@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+echo "Not yet implemented."
+exit 1
+
+MAJOR=0.1.0
+
+git pull
+git push
+git tag -a v$MAJOR -m "Version $MAJOR"
+git push origin --tags
+
