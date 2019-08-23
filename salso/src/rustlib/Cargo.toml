@@ -1,0 +1,15 @@
+[package]
+name = "rustlib"
+version = "0.1.0"
+authors = ["David B. Dahl <dahl@stat.byu.edu>"]
+edition = "2018"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+dahl-partition = "0.3.0"
+dahl-randompartition = "0.1.0"
+dahl-bellnumber = "0.1.0"
+dahl-salso = "0.1.0"
+

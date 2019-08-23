@@ -1,0 +1,91 @@
+#!/bin/bash
+
+set -e
+
+## For debugging
+# set -x
+# trap read debug
+
+cd $(dirname $(readlink -f "$0"))/..
+
+function usage() {
+  >&2 echo "Usage: $0 [ -p ]"
+  >&2 echo "       where -p posts to personal CRAN-like repository."
+  exit 1
+}
+
+if [[ $# -eq 0 ]]
+then
+  DEFAULT=""
+  >&2 echo "Note: using default arguments: $DEFAULT"
+  set -- $DEFAULT
+fi
+
+while getopts ":p" o
+do
+  case "${o}" in
+    p)
+      FLAG_POST=yes
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+shift $((OPTIND-1))
+
+if [[ $# -ne 0 ]]
+then
+  usage
+fi
+
+if [[ $(find . -name DESCRIPTION | wc -l) -gt 1 ]]
+then
+  >&2 echo "Too many DESCRIPTION files found."
+  exit 2
+fi
+
+PKG_BASE=$(basename $(dirname $(find . -name DESCRIPTION)))
+
+trim() {
+    local var="$*"
+    # remove leading whitespace characters
+    var="${var#"${var%%[![:space:]]*}"}"
+    # remove trailing whitespace characters
+    var="${var%"${var##*[![:space:]]}"}"   
+    echo -n "$var"
+}
+
+cd $PKG_BASE
+PKG_NAME=$(trim $(grep '^Package: ' DESCRIPTION | sed -e 's/^Package: //g'))
+PKG_VERSION=$(trim $(grep '^Version: ' DESCRIPTION | sed -e 's/^Version: //g'))
+cd ..
+
+if [[ ! -e ${PKG_NAME}/NAMESPACE ]]
+then
+  touch ${PKG_NAME}/NAMESPACE
+fi
+
+R CMD INSTALL $PKG_NAME
+
+cd $PKG_NAME
+R --slave -e 'devtools::document()'
+cd ..
+
+chmod a+x ${PKG_NAME}/configure
+
+R CMD build $PKG_NAME
+
+TGZ_NAME=${PKG_NAME}_${PKG_VERSION}.tar.gz
+
+mkdir -p deliveries
+mv $TGZ_NAME deliveries
+
+if [[ "$FLAG_POST" ]]
+then
+  REPOS=docs/devel/website-professional/html/rpackages
+  scp "deliveries/$TGZ_NAME" dahl.byu.edu:"$REPOS"/src/contrib
+  ssh dahl.byu.edu bash -lc "'$REPOS/mkBinaries src/contrib/$TGZ_NAME'"
+  ssh dahl.byu.edu bash -lc "'$REPOS/updatePACKAGES'"
+fi
+

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+if [[ $(command -v cargo) ]]
+then
+  cargo --version
+else
+  echo "------------------------------------------------------------------------------------"
+  echo ""
+  echo "On macOS, Linux, or another Unix-like OS,"
+  echo ""
+  echo "    - Run the following in the terminal:  curl https://sh.rustup.rs -sSf | sh"
+  echo ""
+  echo "    OR, using your operating system's package manager, run one of the following:"
+  echo ""
+  echo "    - brew install rust (macOS)"
+  echo "    - sudo apt install cargo (Debian/Ubuntu)"
+  echo "    - sudo dnf install cargo (Fedora/CentOS)"
+  echo ""
+  echo "On Windows,"
+  echo ""
+  echo "    - Download rustup-init.exe from https://win.rustup.rs"
+  echo "    - In the terminal, run:  rustup-init.exe -y --default-host x86_64-pc-windows-gnu"
+  echo "    - Restart the terminal"
+  echo "    - In the terminal, run:  rustup target add i686-pc-windows-gnu"
+  echo ""
+  echo "------------------------------------------------------------------------------------"
+  echo ""
+  exit 1
+fi
+

@@ -1,0 +1,11 @@
+.Rproj.user
+/deliveries
+/salso_*.tar.gz
+/salso.Rcheck
+/salso/NAMESPACE
+/salso/man
+/salso/src/*.o
+/salso/src/*.so
+/salso/src/*.dll
+/salso/src/*.a
+/salso/src/rustlib/target

@@ -1,0 +1,15 @@
+TARGET = $(subst 64,x86_64,$(subst 32,i686,$(WIN)))-pc-windows-gnu
+LIBDIR = rustlib/target/$(TARGET)/release
+STATLIB = $(LIBDIR)/rustlib.lib
+PKG_LIBS = -L$(LIBDIR) -lrustlib -lws2_32 -ladvapi32 -luserenv
+
+all: clean
+
+$(SHLIB): $(STATLIB)
+
+$(STATLIB):
+	cargo build --target=$(TARGET) --release --manifest-path=rustlib/Cargo.toml
+
+clean:
+	# rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) rustlib/target
+	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)

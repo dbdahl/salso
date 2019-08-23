@@ -1,0 +1,5 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+src/rustlib/target
+src/rustlib/cbindgen.toml
+src/rustlib/generate-headers
