@@ -1,0 +1,23 @@
+Compiling this package requires Cargo, the package manager of the Rust
+programming language.  This is a compile-time dependency only.  Users of the
+binary package do **not** need to have Cargo or Rust installed.  Instructions
+for installing Cargo are below.
+
+On macOS, Linux, or another Unix-like OS,
+
+   - Run the following in the terminal:  curl https://sh.rustup.rs -sSf | sh
+
+   OR, using your operating system's package manager, run one of the following:
+
+   - brew install rust (macOS)
+   - sudo apt install cargo (Debian/Ubuntu)
+   - sudo dnf install cargo (Fedora/CentOS)
+
+On Windows,
+
+   - Download rustup-init.exe from https://win.rustup.rs
+   - In the terminal, run:  rustup-init.exe -y --default-host x86_64-pc-windows-gnu
+   - Restart the terminal (so the new terminal picks up changes to your PATH).
+   - In a new terminal, run:  rustup target add i686-pc-windows-gnu
+   - Restart R (so it picks up changes to your PATH) and install this package.
+

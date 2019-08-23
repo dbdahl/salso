@@ -18,7 +18,9 @@
 #' @export
 #' @useDynLib salso .psm
 #' @examples
-#' psm(matrix(c(1,2,2,1,2,1), nrow=2, byrow=TRUE))
+#' dim(iris.clusterings)
+#' probs <- psm(iris.clusterings)
+#' dim(probs)
 #'
 psm <- function(x, parallel=TRUE) {
   y <- .Call(.psm, x, parallel)
