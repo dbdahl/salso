@@ -83,9 +83,6 @@ mv $TGZ_NAME deliveries
 
 if [[ "$FLAG_POST" ]]
 then
-  REPOS=docs/devel/website-professional/html/rpackages
-  scp "deliveries/$TGZ_NAME" dahl.byu.edu:"$REPOS"/src/contrib
-  ssh dahl.byu.edu bash -lc "'$REPOS/mkBinaries src/contrib/$TGZ_NAME'"
-  ssh dahl.byu.edu bash -lc "'$REPOS/updatePACKAGES'"
+  deploy-R-package --rust "deliveries/$TGZ_NAME"
 fi
 
