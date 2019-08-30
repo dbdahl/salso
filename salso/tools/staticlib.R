@@ -3,7 +3,7 @@ FORCE_DOWNLOAD <- FALSE
 if ( ( ! FORCE_DOWNLOAD ) && ( Sys.which("cargo") != "" ) ) {
   cat("\nCompiling static library.\n\n")
   args <- commandArgs(TRUE)
-  target <- if ( length(args) > 0 ) paste0("--target",args[1]) else NULL
+  target <- if ( length(args) > 0 ) paste0("--target=",args[1]) else NULL
   status <- system2("cargo",c("build",target,"--release","--manifest-path=rustlib/Cargo.toml"))
   quit(status=status)
 }
