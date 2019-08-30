@@ -11,7 +11,7 @@
 #'
 #' @export
 #' @examples
-#' probs <- psm(iris.clusterings)
+#' probs <- psm(iris.clusterings, parallel=FALSE)
 #' binder(iris.clusterings[1:5,], probs)
 #' VI.lb(iris.clusterings[1:5,], probs)
 #'
@@ -21,8 +21,6 @@ binder <- function(partitions, psm) {
 
 #' @export
 #' @rdname binder
-#' @examples
-#' VI.lb(c(1,1,1), psm(matrix(c(1,2,2,1,2,1), nrow=2, byrow=TRUE)))
 #'
 VI.lb <- function(partitions, psm) {
   expectedLoss(partitions, psm, TRUE)

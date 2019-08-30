@@ -1,9 +1,11 @@
-Compiling this package requires Cargo, the package manager of the Rust
-programming language.  This is a compile-time dependency only.  Users of the
-binary package do **not** need to have Cargo or Rust installed.  Instructions
-for installing Cargo are below.
+Compiling this package uses Cargo (the package manager of the Rust programming
+language) if it is available.  Otherwise, the necessary static library is
+downloaded for select operating systems (namely Linux, macOS, and Windows).  In
+either case, this is a compile-time dependency only.  Users of the binary
+package do **not** need to have Cargo or Rust installed.  Instructions for
+installing Cargo are below.
 
-On macOS, Linux, or another Unix-like OS,
+On macOS, Linux, and other Unix-like OSes,
 
    - Run the following in the terminal:  curl https://sh.rustup.rs -sSf | sh
 

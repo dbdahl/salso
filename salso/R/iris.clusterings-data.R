@@ -6,6 +6,6 @@
 #'   150 observations in the iris dataset.
 #'
 #' @seealso \code{\link[datasets]{iris}}
-
+#'
 "iris.clusterings"
 

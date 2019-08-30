@@ -19,7 +19,7 @@
 #' @useDynLib salso .psm
 #' @examples
 #' dim(iris.clusterings)
-#' probs <- psm(iris.clusterings)
+#' probs <- psm(iris.clusterings, parallel=FALSE)
 #' dim(probs)
 #'
 psm <- function(x, parallel=TRUE) {
