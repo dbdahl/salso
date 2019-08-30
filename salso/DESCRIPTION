@@ -1,7 +1,7 @@
 Package: salso
 Type: Package
 Title: Sequentially-Allocated Latent Structure Optimization
-Version: 0.1.1
+Version: 0.1.2
 Author: David B. Dahl
 Maintainer: David B. Dahl <dahl@stat.byu.edu>
 Description: Point estimation for partition distributions using the sequentially-allocated latent structure optimization (SALSO) algorithm to minimize Binder loss or the lower bound of the variation of information loss. Clustering uncertainty can be assessed with the confidence calculations and the associated plot.
