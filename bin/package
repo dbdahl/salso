@@ -72,8 +72,6 @@ cd $PKG_NAME
 R --slave -e 'devtools::document()'
 cd ..
 
-chmod a+x ${PKG_NAME}/configure
-
 R CMD build $PKG_NAME
 
 TGZ_NAME=${PKG_NAME}_${PKG_VERSION}.tar.gz
