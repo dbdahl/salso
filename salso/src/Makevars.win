@@ -8,8 +8,7 @@ all: clean
 $(SHLIB): $(STATLIB)
 
 $(STATLIB):
-	cargo build --target=$(TARGET) --release --manifest-path=rustlib/Cargo.toml
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript" ../tools/staticlib.R "$(TARGET)"
 
 clean:
-	# rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS) rustlib/target
 	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)
