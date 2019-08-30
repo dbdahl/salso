@@ -1,0 +1,12 @@
+Run 'install-R --devel'
+Bump version number in DESCRIPTION
+Update NEWS detailing changes (including the date)
+bin/package -p
+Test on Linux, Mac OS, and Windows
+  For Windows, use https://win-builder.r-project.org/
+  For Mac, run R CMD check --as-cran ...
+  Try rhub service.
+Commit everything to Git, including the package in the deliveries directory.
+Tag in Git the version using "bin/tag" script.
+Submit to CRAN
+Bump (development) version number in DESCRIPTION

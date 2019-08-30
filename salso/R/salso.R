@@ -32,8 +32,8 @@
 #' @export
 #' @useDynLib salso .minimize_by_salso
 #' @examples
-#' probs <- psm(iris.clusterings)
-#' salso(probs, nPermutations=50)
+#' probs <- psm(iris.clusterings, parallel=FALSE)
+#' salso(probs, nPermutations=50, parallel=FALSE)
 #'
 salso <- function(psm, loss=c("VI.lb","binder")[1], maxSize=0, maxScans=5, nPermutations=5000, seconds=10, parallel=TRUE) {
   if ( ! ( isSymmetric(psm) && all(0 <= psm) && all(psm <= 1) && all(diag(psm)==1) ) ) {

@@ -7,7 +7,7 @@ Maintainer: David B. Dahl <dahl@stat.byu.edu>
 Description: Point estimation for partition distributions using the sequentially-allocated latent structure optimization (SALSO) algorithm to minimize Binder loss or the lower bound of the variation of information loss. Clustering uncertainty can be assessed with the confidence calculations and the associated plot.
 License: MIT + file LICENSE | Apache License 2.0
 Depends: R (>= 3.3.0)
-SystemRequirements: Cargo (rustc package manager)
+SystemRequirements: Cargo (the Rust package manager)
 Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 6.1.1

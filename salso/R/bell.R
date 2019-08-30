@@ -1,4 +1,4 @@
-#' Compute the Bell number
+#' Compute the Bell Number
 #'
 #' These functions compute the Bell number (the number of partitions of a set)
 #' or its natural logarithm.
