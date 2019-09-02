@@ -1,13 +1,18 @@
 #' Compute a Partition Loss Function
 #'
-#' These functions compute the Binder loss and the lower bound of the variation of information loss.
+#' These functions compute the Binder loss and the lower bound of the variation
+#' of information loss.
 #'
-#' @param partitions An integer matrix of cluster labels, where two items are in the same subset (i.e., cluster) if
-#' their labels are equal.
+#' @param partitions An integer matrix of cluster labels, where each row is a
+#'   partition given as cluster labels.  Two items are in the same subset (i.e.,
+#'   cluster) if their labels are equal.
 #' @param psm A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
 #'   matrix whose \code{(i,j)} elements gives the (estimated) probability that
 #'   items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
 #'   partition (i.e., clustering).
+#'
+#' @return A numeric vector of length equal to the number of rows of
+#'   \code{partitions}, where each element gives the value of the loss function.
 #'
 #' @export
 #' @examples

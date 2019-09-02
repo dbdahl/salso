@@ -5,6 +5,9 @@
 #'
 #' @param nItems The size of the set \code{\{1, 2, ..., n\}}.
 #'
+#' @return A numeric vector of length one giving the Bell number or its natural
+#'   logarithm.
+#'
 #' @export
 #' @useDynLib salso .bell
 #' @rdname bell

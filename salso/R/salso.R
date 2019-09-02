@@ -3,9 +3,10 @@
 #' This function provides a point estimate for a partition distribution using
 #' the sequentially-allocated latent structure optimization (SALSO) method. The
 #' method seeks to minimize the Binder loss or the lower bound of the variation
-#' of information loss.  The SALSO method was presented at the workshop
-#' "Bayesian Nonparametric Inference: Dependence Structures and their
-#' Applications" in Oaxaca, Mexico on December 6, 2017.
+#' of information loss. The SALSO method was presented at the workshop "Bayesian
+#' Nonparametric Inference: Dependence Structures and their Applications" in
+#' Oaxaca, Mexico on December 6, 2017. See
+#' <https://www.birs.ca/events/2017/5-day-workshops/17w5060/schedule>.
 #'
 #' @param psm A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
 #'   matrix whose \code{(i,j)} elements gives the (estimated) probability that
@@ -28,6 +29,14 @@
 #'   however, because this threadhold is only checked after each permutation is
 #'   completed.
 #' @param parallel Should the search use all CPU cores?
+#'
+#' @return A list of the following elements: \describe{ \item{estimate}{An
+#'   integer vector giving a partition encoded using cluster labels.}
+#'   \item{loss}{A character vector equal to the \code{loss} argument.}
+#'   \item{expectedLoss}{A numeric vector of length one giving the expected
+#'   loss.} \item{nScans}{An integer vector giving the number of scans used to
+#'   arrive at the supplied estimate.} \item{nPermutations}{An integer vector
+#'   giving the number of permutations actually performed.} }
 #'
 #' @export
 #' @useDynLib salso .minimize_by_salso

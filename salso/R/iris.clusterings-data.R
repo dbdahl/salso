@@ -5,6 +5,8 @@
 #' @format A 1000-by-150 matrix of 1000 randomly generated clusterings of the
 #'   150 observations in the iris dataset.
 #'
+#' @source Unknown.
+#'
 #' @seealso \code{\link[datasets]{iris}}
 #'
 "iris.clusterings"

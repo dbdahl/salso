@@ -1,3 +1,7 @@
+0.1.2 (2019-09-02)
+  * Improved DESCRIPTION file as requested by CRAN.
+  * Added \value to .Rd files as requested by CRAN.
+
 0.1.1 (2019-08-30)
   * Support for static libraries.
 
