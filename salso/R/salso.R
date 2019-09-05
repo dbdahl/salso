@@ -25,8 +25,8 @@
 #'   searching for the minimizer.
 #' @param seconds A time threshold in seconds after which the function will
 #'   return early (with a warning) instead of finishing all the desired
-#'   permutations.  Note that the function could take considerably larger,
-#'   however, because this threadhold is only checked after each permutation is
+#'   permutations.  Note that the function could take considerably longer,
+#'   however, because this threshold is only checked after each permutation is
 #'   completed.
 #' @param parallel Should the search use all CPU cores?
 #'
