@@ -7,7 +7,7 @@
 #'   partition given as cluster labels.  Two items are in the same subset (i.e.,
 #'   cluster) if their labels are equal.
 #' @param psm A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
-#'   matrix whose \code{(i,j)} elements gives the (estimated) probability that
+#'   matrix whose \code{(i,j)} element gives the (estimated) probability that
 #'   items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
 #'   partition (i.e., clustering).
 #'
