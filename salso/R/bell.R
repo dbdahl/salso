@@ -12,9 +12,9 @@
 #' @useDynLib salso .bell
 #' @rdname bell
 #' @examples
-#' all.equal( bell(5), exp(lbell(5)) )
 #' bell(12)
 #' lbell(300)
+#' all.equal( bell(5), exp(lbell(5)) )
 #'
 bell <- function(nItems) {
   .Call(.bell, nItems)

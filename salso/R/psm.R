@@ -21,6 +21,7 @@
 #' dim(iris.clusterings)
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' dim(probs)
+#' probs[1:6, 1:6]
 #'
 psm <- function(x, parallel=TRUE) {
   y <- .Call(.psm, x, parallel)
