@@ -1,9 +1,12 @@
-FORCE_DOWNLOAD <- FALSE
+FORCE_DOWNLOAD <- as.logical(Sys.getenv("RUSTLIB_FORCE_DOWNLOAD",unset="FALSE"))
+
+args <- commandArgs(TRUE)
+target <- if ( length(args) > 0 ) args[1] else NULL
+cat("RUSTLIB_FORCE_DOWNLOAD=",FORCE_DOWNLOAD,"\n",sep="")
 
 if ( ( ! FORCE_DOWNLOAD ) && ( Sys.which("cargo") != "" ) ) {
   cat("\nCompiling static library.\n\n")
-  args <- commandArgs(TRUE)
-  target <- if ( length(args) > 0 ) paste0("--target=",args[1]) else NULL
+  targetArg <- if ( is.null(target) ) NULL else paste0("--target=",args[1])
   status <- system2("cargo",c("build",target,"--release","--manifest-path=rustlib/Cargo.toml"))
   quit(status=status)
 }
@@ -33,4 +36,12 @@ pkgVersion <- as.character(desc[,"Version"])
 download.file(sprintf("https://dbdahl.github.io/rpackages/lib/%s/%s/%s.tar.gz",osType,pkgName,pkgVersion), "staticlib.tar.gz", quiet=TRUE)
 untar(sprintf("staticlib.tar.gz",pkgVersion), exdir="..")
 unlink("staticlib.tar.gz")
+
+if ( osType == "windows" ) {
+  destDir <- sprintf("rustlib/target/%s/release", target)
+  headDir <- if ( substr(target,1,3) == "x86" ) "x64" else "i386"
+  dir.create(destDir, recursive=TRUE, showWarnings=FALSE)
+  invisible(file.rename(sprintf("../src-%s/%s/rustlib.lib", headDir, destDir),
+                        sprintf(          "%s/rustlib.lib",          destDir)))
+}
 
