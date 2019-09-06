@@ -13,7 +13,6 @@
 #' @export
 #' @useDynLib salso .enumerate_partitions
 #' @examples
-#' enumerate.partitions(3)
 #' enumerate.partitions(5)
 #'
 enumerate.partitions <- function(nItems) {
