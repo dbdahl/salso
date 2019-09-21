@@ -111,15 +111,6 @@ version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
-name = "dahl-randompartition"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "dahl-partition 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "rand 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
 name = "dahl-salso"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -254,7 +245,6 @@ version = "0.1.0"
 dependencies = [
  "dahl-bellnumber 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dahl-partition 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "dahl-randompartition 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dahl-salso 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -295,7 +285,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum crossbeam-utils 0.6.6 (registry+https://github.com/rust-lang/crates.io-index)" = "04973fa96e96579258a5091af6003abde64af786b860f18622b82e026cca60e6"
 "checksum dahl-bellnumber 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "6a3470d2101ec2451e81c57b39b86b88c973646538fa6561f15c1b510541e8dd"
 "checksum dahl-partition 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "6376aa2861f2f310ea5a2b8087c40fd209fd3ec3742cddb570737b37549e7d22"
-"checksum dahl-randompartition 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "482b3b57b127af133a38e31c2e308750636692f0936f812d2c376164fd7b0df6"
 "checksum dahl-salso 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "3249ad7db2e1f93ce5fcdd942821bfed0357117121769864c7d13e9d472540dd"
 "checksum getrandom 0.1.10 (registry+https://github.com/rust-lang/crates.io-index)" = "6171a6cc63fbabbe27c2b5ee268e8b7fe5dc1eb0dd2dfad537c1dfed6f69117e"
 "checksum lazy_static 1.3.0 (registry+https://github.com/rust-lang/crates.io-index)" = "bc5729f27f159ddd61f4df6228e827e86643d4d3e7c32183cb30a1c08f604a14"

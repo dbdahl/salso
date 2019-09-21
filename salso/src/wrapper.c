@@ -4,7 +4,6 @@
 #include <Rinternals.h>
 
 // Import C headers for rust API
-#include "rustlib/dahl-randompartition.h"
 #include "rustlib/dahl-partition.h"
 #include "rustlib/dahl-bellnumber.h"
 #include "rustlib/dahl-salso.h"
@@ -55,7 +54,7 @@ SEXP lbell(SEXP n_items_sexp) {
 SEXP enumerate_partitions(SEXP n_items_sexp) {
   n_items_sexp = PROTECT(Rf_coerceVector(n_items_sexp, INTSXP));
   int n_items = *(INTEGER(n_items_sexp));
-  int n_partitions = dahl_bellnumber__bell(n_items);
+  int n_partitions = (int) dahl_bellnumber__bell(n_items);
   SEXP partitions = PROTECT(Rf_allocVector(INTSXP, n_partitions*n_items));
   int *xpartitions = INTEGER(partitions);
   dahl_partition__enumerated(n_partitions, n_items, xpartitions);

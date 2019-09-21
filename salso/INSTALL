@@ -1,9 +1,9 @@
 Compiling this package uses Cargo (the package manager of the Rust programming
-language) if it is available.  Otherwise, the necessary static library is
-downloaded for select operating systems (namely Linux, macOS, and Windows).  In
-either case, this is a compile-time dependency only.  Users of the binary
-package do **not** need to have Cargo or Rust installed.  Instructions for
-installing Cargo are below.
+language) if it is available.  Version 1.31.0 or newer is required.  Otherwise,
+the necessary static library is downloaded for select operating systems (namely
+Linux, macOS, and Windows).  In either case, this is a compile-time dependency
+only.  Users of the binary package do **not** need to have Cargo or Rust
+installed.  Instructions for installing Cargo are below.
 
 On macOS, Linux, and other Unix-like OSes,
 

@@ -5,10 +5,16 @@ target <- if ( length(args) > 0 ) args[1] else NULL
 cat("RUSTLIB_FORCE_DOWNLOAD=",FORCE_DOWNLOAD,"\n",sep="")
 
 if ( ( ! FORCE_DOWNLOAD ) && ( Sys.which("cargo") != "" ) ) {
-  cat("\nCompiling static library.\n\n")
-  targetArg <- if ( is.null(target) ) NULL else paste0("--target=",args[1])
-  status <- system2("cargo",c("build",target,"--release","--manifest-path=rustlib/Cargo.toml"))
-  quit(status=status)
+  requiredCargoVersion <- "1.31.0"
+  installedCargoVersion <- gsub("cargo ([^ ]+) .*", "\\1", system2("cargo","--version",stdout=TRUE))
+  if ( compareVersion(installedCargoVersion, requiredCargoVersion) < 0 ) {
+    cat(sprintf("\nCargo %s is needed, but only found Cargo %s.\n\n", requiredCargoVersion, installedCargoVersion))
+  } else {
+    cat("\nCompiling static library.\n\n")
+    targetArg <- if ( is.null(target) ) NULL else paste0("--target=",args[1])
+    status <- system2("cargo",c("build",target,"--release","--manifest-path=rustlib/Cargo.toml"))
+    quit(status=status)
+  }
 }
 
 osType <- function() {

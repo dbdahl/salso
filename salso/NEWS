@@ -1,4 +1,8 @@
+0.1.3 (2019-09-21)
+  * Check for sufficiently recent version of Cargo.
+
 0.1.2 (2019-09-02)
+  * First version available on CRAN
   * Improved DESCRIPTION file as requested by CRAN.
   * Added \value to .Rd files as requested by CRAN.
 
