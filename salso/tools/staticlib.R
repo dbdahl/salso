@@ -11,8 +11,8 @@ if ( ( ! FORCE_DOWNLOAD ) && ( Sys.which("cargo") != "" ) ) {
     cat(sprintf("\nCargo %s is needed, but only found Cargo %s.\n\n", requiredCargoVersion, installedCargoVersion))
   } else {
     cat("\nCompiling static library.\n\n")
-    targetArg <- if ( is.null(target) ) NULL else paste0("--target=",args[1])
-    status <- system2("cargo",c("build",target,"--release","--manifest-path=rustlib/Cargo.toml"))
+    targetArg <- if ( is.null(target) ) NULL else paste0("--target=",target)
+    status <- system2("cargo",c("build",targetArg,"--release","--manifest-path=rustlib/Cargo.toml"))
     quit(status=status)
   }
 }
