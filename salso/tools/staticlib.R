@@ -25,7 +25,7 @@ osType <- function() {
   if ( ( ! grepl("^x86", info["machine"]) ) || ( ! ( sysname %in% c("Windows","Darwin","Linux") ) ) ) sprintf("%s-%s",info["sysname"],info["machine"])
   else if ( sysname == "Windows" ) "windows"
   else if ( sysname == "Darwin" ) "macosx"
-  else if ( sysname == "Linux" ) "linuxx"
+  else if ( sysname == "Linux" ) "linux"
   else sysname
 }
 osType <- osType()
