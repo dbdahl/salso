@@ -6,7 +6,7 @@ cat("RUSTLIB_FORCE_DOWNLOAD=",FORCE_DOWNLOAD,"\n",sep="")
 
 requiredCargoVersion <- "1.31.0"
 if ( ( ! FORCE_DOWNLOAD ) && ( Sys.which("cargo") != "" ) ) {
-  installedCargoVersion <- gsub("cargo ([^ ]+) .*", "\\1", system2("cargo","--version",stdout=TRUE))
+  installedCargoVersion <- gsub("cargo ([^ ]+).*", "\\1", system2("cargo","--version",stdout=TRUE))
   cat(sprintf("\nCargo %s is found", installedCargoVersion))
   if ( compareVersion(installedCargoVersion, requiredCargoVersion) < 0 ) {
     cat(sprintf(" but Cargo (>= %s) is required for compilation.\n\n", requiredCargoVersion))

@@ -40,6 +40,30 @@
 #'
 #' @export
 #' @useDynLib salso .minimize_by_salso
+#' @references
+#' D. A. Binder (1978), Bayesian cluster analysis, \emph{Biometrika} \bold{65},
+#' 31-38.
+#'
+#' D. B. Dahl (2006), Model-Based Clustering for Expression Data via a Dirichlet
+#' Process Mixture Model, in \emph{Bayesian Inference for Gene Expression and
+#' Proteomics}, Kim-Anh Do, Peter Müller, Marina Vannucci (Eds.), Cambridge
+#' University Press.
+#'
+#' J. W. Lau and P. J. Green (2007), Bayesian model based clustering procedures,
+#' \emph{Journal of Computational and Graphical Statistics} \bold{16}, 526-558.
+#
+#' D. B. Dahl, M. A. Newton (2007), Multiple Hypothesis Testing by Clustering
+#' Treatment Effects, \emph{Journal of the American Statistical Association},
+#' \bold{102}, 517-526.
+#'
+#' A. Fritsch and K. Ickstadt (2009), An improved criterion for clustering
+#' based on the posterior similarity matrix, \emph{Bayesian Analysis},
+#' \bold{4}, 367-391.
+#'
+#' S. Wade and Z. Ghahramani (2018), Bayesian cluster analysis: Point
+#' estimation and credible balls. \emph{Bayesian Analysis}, \bold{13:2},
+#' 559-626.
+#'
 #' @examples
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' salso(probs, nPermutations=50, parallel=FALSE)

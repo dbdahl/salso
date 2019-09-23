@@ -3,6 +3,7 @@
 export(VI.lb)
 export(bell)
 export(binder)
+export(dlso)
 export(enumerate.partitions)
 export(lbell)
 export(psm)

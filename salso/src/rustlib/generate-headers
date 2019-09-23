@@ -2,7 +2,6 @@
 
 # cbindgen >| api.h
 cp ~/docs/devel/rust-dahl-partition/dahl-partition.h .
-cp ~/docs/devel/rust-dahl-randompartition/dahl-randompartition.h .
 cp ~/docs/devel/rust-dahl-bellnumber/dahl-bellnumber.h .
 cp ~/docs/devel/rust-dahl-salso/dahl-salso.h .
 
