@@ -4,8 +4,8 @@ args <- commandArgs(TRUE)
 target <- if ( length(args) > 0 ) args[1] else NULL
 cat("RUSTLIB_FORCE_DOWNLOAD=",FORCE_DOWNLOAD,"\n",sep="")
 
+requiredCargoVersion <- "1.31.0"
 if ( ( ! FORCE_DOWNLOAD ) && ( Sys.which("cargo") != "" ) ) {
-  requiredCargoVersion <- "1.31.0"
   installedCargoVersion <- gsub("cargo ([^ ]+) .*", "\\1", system2("cargo","--version",stdout=TRUE))
   if ( compareVersion(installedCargoVersion, requiredCargoVersion) < 0 ) {
     cat(sprintf("\nCargo %s is needed, but only found Cargo %s.\n\n", requiredCargoVersion, installedCargoVersion))
@@ -29,7 +29,7 @@ osType <- function() {
 osType <- osType()
 
 if ( ! ( osType %in% c("windows","macosx","linux") ) ) {
-  cat(sprintf("\nThe package is not supported on this platform (%s).\n\n",osType))
+  cat(sprintf("\nCargo (>= %s) is not found.\nThis package may not be supported on this platform (%s).\nPlease see https://forge.rust-lang.org/release/platform-support.html\n\n",requiredCargoVersion,osType))
   quit(status=1)
 }
 
