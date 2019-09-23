@@ -7,33 +7,37 @@ cat("RUSTLIB_FORCE_DOWNLOAD=",FORCE_DOWNLOAD,"\n",sep="")
 requiredCargoVersion <- "1.31.0"
 if ( ( ! FORCE_DOWNLOAD ) && ( Sys.which("cargo") != "" ) ) {
   installedCargoVersion <- gsub("cargo ([^ ]+) .*", "\\1", system2("cargo","--version",stdout=TRUE))
+  cat(sprintf("\nCargo %s is found", installedCargoVersion))
   if ( compareVersion(installedCargoVersion, requiredCargoVersion) < 0 ) {
-    cat(sprintf("\nCargo %s is needed, but only found Cargo %s.\n\n", requiredCargoVersion, installedCargoVersion))
+    cat(sprintf(" but Cargo (>= %s) is required for compilation.\n\n", requiredCargoVersion))
   } else {
-    cat("\nCompiling static library.\n\n")
+    cat("; compiling static library.\n\n")
     targetArg <- if ( is.null(target) ) NULL else paste0("--target=",target)
     status <- system2("cargo",c("build",targetArg,"--release","--manifest-path=rustlib/Cargo.toml"))
+    cat("\n")
     quit(status=status)
   }
 }
 
 osType <- function() {
-  if ( .Platform$OS.type == "windows" ) "windows"
-  else {
-    sysname <- Sys.info()["sysname"]
-    if ( sysname == "Darwin" ) "macosx"
-    else if ( sysname == "Linux" ) "linux"
-    else sysname
-  }
+  info <- Sys.info()
+  sysname <- info["sysname"]
+  if ( ( ! grepl("^x86", info["machine"]) ) || ( ! ( sysname %in% c("Windows","Darwin","Linux") ) ) ) sprintf("%s-%s",info["sysname"],info["machine"])
+  else if ( sysname == "Windows" ) "windows"
+  else if ( sysname == "Darwin" ) "macosx"
+  else if ( sysname == "Linux" ) "linuxx"
+  else sysname
 }
 osType <- osType()
 
 if ( ! ( osType %in% c("windows","macosx","linux") ) ) {
-  cat(sprintf("\nCargo (>= %s) is not found.\nThis package may not be supported on this platform (%s).\nPlease see https://forge.rust-lang.org/release/platform-support.html\n\n",requiredCargoVersion,osType))
+  cat(sprintf("\nCargo (>= %s) is not installed.\n\n",requiredCargoVersion))
+  cat(paste(readLines("../INSTALL"),collapse="\n"))
+  cat("\n")
   quit(status=1)
 }
 
-cat("\nDownloading static library.\n\n")
+cat(sprintf("\nDownloading static library for %s.\n\n",osType))
 
 desc <- read.dcf("../DESCRIPTION")
 pkgName    <- as.character(desc[,"Package"])

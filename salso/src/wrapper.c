@@ -2,6 +2,7 @@
 #define STRICT_R_HEADERS
 #include <R.h>
 #include <Rinternals.h>
+#include <R_ext/Rdynload.h>
 
 // Import C headers for rust API
 #include "rustlib/dahl-partition.h"
