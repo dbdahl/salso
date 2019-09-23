@@ -1,19 +1,19 @@
 Compiling this package uses Cargo (the package manager of the Rust programming
 language) if it is available.  Version 1.31.0 or newer is required.  Otherwise,
 the necessary static library is downloaded for select operating systems (namely
-Linux, macOS, and Windows).  In either case, this is a compile-time dependency
-only.  Users of the binary package do **not** need to have Cargo or Rust
-installed.  Below is help on installing Cargo on some platforms.
+Linux, macOS, and Windows running on x86_64).  In either case, this is a
+compile-time dependency only.  Users of the binary package do **not** need to
+have Cargo or Rust installed.  Below is installation help on some platforms.
 
-On macOS, Linux, and other Unix-like OSes,
+On Linux, macOS, and other Unix-like OSes,
 
    - Run the following in the terminal:  curl https://sh.rustup.rs -sSf | sh
 
    OR, using your operating system's package manager, run one of the following:
 
-   - brew install rust (macOS)
    - sudo apt install cargo (Debian/Ubuntu)
    - sudo dnf install cargo (Fedora/CentOS)
+   - brew install rust (macOS)
 
 On Windows,
 
