@@ -3,6 +3,7 @@
 export(VI.lb)
 export(bell)
 export(binder)
+export(confidence)
 export(dlso)
 export(enumerate.partitions)
 export(lbell)
