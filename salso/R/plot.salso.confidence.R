@@ -1,0 +1,90 @@
+#' Confidence and Exemplar Plotting
+#'
+#' Functions to produce confidence plots (e.g., heatmaps of pairwise allocation probabilities) and exemplar plots.
+#'
+#' @param x An object returned by the \code{\link{confidence}} function.
+#' @param estimate A vector of cluster labels, or \code{NULL}.
+#' @param data The data from which the distances were computed.
+#' @param show.labels Show the items names be shown in the plot?
+#' @param ... Currently ignored.
+#'
+#' @author David B. Dahl \email{dahl@stat.byu.edu}
+#'
+#' @examples
+#' probs <- psm(iris.clusterings, parallel=FALSE)
+#' est <- salso(probs, nPermutations=50, parallel=FALSE)$estimate
+#' conf <- confidence(est,probs)
+#' plot(conf)
+#' plot(conf,data=iris)
+#'
+#' @seealso \code{\link{psm}}, \code{\link{dlso}}, \code{\link{salso}}
+#'
+#' @importFrom grDevices heat.colors rainbow topo.colors
+#' @importFrom graphics abline axis box image pairs par points polygon segments text
+#' @export
+#'
+plot.salso.confidence <- function(x, estimate=NULL, data=NULL, show.labels=length(x$estimate)<=50, ...) {
+  if ( ! is.null(data) ) {
+    if ( ! is.null(estimate) ) stop("'estimate' must be 'NULL' for pairs plot.")
+    m <- match(x$estimate,as.numeric(colnames(x$confidenceMatrix)))
+    i <- x$exemplar[m]
+    c <- rainbow(length(x$exemplar))[m]
+    panelFnc <- function(x0,y0,...) {
+      points(x0,y0,col=c,pch=19,...)
+      segments(x0,y0,x0[i],y0[i],col=c,...)
+      points(x0[x$exemplar],y0[x$exemplar],pch=22,bg="white",cex=2,...)
+    }
+    pairs(data,panel=panelFnc)
+    return(invisible())
+  }
+  if ( is.null(estimate) ) {
+    estimate <- x$estimate
+    o <- x$order
+  } else {
+    o <- order(estimate)
+  }
+  pm <- x$psm[o,rev(o)]
+  n <- nrow(pm)
+  sizes <- rle(estimate[o])$lengths
+  cuts <- cumsum(sizes)
+  centers <- ( c(0,cuts[-length(cuts)]) + cuts ) / 2
+  cuts <- cuts[-length(cuts)]
+  labels <- rle(estimate[o])$values
+  if ( show.labels ) {
+    mymai <- c(1.5,0.5,0.5,1.5)
+    cexscale <- 0.85 * 50 / length(estimate)
+  } else {
+    mymai <- c(0,0,0,0)
+    cexscale <- 1 * 50 / length(estimate)
+  }
+  opar <- par(pty="s",mai=mymai)
+  colors <- topo.colors(200)
+  colors <- rev(heat.colors(200))
+  image(x=1:n,y=1:n,z=pm,axes=FALSE,xlab="",ylab="",col=colors)
+  box()
+  abline(v=cuts+0.5,lwd=3)
+  abline(h=n-cuts+0.5,lwd=3)
+  text(centers+0.5,n-centers+0.5,labels,cex=0.8*cexscale*sizes)
+  if ( show.labels ) {
+    axisLabels <- if ( is.null(names(estimate)) ) o
+    else names(estimate[o])
+    axis(4,1:length(estimate),rev(axisLabels),las=2,cex.axis=0.8*cexscale)
+    axis(1,1:length(estimate),axisLabels,las=2,cex.axis=0.8*cexscale)
+    nn <- length(colors)
+    bx <- par("usr")
+    bx.cx <- c(bx[1] - 1.6 * (bx[2] - bx[1]) / 50, bx[1] - 0.3 * (bx[2] - bx[1]) / 50)
+    bx.cy <- c(bx[3], bx[3])
+    bx.sy <- (bx[4] - bx[3]) / nn
+    xx <- rep(bx.cx, each=2)
+    for ( i in 1:nn ) {
+      yy <- c(bx.cy[1] + (bx.sy * (i - 1)),
+              bx.cy[1] + (bx.sy * (i)),
+              bx.cy[1] + (bx.sy * (i)),
+              bx.cy[1] + (bx.sy * (i - 1)))
+      polygon(xx,yy,col=colors[i],border=colors[i],xpd=TRUE)
+    }
+  }
+  par(opar)
+  invisible()
+}
+
