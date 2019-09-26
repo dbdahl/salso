@@ -43,6 +43,7 @@ confidence <- function(estimate, psm) {
   w <- rev(1:length(o))
   order <- order(match(estimate+1,o),confidence)
   exemplar <- rep(0L, nSubsets)
+  names(exemplar) <- labels
   for ( k in labels ) {
     x <- seq_along(estimate)[estimate==k & confidence==max(confidence[estimate==k])]
     exemplar[k+1] <- if ( length(x) == 1 ) x else sample(x,1)
