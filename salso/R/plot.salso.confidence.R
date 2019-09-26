@@ -26,9 +26,8 @@
 plot.salso.confidence <- function(x, estimate=NULL, data=NULL, show.labels=length(x$estimate)<=50, ...) {
   if ( ! is.null(data) ) {
     if ( ! is.null(estimate) ) stop("'estimate' must be 'NULL' for pairs plot.")
-    o <- as.numeric(colnames(x$confidenceMatrix))
-    m <- match(x$estimate,o)
-    i <- x$exemplar[match(x$estimate, as.numeric(names(x$exemplar)))]
+    m <- match(x$estimate, as.numeric(names(x$exemplar)))
+    i <- x$exemplar[m]
     c <- rainbow(length(x$exemplar))[m]
     panelFnc <- function(x0,y0,...) {
       points(x0,y0,col=c,pch=19,...)
