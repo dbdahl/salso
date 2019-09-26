@@ -18,6 +18,9 @@
 
 \item{...}{Currently ignored.}
 }
+\value{
+\code{NULL}, invisibly.
+}
 \description{
 Functions to produce confidence plots (e.g., heatmaps of pairwise allocation probabilities) and exemplar plots.
 }

@@ -15,6 +15,16 @@ matrix whose \code{(i,j)} element gives the (estimated) probability that
 items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
 partition (i.e., clustering).}
 }
+\value{
+A list of the following elements: \describe{ \item{estimate}{The
+  value of the \code{estimate} argument.}
+  \item{psm}{The value of the \code{psm} argument.}
+  \item{confidence}{asdf}
+  \item{confidenceMatrix}{asdf}
+  \item{exemplar}{asdf}
+  \item{order}{asdf}
+  }
+}
 \description{
 This function computes the confidence values for \code{n} observations based
 on a clustering estimate and the expected pairwise allocation matrix.

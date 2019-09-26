@@ -10,6 +10,15 @@
 #'   items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
 #'   partition (i.e., clustering).
 #'
+#' @return A list of the following elements: \describe{ \item{estimate}{The
+#'   value of the \code{estimate} argument.}
+#'   \item{psm}{The value of the \code{psm} argument.}
+#'   \item{confidence}{asdf}
+#'   \item{confidenceMatrix}{asdf}
+#'   \item{exemplar}{asdf}
+#'   \item{order}{asdf}
+#'   }
+#'
 #' @author David B. Dahl \email{dahl@stat.byu.edu}
 #'
 #' @examples

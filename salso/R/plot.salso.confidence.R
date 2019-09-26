@@ -8,6 +8,8 @@
 #' @param show.labels Show the items names be shown in the plot?
 #' @param ... Currently ignored.
 #'
+#' @return \code{NULL}, invisibly.
+#'
 #' @author David B. Dahl \email{dahl@stat.byu.edu}
 #'
 #' @examples
