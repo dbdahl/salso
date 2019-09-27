@@ -25,8 +25,8 @@ A numeric vector of length equal to the number of rows of
 }
 \description{
 These functions compute the expectation of the Binder loss and the lower
-bound of the variation of information loss for given partitions based on the
-supplied pairwise similarity matrix.
+bound of the expectation of the variation of information loss for given
+partitions based on the supplied pairwise similarity matrix.
 }
 \examples{
 probs <- psm(iris.clusterings, parallel=FALSE)

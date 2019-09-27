@@ -3,9 +3,9 @@
 #' This function provides a point estimate for a partition distribution using
 #' the draws latent structure optimization (DLSO) method, which is also known as
 #' the least-squares clustering method (Dahl 2006). The method seeks to minimize
-#' the expectation of the Binder loss or the lower bound of the variation of
-#' information loss by picking the minimizer among the partitions supplied by
-#' the `draws` argument.
+#' the expectation of the Binder loss or the lower bound of the expectation of
+#' the variation of information loss by picking the minimizer among the
+#' partitions supplied by the `draws` argument.
 #'
 #' @param psm A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
 #'   matrix whose \code{(i,j)} element gives the (estimated) probability that

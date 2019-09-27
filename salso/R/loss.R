@@ -1,8 +1,8 @@
 #' Compute a Partition Loss Function
 #'
 #' These functions compute the expectation of the Binder loss and the lower
-#' bound of the variation of information loss for given partitions based on the
-#' supplied pairwise similarity matrix.
+#' bound of the expectation of the variation of information loss for given
+#' partitions based on the supplied pairwise similarity matrix.
 #'
 #' @param partitions An integer matrix of cluster labels, where each row is a
 #'   partition given as cluster labels.  Two items are in the same subset (i.e.,
