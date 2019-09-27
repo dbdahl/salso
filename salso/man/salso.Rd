@@ -48,10 +48,10 @@ A list of the following elements: \describe{ \item{estimate}{An
 \description{
 This function provides a point estimate for a partition distribution using
 the sequentially-allocated latent structure optimization (SALSO) method. The
-method seeks to minimize the Binder loss or the lower bound of the variation
-of information loss. The SALSO method was presented at the workshop "Bayesian
-Nonparametric Inference: Dependence Structures and their Applications" in
-Oaxaca, Mexico on December 6, 2017. See
+method seeks to minimize the expectation of the Binder loss or the lower
+bound of the variation of information loss. The SALSO method was presented at
+the workshop "Bayesian Nonparametric Inference: Dependence Structures and
+their Applications" in Oaxaca, Mexico on December 6, 2017. See
 <https://www.birs.ca/events/2017/5-day-workshops/17w5060/schedule>.
 }
 \examples{
