@@ -33,8 +33,9 @@ A list of the following elements: \describe{ \item{estimate}{An
 This function provides a point estimate for a partition distribution using
 the draws latent structure optimization (DLSO) method, which is also known as
 the least-squares clustering method (Dahl 2006). The method seeks to minimize
-the Binder loss or the lower bound of the variation of information loss by
-picking the minimizer among the partitions supplied by the `draws` argument.
+the expectation of the Binder loss or the lower bound of the expectation of
+the variation of information loss by picking the minimizer among the
+partitions supplied by the `draws` argument.
 }
 \examples{
 dlso(draws=iris.clusterings, parallel=FALSE)
