@@ -12,11 +12,11 @@
 #'
 #' @return A list of the following elements: \describe{ \item{estimate}{The
 #'   value of the \code{estimate} argument.}
-#'   \item{psm}{The value of the \code{psm} argument.}
-#'   \item{confidence}{asdf}
-#'   \item{confidenceMatrix}{asdf}
-#'   \item{exemplar}{asdf}
-#'   \item{order}{asdf}
+#'   \item{psm}{The value of the \code{psm} argument (the given pairwise similarity matrix).}
+#'   \item{confidence}{A numeric vector containing the confidence or probability that each item is paired with all of the other items in its particular cluster.}
+#'   \item{confidenceMatrix}{A matrix containing the average confidence of all items in a cluster (on the diagonal). The off-diagonal shows the confidence or probability that items in a cluster should be clustered with the items in a different cluster. High probabilities on the diagonal and low probabilities everywhere else indicates a high confidence that the clusterings chosen are correct.}
+#'   \item{exemplar}{A numeric vector containing the exemplar for each cluster. The "exemplar" is the best representative of a particular cluster, meaning that it has the highest confidence or probability of being clustered with all of the other items in its cluster.}
+#'   \item{order}{A numeric vector containg the ordering of the items in the clusters, labeled by the original index or item number. Note that the ordering is somewhat arbitrary, as the important thing is that items are clustered with the correct items, not the order of these items within a particular cluster.}
 #'   }
 #'
 #' @author David B. Dahl \email{dahl@stat.byu.edu}

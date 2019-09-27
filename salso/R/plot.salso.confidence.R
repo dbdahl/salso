@@ -1,11 +1,12 @@
 #' Confidence and Exemplar Plotting
 #'
 #' Functions to produce confidence plots (e.g., heatmaps of pairwise allocation probabilities) and exemplar plots.
+#' (Note: The "exemplar" refers to the best representative of a particular cluster. See \code{\link{confidence}} for further explanation.)
 #'
 #' @param x An object returned by the \code{\link{confidence}} function.
 #' @param estimate A vector of cluster labels, or \code{NULL}.
 #' @param data The data from which the distances were computed.
-#' @param show.labels Show the items names be shown in the plot?
+#' @param show.labels Should the items' names be shown in the plot?
 #' @param ... Currently ignored.
 #'
 #' @return \code{NULL}, invisibly.
