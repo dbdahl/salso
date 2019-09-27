@@ -31,7 +31,7 @@
 #'
 #' @export
 #'
-confidence <- function(estimate, psm, method="average") {
+confidence <- function(estimate, psm) {
   if ( ! ( isSymmetric(psm) && all(0 <= psm) && all(psm <= 1) && all(diag(psm)==1) ) ) {
     stop("'psm' should be symmetric with diagonal elements equal to 1 and off-diagonal elements in [0, 1].")
   }
@@ -48,16 +48,12 @@ confidence <- function(estimate, psm, method="average") {
     for ( i2 in seq_along(labels) ) {
       k2 <- labels[i2]
       minipsm <- psm[estimate==k1, estimate==k2]
-      if ( ( k1 == k2 ) && ( sum(estimate==k1) > 1 ) ) {
-        o3 <- hclust(as.dist(1-minipsm), method=method)$order
-        o2[estimate==k1] <- o3
-      }
       confidenceMatrix[i1,i2] <- mean(minipsm)
     }
   }
   exemplar <- sapply(labels, function(l) which(estimate==l & confidence==max(confidence[estimate==l]))[1])
   names(exemplar) <- labels
-  order <- order(match(estimate,labels),order(o2))
+  order <- order(match(estimate,labels),runif(length(estimate)))
   result <- list(estimate=estimate, psm=psm, confidence=confidence, confidenceMatrix=confidenceMatrix,
                  exemplar=exemplar, order=order)
   class(result) <- "salso.confidence"
