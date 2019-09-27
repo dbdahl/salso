@@ -5,7 +5,7 @@
 #' partitions based on the supplied pairwise similarity matrix.
 #'
 #' @param partitions An integer matrix of cluster labels, where each row is a
-#'   partition given as cluster labels.  Two items are in the same subset (i.e.,
+#'   partition given as cluster labels. Two items are in the same subset (i.e.,
 #'   cluster) if their labels are equal.
 #' @param psm A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
 #'   matrix whose \code{(i,j)} element gives the (estimated) probability that

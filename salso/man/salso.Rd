@@ -16,13 +16,13 @@ partition (i.e., clustering).}
 \item{loss}{Either \code{"VI.lb"} or \code{"binder"}, to indicate the desired
 loss function.}
 
-\item{maxSize}{Either zero or a positive integer.  If a positive integer, the
+\item{maxSize}{Either zero or a positive integer. If a positive integer, the
 optimization is constrained to produce solutions whose number of subsets
-(i.e., clusters) is no more than the supplied value.  If zero, the size is
+(i.e., clusters) is no more than the supplied value. If zero, the size is
 not constrained.}
 
 \item{maxScans}{The maximum number of reallocation scans after the intial
-allocation.  The actual number of scans may be less than \code{maxScans}
+allocation. The actual number of scans may be less than \code{maxScans}
 since the method stops if the result does not change between scans.}
 
 \item{nPermutations}{The desired number of permutations to consider when
@@ -30,7 +30,7 @@ searching for the minimizer.}
 
 \item{seconds}{A time threshold in seconds after which the function will
 return early (with a warning) instead of finishing all the desired
-permutations.  Note that the function could take considerably longer,
+permutations. Note that the function could take considerably longer,
 however, because this threshold is only checked after each permutation is
 completed.}
 
@@ -82,4 +82,7 @@ based on the posterior similarity matrix, \emph{Bayesian Analysis},
 S. Wade and Z. Ghahramani (2018), Bayesian cluster analysis: Point
 estimation and credible balls. \emph{Bayesian Analysis}, \bold{13:2},
 559-626.
+}
+\seealso{
+\code{\link{psm}}, \code{\link{confidence}}, \code{\link{dlso}}
 }

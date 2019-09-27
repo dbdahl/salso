@@ -16,7 +16,7 @@ partition (i.e., clustering).}
 loss function.}
 
 \item{draws}{A \code{B}-by-\code{n} matrix, where each of the \code{B} rows
-represents a clustering of \code{n} items using cluster labels.  For
+represents a clustering of \code{n} items using cluster labels. For
 clustering \code{b}, items \code{i} and \code{j} are in the same cluster if
 \code{x[b,i] == x[b,j]}.}
 
@@ -35,7 +35,7 @@ the draws latent structure optimization (DLSO) method, which is also known as
 the least-squares clustering method (Dahl 2006). The method seeks to minimize
 the expectation of the Binder loss or the lower bound of the expectation of
 the variation of information loss by picking the minimizer among the
-partitions supplied by the `draws` argument.
+partitions supplied by the \code{draws} argument.
 }
 \examples{
 dlso(draws=iris.clusterings, parallel=FALSE)
@@ -63,4 +63,7 @@ based on the posterior similarity matrix, \emph{Bayesian Analysis},
 S. Wade and Z. Ghahramani (2018), Bayesian cluster analysis: Point
 estimation and credible balls. \emph{Bayesian Analysis}, \bold{13:2},
 559-626.
+}
+\seealso{
+\code{\link{psm}}, \code{\link{confidence}}, \code{\link{salso}}
 }

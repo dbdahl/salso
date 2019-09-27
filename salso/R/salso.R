@@ -15,18 +15,18 @@
 #'   partition (i.e., clustering).
 #' @param loss Either \code{"VI.lb"} or \code{"binder"}, to indicate the desired
 #'   loss function.
-#' @param maxSize Either zero or a positive integer.  If a positive integer, the
+#' @param maxSize Either zero or a positive integer. If a positive integer, the
 #'   optimization is constrained to produce solutions whose number of subsets
-#'   (i.e., clusters) is no more than the supplied value.  If zero, the size is
+#'   (i.e., clusters) is no more than the supplied value. If zero, the size is
 #'   not constrained.
 #' @param maxScans The maximum number of reallocation scans after the intial
-#'   allocation.  The actual number of scans may be less than \code{maxScans}
+#'   allocation. The actual number of scans may be less than \code{maxScans}
 #'   since the method stops if the result does not change between scans.
 #' @param nPermutations The desired number of permutations to consider when
 #'   searching for the minimizer.
 #' @param seconds A time threshold in seconds after which the function will
 #'   return early (with a warning) instead of finishing all the desired
-#'   permutations.  Note that the function could take considerably longer,
+#'   permutations. Note that the function could take considerably longer,
 #'   however, because this threshold is only checked after each permutation is
 #'   completed.
 #' @param parallel Should the search use all CPU cores?
@@ -38,6 +38,8 @@
 #'   loss.} \item{nScans}{An integer vector giving the number of scans used to
 #'   arrive at the supplied estimate.} \item{nPermutations}{An integer vector
 #'   giving the number of permutations actually performed.} }
+#'
+#' @seealso \code{\link{psm}}, \code{\link{confidence}}, \code{\link{dlso}}
 #'
 #' @export
 #' @useDynLib salso .minimize_by_salso
@@ -83,7 +85,7 @@ salso <- function(psm, loss=c("VI.lb","binder")[1], maxSize=0, maxScans=5, nPerm
   names(y[[1]]) <- colnames(psm)
   y[[2]] <- loss
   if ( y$nPermutations <  nPermutations ) {
-    warning(sprintf("Only %s permutations of %s were tried.  Adjust the 'seconds' and/or 'nPermutations' parameters.",y$nPermutations,nPermutations))
+    warning(sprintf("Only %s permutations of %s were tried. Adjust the 'seconds' and/or 'nPermutations' parameters.",y$nPermutations,nPermutations))
   }
   y
 }

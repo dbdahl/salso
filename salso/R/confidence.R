@@ -1,22 +1,23 @@
 #' Compute Clustering Confidence
 #'
 #' This function computes the confidence values for \code{n} observations based
-#' on a clustering estimate and the expected pairwise allocation matrix.
+#' on a clustering estimate and the pairwise similarity matrix.
 #'
 #' @param estimate A vector of length \code{n}, where \code{i} and \code{j} are
-#'   in the same cluster if and only if \code{clustering[i] == clustering[j]}.
+#'   in the same subset (i.e., cluster) if and only if \code{estimate[i] ==
+#'   estimate[j]}.
 #' @param psm A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
 #'   matrix whose \code{(i,j)} element gives the (estimated) probability that
 #'   items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
 #'   partition (i.e., clustering).
 #'
-#' @return A list of the following elements: \describe{ \item{estimate}{The
-#'   value of the \code{estimate} argument.}
-#'   \item{psm}{The value of the \code{psm} argument (the given pairwise similarity matrix).}
-#'   \item{confidence}{A numeric vector containing the confidence or probability that each item is paired with all of the other items in its particular cluster.}
-#'   \item{confidenceMatrix}{A matrix containing the average confidence of all items in a cluster (on the diagonal). The off-diagonal shows the confidence or probability that items in a cluster should be clustered with the items in a different cluster. High probabilities on the diagonal and low probabilities everywhere else indicates a high confidence that the clusterings chosen are correct.}
-#'   \item{exemplar}{A numeric vector containing the exemplar for each cluster. The "exemplar" is the best representative of a particular cluster, meaning that it has the highest confidence or probability of being clustered with all of the other items in its cluster.}
-#'   \item{order}{A numeric vector containg the ordering of the items in the clusters, labeled by the original index or item number. Note that the ordering is somewhat arbitrary, as the important thing is that items are clustered with the correct items, not the order of these items within a particular cluster.}
+#' @return A list of the following elements: \describe{
+#'   \item{estimate}{The value of the \code{estimate} argument.}
+#'   \item{psm}{The value of the \code{psm} argument.}
+#'   \item{confidence}{A numeric vector with the same length as \code{estimate} that contains the mean probability that each item is paired with all of the other items in its subset (i.e., cluster).}
+#'   \item{confidenceMatrix}{A matrix containing the mean confidences of items in each subset on the diagonal. In the off-diagonal elements, the mean confidence among all pairs from the two subsets. High probabilities on the diagonal and low probabilities everywhere else indicate good separability among the subsets.}
+#'   \item{exemplar}{A numeric vector containing the exemplar for each subset (i.e, cluster). The "exemplar" of a subset has the highest probability of being clustered with all of the other items in its subset.}
+#'   \item{order}{A vector giving the permutation of the original observations used in plotting.}
 #'   }
 #'
 #' @author David B. Dahl \email{dahl@stat.byu.edu}
@@ -27,7 +28,7 @@
 #' conf <- confidence(est, probs)
 #' conf
 #'
-#' @seealso \code{\link{salso}}, \code{\link{dlso}}, \code{\link{psm}}
+#' @seealso \code{\link{plot.salso.confidence}}, \code{\link{salso}}, \code{\link{dlso}}, \code{\link{psm}}
 #'
 #' @export
 #'

@@ -8,7 +8,8 @@ confidence(estimate, psm)
 }
 \arguments{
 \item{estimate}{A vector of length \code{n}, where \code{i} and \code{j} are
-in the same cluster if and only if \code{clustering[i] == clustering[j]}.}
+in the same subset (i.e., cluster) if and only if \code{estimate[i] ==
+estimate[j]}.}
 
 \item{psm}{A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
 matrix whose \code{(i,j)} element gives the (estimated) probability that
@@ -16,18 +17,18 @@ items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
 partition (i.e., clustering).}
 }
 \value{
-A list of the following elements: \describe{ \item{estimate}{The
-  value of the \code{estimate} argument.}
+A list of the following elements: \describe{
+  \item{estimate}{The value of the \code{estimate} argument.}
   \item{psm}{The value of the \code{psm} argument.}
-  \item{confidence}{asdf}
-  \item{confidenceMatrix}{asdf}
-  \item{exemplar}{asdf}
-  \item{order}{asdf}
+  \item{confidence}{A numeric vector with the same length as \code{estimate} that contains the mean probability that each item is paired with all of the other items in its subset (i.e., cluster).}
+  \item{confidenceMatrix}{A matrix containing the mean confidences of items in each subset on the diagonal. In the off-diagonal elements, the mean confidence among all pairs from the two subsets. High probabilities on the diagonal and low probabilities everywhere else indicate good separability among the subsets.}
+  \item{exemplar}{A numeric vector containing the exemplar for each subset (i.e, cluster). The "exemplar" of a subset has the highest probability of being clustered with all of the other items in its subset.}
+  \item{order}{A vector giving the permutation of the original observations used in plotting.}
   }
 }
 \description{
 This function computes the confidence values for \code{n} observations based
-on a clustering estimate and the expected pairwise allocation matrix.
+on a clustering estimate and the pairwise similarity matrix.
 }
 \examples{
 probs <- psm(iris.clusterings, parallel=FALSE)
@@ -37,7 +38,7 @@ conf
 
 }
 \seealso{
-\code{\link{salso}}, \code{\link{dlso}}, \code{\link{psm}}
+\code{\link{plot.salso.confidence}}, \code{\link{salso}}, \code{\link{dlso}}, \code{\link{psm}}
 }
 \author{
 David B. Dahl \email{dahl@stat.byu.edu}

@@ -5,7 +5,7 @@
 #' are in the same subset (i.e., cluster).
 #'
 #' @param x A \code{B}-by-\code{n} matrix, where each of the \code{B} rows
-#'   represents a clustering of \code{n} items using cluster labels.  For
+#'   represents a clustering of \code{n} items using cluster labels. For
 #'   clustering \code{b}, items \code{i} and \code{j} are in the same cluster if
 #'   \code{x[b,i] == x[b,j]}.
 #' @param parallel Should the computation use all CPU cores?

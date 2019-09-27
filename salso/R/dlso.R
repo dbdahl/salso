@@ -5,7 +5,7 @@
 #' the least-squares clustering method (Dahl 2006). The method seeks to minimize
 #' the expectation of the Binder loss or the lower bound of the expectation of
 #' the variation of information loss by picking the minimizer among the
-#' partitions supplied by the `draws` argument.
+#' partitions supplied by the \code{draws} argument.
 #'
 #' @param psm A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
 #'   matrix whose \code{(i,j)} element gives the (estimated) probability that
@@ -14,7 +14,7 @@
 #' @param loss Either \code{"VI.lb"} or \code{"binder"}, to indicate the desired
 #'   loss function.
 #' @param draws A \code{B}-by-\code{n} matrix, where each of the \code{B} rows
-#'   represents a clustering of \code{n} items using cluster labels.  For
+#'   represents a clustering of \code{n} items using cluster labels. For
 #'   clustering \code{b}, items \code{i} and \code{j} are in the same cluster if
 #'   \code{x[b,i] == x[b,j]}.
 #' @param parallel Should the search use all CPU cores?
@@ -24,6 +24,8 @@
 #'   \item{loss}{A character vector equal to the \code{loss} argument.}
 #'   \item{expectedLoss}{A numeric vector of length one giving the expected
 #'   loss.} }
+#'
+#' @seealso \code{\link{psm}}, \code{\link{confidence}}, \code{\link{salso}}
 #'
 #' @export
 #' @references

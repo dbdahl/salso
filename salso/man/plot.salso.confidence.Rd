@@ -5,16 +5,18 @@
 \title{Confidence and Exemplar Plotting}
 \usage{
 \method{plot}{salso.confidence}(x, estimate = NULL, data = NULL,
-  show.labels = length(x$estimate) <= 50, ...)
+  showLabels = length(x$estimate) <= 50, ...)
 }
 \arguments{
 \item{x}{An object returned by the \code{\link{confidence}} function.}
 
-\item{estimate}{A vector of cluster labels, or \code{NULL}.}
+\item{estimate}{A vector of length \code{n}, where \code{i} and \code{j} are
+in the same subset (i.e., cluster) if and only if \code{estimate[i] ==
+estimate[j]}.'  If \code{NULL}, the \code{x$estimate} in used.}
 
 \item{data}{The data from which the distances were computed.}
 
-\item{show.labels}{Show the items names be shown in the plot?}
+\item{showLabels}{Should the names of items be shown in the plot?}
 
 \item{...}{Currently ignored.}
 }
@@ -22,7 +24,10 @@
 \code{NULL}, invisibly.
 }
 \description{
-Functions to produce confidence plots (e.g., heatmaps of pairwise allocation probabilities) and exemplar plots.
+This function produces confidence plots (e.g., heatmaps of pairwise
+allocation probabilities) and exemplar plots. The "exemplar" refers to the
+best representative of a particular cluster. See \code{\link{confidence}} for
+further explanation.
 }
 \examples{
 probs <- psm(iris.clusterings, parallel=FALSE)
@@ -33,7 +38,7 @@ plot(conf,data=iris)
 
 }
 \seealso{
-\code{\link{psm}}, \code{\link{dlso}}, \code{\link{salso}}
+\code{\link{confidence}}, \code{\link{psm}}, \code{\link{dlso}}, \code{\link{salso}}
 }
 \author{
 David B. Dahl \email{dahl@stat.byu.edu}

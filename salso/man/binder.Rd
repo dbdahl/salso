@@ -11,7 +11,7 @@ VI.lb(partitions, psm)
 }
 \arguments{
 \item{partitions}{An integer matrix of cluster labels, where each row is a
-partition given as cluster labels.  Two items are in the same subset (i.e.,
+partition given as cluster labels. Two items are in the same subset (i.e.,
 cluster) if their labels are equal.}
 
 \item{psm}{A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
