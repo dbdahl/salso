@@ -27,7 +27,7 @@ Functions to produce confidence plots (e.g., heatmaps of pairwise allocation pro
 \examples{
 probs <- psm(iris.clusterings, parallel=FALSE)
 est <- salso(probs, nPermutations=50, parallel=FALSE)$estimate
-conf <- confidence(est,probs)
+conf <- confidence(est, probs)
 plot(conf)
 plot(conf,data=iris)
 

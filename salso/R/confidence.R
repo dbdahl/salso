@@ -53,7 +53,11 @@ confidence <- function(estimate, psm) {
   }
   exemplar <- sapply(labels, function(l) which(estimate==l & confidence==max(confidence[estimate==l]))[1])
   names(exemplar) <- labels
-  order <- order(match(estimate,labels),runif(length(estimate)))
+  secondary <- confidence
+  if ( length(secondary) %% 2 == 1 ) secondary <- c(secondary,0)
+  secondary <- c(-1,1) * secondary
+  secondary <- secondary[seq_along(estimate)]
+  order <- order(match(estimate,labels), secondary)
   result <- list(estimate=estimate, psm=psm, confidence=confidence, confidenceMatrix=confidenceMatrix,
                  exemplar=exemplar, order=order)
   class(result) <- "salso.confidence"
