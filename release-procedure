@@ -1,7 +1,7 @@
 Run 'install-R --devel'
 Bump version number in DESCRIPTION
 Update NEWS detailing changes (including the date)
-build-R-package -p
+build-R-package --rust --post
 Test on Linux, Mac OS, and Windows
   For Linux, R CMD check --as-cran ...
   For Mac, run R CMD check --as-cran ...
