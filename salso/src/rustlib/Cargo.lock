@@ -115,7 +115,7 @@ dependencies = [
 [[package]]
 name = "dahl-salso"
 version = "0.1.0"
-source = "git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git#d921c724bbdd06b78bee15648c093a3bed906398"
+source = "git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git#3a171a63a8884b65917b9b69c2a8fc877980bb33"
 dependencies = [
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossbeam 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",

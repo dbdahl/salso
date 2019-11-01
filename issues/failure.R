@@ -1,7 +1,7 @@
 library(salso)
 
 load("probs.Rbin")
-result <- salso(probs, parallel=FALSE, maxScans=10, nPermutations=500)
+result <- salso(probs, parallel=TRUE, maxScans=1, nPermutations=5000, probExploration=0.001)
 result
 result$estimate
 VI.lb(result$estimate, probs)
@@ -46,6 +46,8 @@ library(mcclust)
 data(cls.draw1.5)
 probs <- psm(cls.draw1.5)
 
-salso(probs, nPermutations=5000)$expectedLoss
+r1 <- salso(probs, nPermutations=5000, probExploration=0.001)
+r2 <- salso(probs, nPermutations=5000, probExploration=0.0)
+table(r1$estimate,r2$estimate)
 
 # minVI(probs, method="greedy")
