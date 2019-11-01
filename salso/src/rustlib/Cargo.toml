@@ -10,8 +10,8 @@ crate-type = ["staticlib"]
 [dependencies]
 # dahl-partition = "0.3.0"
 dahl-partition = { git="https://dahl-git.byu.edu/dahl/rust-dahl-partition.git" }
+# dahl-partition = { path="/home/dahl/docs/devel/rust-dahl-partition" }
 dahl-bellnumber = "0.1.0"
 # dahl-salso = "0.1.0"
-# dahl-salso = { path="/home/dahl/docs/devel/rust-dahl-salso" }
 dahl-salso = { git="https://dahl-git.byu.edu/dahl/rust-dahl-salso.git" }
-
+# dahl-salso = { path="/home/dahl/docs/devel/rust-dahl-salso" }

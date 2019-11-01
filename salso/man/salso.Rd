@@ -5,7 +5,8 @@
 \title{Sequentially-Allocated Latent Structure Optimization}
 \usage{
 salso(psm, loss = c("VI.lb", "binder")[1], maxSize = 0, maxScans = 5,
-  nPermutations = 5000, seconds = 10, parallel = TRUE)
+  nPermutations = 5000, probExploration = 0.001, seconds = 10,
+  parallel = TRUE)
 }
 \arguments{
 \item{psm}{A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
@@ -27,6 +28,9 @@ since the method stops if the result does not change between scans.}
 
 \item{nPermutations}{The desired number of permutations to consider when
 searching for the minimizer.}
+
+\item{probExploration}{The probability of picking the second best
+micro-optimization (instead of the best)}
 
 \item{seconds}{A time threshold in seconds after which the function will
 return early (with a warning) instead of finishing all the desired
