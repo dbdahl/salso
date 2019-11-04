@@ -82,7 +82,8 @@ salso <- function(psm, loss=c("VI.lb","binder")[1], maxSize=0, maxScans=5, nPerm
   if ( maxScans < 0 ) stop("'maxScans' may not be negative.")
   if ( nPermutations < 0 ) stop("'nPermutations' may not be negative.")
   useVIlb <- loss == "VI.lb"
-  y <- .Call(.minimize_by_salso, nrow(psm), psm, useVIlb, maxSize, maxScans, nPermutations, probExploration, seconds, parallel)
+  seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
+  y <- .Call(.minimize_by_salso, nrow(psm), psm, useVIlb, maxSize, maxScans, nPermutations, probExploration, seconds, parallel, seed)
   names(y) <- c("estimate","loss","expectedLoss","nScans","nPermutations")
   names(y[[1]]) <- colnames(psm)
   y[[2]] <- loss
