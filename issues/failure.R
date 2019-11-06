@@ -9,6 +9,4 @@ salso(probs)                    # We get it
 library(mcclust.ext)
 minVI(probs, method="greedy")   # But they don't
 
-partitions <- enumerate.partitions(9L)
-min(VI.lb(partitions, probs))   # Via enumeration
-
+salso:::minimize.by.enumeration(probs, loss="VI.lb")
