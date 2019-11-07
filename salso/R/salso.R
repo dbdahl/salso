@@ -24,8 +24,10 @@
 #'   since the method stops if the result does not change between scans.
 #' @param nPermutations The desired number of permutations to consider when
 #'   searching for the minimizer.
-#' @param probExploration The probability of picking the second best
-#'   micro-optimization (instead of the best)
+#' @param probExploration The expected probability of picking the second best
+#'   micro-optimization (instead of the best).  For a given permutation, the
+#'   probability is sampled from a beta distribution with shape \code{1} and
+#'   \code{1/probExploration}.
 #' @param seconds A time threshold in seconds after which the function will
 #'   return early (with a warning) instead of finishing all the desired
 #'   permutations. Note that the function could take considerably longer,

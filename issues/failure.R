@@ -10,3 +10,9 @@ library(mcclust.ext)
 minVI(probs, method="greedy")   # But they don't
 
 salso:::minimize.by.enumeration(probs, loss="VI.lb")
+
+
+data("cls.draw1.5")
+probs2 <- psm(cls.draw1.5)
+salso(probs2)
+
