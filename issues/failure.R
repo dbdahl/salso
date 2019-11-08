@@ -14,5 +14,10 @@ salso:::minimize.by.enumeration(probs, loss="VI.lb")
 
 data("cls.draw1.5")
 probs2 <- psm(cls.draw1.5)
-salso(probs2)
+
+library(microbenchmark)
+microbenchmark(
+  salso(probs2, probExploration = 0.001),
+  times=2
+)
 
