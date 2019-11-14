@@ -4,9 +4,16 @@
 \alias{salso}
 \title{Sequentially-Allocated Latent Structure Optimization}
 \usage{
-salso(psm, loss = c("VI.lb", "binder")[1], maxSize = 0, maxScans = 5,
-  nPermutations = 5000, probExploration = 0.001, seconds = 10,
-  parallel = TRUE)
+salso(
+  psm,
+  loss = c("VI.lb", "binder")[1],
+  maxSize = 0,
+  maxScans = 5,
+  nPermutations = 5000,
+  probExploration = 0.001,
+  seconds = 10,
+  parallel = TRUE
+)
 }
 \arguments{
 \item{psm}{A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric

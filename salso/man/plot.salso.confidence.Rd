@@ -4,8 +4,13 @@
 \alias{plot.salso.confidence}
 \title{Confidence and Exemplar Plotting}
 \usage{
-\method{plot}{salso.confidence}(x, estimate = NULL, data = NULL,
-  showLabels = length(x$estimate) <= 50, ...)
+\method{plot}{salso.confidence}(
+  x,
+  estimate = NULL,
+  data = NULL,
+  showLabels = length(x$estimate) <= 50,
+  ...
+)
 }
 \arguments{
 \item{x}{An object returned by the \code{\link{confidence}} function.}
