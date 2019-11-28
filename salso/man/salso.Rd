@@ -10,7 +10,7 @@ salso(
   maxSize = 0,
   maxScans = 5,
   nPermutations = 5000,
-  probExploration = 0.001,
+  probExploration = 0.005,
   seconds = 10,
   parallel = TRUE
 )

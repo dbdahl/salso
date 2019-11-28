@@ -75,7 +75,7 @@
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' salso(probs, nPermutations=50, parallel=FALSE)
 #'
-salso <- function(psm, loss=c("VI.lb","binder")[1], maxSize=0, maxScans=5, nPermutations=5000, probExploration=0.001, seconds=10, parallel=TRUE) {
+salso <- function(psm, loss=c("VI.lb","binder")[1], maxSize=0, maxScans=5, nPermutations=5000, probExploration=0.005, seconds=10, parallel=TRUE) {
   if ( ! ( isSymmetric(psm) && all(0 <= psm) && all(psm <= 1) && all(diag(psm)==1) ) ) {
     stop("'psm' should be symmetric with diagonal elements equal to 1 and off-diagonal elements in [0, 1].")
   }
