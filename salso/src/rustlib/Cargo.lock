@@ -90,6 +90,7 @@ dependencies = [
 [[package]]
 name = "dahl-bellnumber"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "num-bigint 0.2.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -99,6 +100,7 @@ dependencies = [
 [[package]]
 name = "dahl-partition"
 version = "0.4.0"
+source = "git+https://dahl-git.byu.edu/dahl/rust-dahl-partition.git#d76479ebc58a0c5757ec6865845aab8ab0f30ee8"
 dependencies = [
  "rand 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -106,6 +108,7 @@ dependencies = [
 [[package]]
 name = "dahl-roxido"
 version = "0.1.0"
+source = "git+https://dahl-git.byu.edu/dahl/rust-dahl-roxido.git#28b1c0b0463f7c450ec88d8e44ad1cbeb050c21a"
 dependencies = [
  "rand 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand_isaac 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -114,11 +117,12 @@ dependencies = [
 [[package]]
 name = "dahl-salso"
 version = "0.2.0"
+source = "git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git#cf56a76a58a40897746fc658df3a2324c56bc07b"
 dependencies = [
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossbeam 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "dahl-partition 0.4.0",
- "dahl-roxido 0.1.0",
+ "dahl-partition 0.4.0 (git+https://dahl-git.byu.edu/dahl/rust-dahl-partition.git)",
+ "dahl-roxido 0.1.0 (git+https://dahl-git.byu.edu/dahl/rust-dahl-roxido.git)",
  "num_cpus 1.11.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand 0.7.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "rand_distr 0.2.2 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -267,9 +271,9 @@ dependencies = [
 name = "rustlib"
 version = "0.1.0"
 dependencies = [
- "dahl-bellnumber 0.1.0",
- "dahl-partition 0.4.0",
- "dahl-salso 0.2.0",
+ "dahl-bellnumber 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "dahl-partition 0.4.0 (git+https://dahl-git.byu.edu/dahl/rust-dahl-partition.git)",
+ "dahl-salso 0.2.0 (git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git)",
 ]
 
 [[package]]
@@ -306,6 +310,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum crossbeam-epoch 0.8.0 (registry+https://github.com/rust-lang/crates.io-index)" = "5064ebdbf05ce3cb95e45c8b086f72263f4166b29b97f6baff7ef7fe047b55ac"
 "checksum crossbeam-queue 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "dfd6515864a82d2f877b42813d4553292c6659498c9a2aa31bab5a15243c2700"
 "checksum crossbeam-utils 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)" = "ce446db02cdc3165b94ae73111e570793400d0794e46125cc4056c81cbb039f4"
+"checksum dahl-bellnumber 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "6a3470d2101ec2451e81c57b39b86b88c973646538fa6561f15c1b510541e8dd"
+"checksum dahl-partition 0.4.0 (git+https://dahl-git.byu.edu/dahl/rust-dahl-partition.git)" = "<none>"
+"checksum dahl-roxido 0.1.0 (git+https://dahl-git.byu.edu/dahl/rust-dahl-roxido.git)" = "<none>"
+"checksum dahl-salso 0.2.0 (git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git)" = "<none>"
 "checksum getrandom 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)" = "e7db7ca94ed4cd01190ceee0d8a8052f08a247aa1b469a7f68c6a3b71afcf407"
 "checksum hermit-abi 0.1.5 (registry+https://github.com/rust-lang/crates.io-index)" = "f629dc602392d3ec14bfc8a09b5e644d7ffd725102b48b81e59f90f2633621d7"
 "checksum lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
