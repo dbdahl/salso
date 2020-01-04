@@ -2,10 +2,10 @@
 
 set -e
 
-echo "Not yet implemented."
-exit 1
+#echo "Not yet implemented."
+#exit 1
 
-MAJOR=0.1.9
+MAJOR=0.1.11
 
 git pull
 git push
