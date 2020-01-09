@@ -6,10 +6,10 @@ https://forge.rust-lang.org/release/platform-support.html
 
 If Cargo is not available, the necessary static library is downloaded for
 select operating systems (namely Linux, macOS, and Windows running on x86_64).
-In either case, Cargo is a compile-time dependency only.  Users of the binary
+In either case, Cargo is an INSTALL-time dependency only.  Users of the binary
 package do **not** need to have Cargo (or Rust) installed.
 
-Below is installation help on some platforms.
+Below are installation notes for some platforms.
 
 On Linux and macOS,
 
