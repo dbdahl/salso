@@ -1,13 +1,21 @@
 Compiling this package uses Cargo (the package manager of the Rust programming
-language) if it is available.  Version 1.31.0 or newer is required.  Otherwise,
-the necessary static library is downloaded for select operating systems (namely
-Linux, macOS, and Windows running on x86_64).  In either case, this is a
-compile-time dependency only.  Users of the binary package do **not** need to
-have Cargo or Rust installed.  Below is installation help on some platforms.
+language) if it is available.  Version 1.31.0 or newer is required.  Cargo is
+available on the "Tier 1" platforms listed here:
 
-On Linux, macOS, and other Unix-like OSes,
+https://forge.rust-lang.org/release/platform-support.html
 
-   - Run the following in the terminal:  curl https://sh.rustup.rs -sSf | sh
+If Cargo is not available, the necessary static library is downloaded for
+select operating systems (namely Linux, macOS, and Windows running on x86_64).
+In either case, Cargo is a compile-time dependency only.  Users of the binary
+package do **not** need to have Cargo (or Rust) installed.
+
+Below is installation help on some platforms.
+
+On Linux and macOS,
+
+   - Run the following in the terminal:
+
+         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
    OR, using your operating system's package manager, run one of the following:
 
