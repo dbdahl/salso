@@ -13,7 +13,7 @@ dahl-partition = "0.5.0"
 # dahl-partition = { path="/home/dahl/docs/devel/rust-dahl-partition" }
 dahl-bellnumber = "0.1.0"
 # dahl-bellnumber = { path="/home/dahl/docs/devel/rust-dahl-bellnumber" }
-dahl-salso = "0.3.0"
-# dahl-salso = { git="https://dahl-git.byu.edu/dahl/rust-dahl-salso.git" }
+# dahl-salso = "0.3.1"
+dahl-salso = { git="https://dahl-git.byu.edu/dahl/rust-dahl-salso.git" }
 # dahl-salso = { path="/home/dahl/docs/devel/rust-dahl-salso" }
 
