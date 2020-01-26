@@ -10,7 +10,9 @@ salso(
   maxSize = 0,
   maxScans = 5,
   nPermutations = 5000,
-  probExploration = 0.005,
+  probExplorationProbAtZero = 0.5,
+  probExplorationShape = 0.5,
+  probExplorationRate = 50,
   seconds = 10,
   parallel = TRUE
 )
@@ -36,10 +38,17 @@ since the method stops if the result does not change between scans.}
 \item{nPermutations}{The desired number of permutations to consider when
 searching for the minimizer.}
 
-\item{probExploration}{The expected probability of picking the second best
-micro-optimization (instead of the best).  For a given permutation, the
-probability is sampled from a beta distribution with shape \code{1} and
-\code{1/probExploration}.}
+\item{probExplorationProbAtZero}{The probability of the point mass at zero
+for the spike-and-slab distribution of the probability of exploration, i.e.
+the probability of picking the second best micro-optimzation (instead of
+the best).  This probability is randomly sampled for (and constant within)
+each permutation.}
+
+\item{probExplorationShape}{The shape of the gamma distribution for the slab
+in the spike-and-slab distribution of the probability of exploration.}
+
+\item{probExplorationRate}{The rate of the gamma distribution for the slab in
+the spike-and-slab distribution of the probability of exploration.}
 
 \item{seconds}{A time threshold in seconds after which the function will
 return early (with a warning) instead of finishing all the desired

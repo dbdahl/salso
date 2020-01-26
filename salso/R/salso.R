@@ -24,10 +24,15 @@
 #'   since the method stops if the result does not change between scans.
 #' @param nPermutations The desired number of permutations to consider when
 #'   searching for the minimizer.
-#' @param probExploration The expected probability of picking the second best
-#'   micro-optimization (instead of the best).  For a given permutation, the
-#'   probability is sampled from a beta distribution with shape \code{1} and
-#'   \code{1/probExploration}.
+#' @param probExplorationProbAtZero The probability of the point mass at zero
+#'   for the spike-and-slab distribution of the probability of exploration, i.e.
+#'   the probability of picking the second best micro-optimzation (instead of
+#'   the best).  This probability is randomly sampled for (and constant within)
+#'   each permutation.
+#' @param probExplorationShape The shape of the gamma distribution for the slab
+#'   in the spike-and-slab distribution of the probability of exploration.
+#' @param probExplorationRate The rate of the gamma distribution for the slab in
+#'   the spike-and-slab distribution of the probability of exploration.
 #' @param seconds A time threshold in seconds after which the function will
 #'   return early (with a warning) instead of finishing all the desired
 #'   permutations. Note that the function could take considerably longer,
@@ -75,7 +80,7 @@
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' salso(probs, nPermutations=50, parallel=FALSE)
 #'
-salso <- function(psm, loss=c("VI.lb","binder")[1], maxSize=0, maxScans=5, nPermutations=5000, probExploration=0.005, seconds=10, parallel=TRUE) {
+salso <- function(psm, loss=c("VI.lb","binder")[1], maxSize=0, maxScans=5, nPermutations=5000, probExplorationProbAtZero=0.5, probExplorationShape=0.5, probExplorationRate=50, seconds=10, parallel=TRUE) {
   if ( ! ( isSymmetric(psm) && all(0 <= psm) && all(psm <= 1) && all(diag(psm)==1) ) ) {
     stop("'psm' should be symmetric with diagonal elements equal to 1 and off-diagonal elements in [0, 1].")
   }
@@ -85,8 +90,8 @@ salso <- function(psm, loss=c("VI.lb","binder")[1], maxSize=0, maxScans=5, nPerm
   if ( nPermutations < 0 ) stop("'nPermutations' may not be negative.")
   useVIlb <- loss == "VI.lb"
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
-  y <- .Call(.minimize_by_salso, nrow(psm), psm, useVIlb, maxSize, maxScans, nPermutations, probExploration, seconds, parallel, seed)
-  names(y) <- c("estimate","loss","expectedLoss","nScans","nPermutations")
+  y <- .Call(.minimize_by_salso, nrow(psm), psm, useVIlb, maxSize, maxScans, nPermutations, probExplorationProbAtZero, probExplorationShape, probExplorationRate, seconds, parallel, seed)
+  names(y) <- c("estimate","loss","expectedLoss","nScans","probExploration","nPermutations")
   names(y[[1]]) <- colnames(psm)
   y[[2]] <- loss
   if ( y$nPermutations <  nPermutations ) {

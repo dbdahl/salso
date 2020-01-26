@@ -122,8 +122,8 @@ dependencies = [
 
 [[package]]
 name = "dahl-salso"
-version = "0.3.1"
-source = "git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git#e9208e442bab2ec8be6c8a37d62fa4c9a2b294fc"
+version = "0.3.2"
+source = "git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git#83e0bd7d2ac3208b76dea77d53b7998c2c30ace8"
 dependencies = [
  "approx 0.3.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "crossbeam 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -279,7 +279,7 @@ version = "0.1.0"
 dependencies = [
  "dahl-bellnumber 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "dahl-partition 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "dahl-salso 0.3.1 (git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git)",
+ "dahl-salso 0.3.2 (git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git)",
 ]
 
 [[package]]
@@ -320,7 +320,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum dahl-bellnumber 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)" = "6a3470d2101ec2451e81c57b39b86b88c973646538fa6561f15c1b510541e8dd"
 "checksum dahl-partition 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)" = "44a01f4bd31b1b2f657603ce959c4b1b3689d695a0ad7e9c8a23f116bfe86843"
 "checksum dahl-roxido 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "39eaf1d2f9f84d590b95dd21dc6f7c1dfe1c873699eb53b14557262feef61c48"
-"checksum dahl-salso 0.3.1 (git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git)" = "<none>"
+"checksum dahl-salso 0.3.2 (git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git)" = "<none>"
 "checksum getrandom 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)" = "7abc8dd8451921606d809ba32e95b6111925cd2906060d2dcc29c070220503eb"
 "checksum hermit-abi 0.1.6 (registry+https://github.com/rust-lang/crates.io-index)" = "eff2656d88f158ce120947499e971d743c05dbcbed62e5bd2f38f1698bbc3772"
 "checksum lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)" = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
