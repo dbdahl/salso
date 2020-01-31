@@ -19,6 +19,7 @@
 #' @useDynLib salso .psm
 #' @examples
 #' dim(iris.clusterings)
+#' # Use parallel=FALSE per CRAN rules for examples but, in practice, omit this.
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' dim(probs)
 #' probs[1:6, 1:6]

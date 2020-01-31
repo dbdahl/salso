@@ -76,14 +76,14 @@ SEXP minimize_by_enumeration(SEXP n_items_sexp, SEXP psm_sexp, SEXP use_vilb_sex
   return results_labels_sexp;
 }
 
-SEXP minimize_by_salso(SEXP n_items_sexp, SEXP psm_sexp, SEXP use_vilb_sexp, SEXP max_size_sexp, SEXP max_scans_sexp, SEXP n_permutations_sexp, SEXP probability_of_exploration_probability_at_zero_sexp, SEXP probability_of_exploration_shape_sexp, SEXP probability_of_exploration_rate_sexp, SEXP seconds_sexp, SEXP parallel_sexp, SEXP seed_sexp) {
+SEXP minimize_by_salso(SEXP n_items_sexp, SEXP psm_sexp, SEXP use_vilb_sexp, SEXP max_size_sexp, SEXP max_scans_sexp, SEXP batch_size_sexp, SEXP probability_of_exploration_probability_at_zero_sexp, SEXP probability_of_exploration_shape_sexp, SEXP probability_of_exploration_rate_sexp, SEXP seconds_sexp, SEXP parallel_sexp, SEXP seed_sexp) {
   int n_items = Rf_asInteger(n_items_sexp);
   psm_sexp = PROTECT(Rf_coerceVector(psm_sexp, REALSXP));
   double *psm = REAL(psm_sexp);
   int loss = Rf_asLogical(use_vilb_sexp);
   int max_size = Rf_asInteger(max_size_sexp);
   int max_scans = Rf_asInteger(max_scans_sexp);
-  int n_permutations = Rf_asInteger(n_permutations_sexp);
+  int batch_size = Rf_asInteger(batch_size_sexp);
   double probability_of_exploration_probability_at_zero = Rf_asReal(probability_of_exploration_probability_at_zero_sexp);
   double probability_of_exploration_shape = Rf_asReal(probability_of_exploration_shape_sexp);
   double probability_of_exploration_rate = Rf_asReal(probability_of_exploration_rate_sexp);
@@ -97,17 +97,20 @@ SEXP minimize_by_salso(SEXP n_items_sexp, SEXP psm_sexp, SEXP use_vilb_sexp, SEX
   int *results_n_scans = INTEGER(results_n_scans_sexp);
   SEXP results_probability_of_exploration_sexp = PROTECT(Rf_allocVector(REALSXP, 1));
   double *results_probability_of_exploration = REAL(results_probability_of_exploration_sexp);
-  SEXP results_actual_n_permutations_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
-  int *results_actual_n_permutations = INTEGER(results_actual_n_permutations_sexp);
+  SEXP results_n_permutations_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
+  int *results_n_permutations = INTEGER(results_n_permutations_sexp);
   int *seed = INTEGER(seed_sexp);
-  dahl_salso__minimize_by_salso(n_items, psm, loss, max_size, max_scans, n_permutations, probability_of_exploration_probability_at_zero, probability_of_exploration_shape, probability_of_exploration_rate, seconds, parallel, results_labels, results_expected_loss, results_n_scans, results_probability_of_exploration, results_actual_n_permutations, seed);
-  SEXP results = PROTECT(Rf_allocVector(VECSXP, 6));
+  SEXP results_curtailed_sexp = PROTECT(Rf_allocVector(LGLSXP,1));
+  int *results_curtailed = LOGICAL(results_curtailed_sexp);
+  dahl_salso__minimize_by_salso(n_items, psm, loss, max_size, max_scans, batch_size, probability_of_exploration_probability_at_zero, probability_of_exploration_shape, probability_of_exploration_rate, seconds, parallel, results_labels, results_expected_loss, results_n_scans, results_probability_of_exploration, results_n_permutations, results_curtailed, seed);
+  SEXP results = PROTECT(Rf_allocVector(VECSXP, 9));
   SET_VECTOR_ELT(results, 0, results_labels_sexp);
   SET_VECTOR_ELT(results, 2, results_expected_loss_sexp);
   SET_VECTOR_ELT(results, 3, results_n_scans_sexp);
   SET_VECTOR_ELT(results, 4, results_probability_of_exploration_sexp);
-  SET_VECTOR_ELT(results, 5, results_actual_n_permutations_sexp);
-  UNPROTECT(7);
+  SET_VECTOR_ELT(results, 5, results_n_permutations_sexp);
+  SET_VECTOR_ELT(results, 7, results_curtailed_sexp);
+  UNPROTECT(8);
   return results;
 }
 
@@ -119,7 +122,7 @@ static const R_CallMethodDef CallEntries[] = {
   {".lbell", (DL_FUNC) &lbell, 1},
   {".enumerate_partitions", (DL_FUNC) &enumerate_partitions, 1},
   {".minimize_by_enumeration", (DL_FUNC) &minimize_by_enumeration, 3},
-  {".minimize_by_salso", (DL_FUNC) &minimize_by_salso, 10},
+  {".minimize_by_salso", (DL_FUNC) &minimize_by_salso, 12},
   {NULL, NULL, 0}
 };
 

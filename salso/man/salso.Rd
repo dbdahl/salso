@@ -8,12 +8,12 @@ salso(
   psm,
   loss = c("VI.lb", "binder")[1],
   maxSize = 0,
-  maxScans = 5,
-  nPermutations = 5000,
+  batchSize = 100,
+  seconds = Inf,
+  maxScans = 10,
   probExplorationProbAtZero = 0.5,
   probExplorationShape = 0.5,
   probExplorationRate = 50,
-  seconds = 10,
   parallel = TRUE
 )
 }
@@ -26,17 +26,25 @@ partition (i.e., clustering).}
 \item{loss}{Either \code{"VI.lb"} or \code{"binder"}, to indicate the desired
 loss function.}
 
-\item{maxSize}{Either zero or a positive integer. If a positive integer, the
-optimization is constrained to produce solutions whose number of subsets
-(i.e., clusters) is no more than the supplied value. If zero, the size is
-not constrained.}
+\item{maxSize}{The maximum number of subsets (i.e, clusters).  The
+optimization is constrained to produce solutions whose number of subsets is
+no more than the supplied value. If zero, the size is not constrained.}
 
-\item{maxScans}{The maximum number of reallocation scans after the intial
+\item{batchSize}{The number of permutations to consider per batch (although
+the actual number of permutations per batch is a multiple of the number of
+cores when \code{parallel=TRUE}). Batches are sequentially performed until
+the most recent batch does not lead to a better result. Therefore, at least
+two batches are performed (unless the \code{seconds} threshold is
+exceeded.)}
+
+\item{seconds}{A time threshold in seconds after which the function will
+curtailed (with a warning) instead of performing another batch of
+permutations. Note that the function could take considerably longer because
+the threshold is only checked after each batch is completed.}
+
+\item{maxScans}{The maximum number of reallocation scans after the initial
 allocation. The actual number of scans may be less than \code{maxScans}
 since the method stops if the result does not change between scans.}
-
-\item{nPermutations}{The desired number of permutations to consider when
-searching for the minimizer.}
 
 \item{probExplorationProbAtZero}{The probability of the point mass at zero
 for the spike-and-slab distribution of the probability of exploration, i.e.
@@ -50,12 +58,6 @@ in the spike-and-slab distribution of the probability of exploration.}
 \item{probExplorationRate}{The rate of the gamma distribution for the slab in
 the spike-and-slab distribution of the probability of exploration.}
 
-\item{seconds}{A time threshold in seconds after which the function will
-return early (with a warning) instead of finishing all the desired
-permutations. Note that the function could take considerably longer,
-however, because this threshold is only checked after each permutation is
-completed.}
-
 \item{parallel}{Should the search use all CPU cores?}
 }
 \value{
@@ -64,8 +66,13 @@ A list of the following elements: \describe{ \item{estimate}{An
   \item{loss}{A character vector equal to the \code{loss} argument.}
   \item{expectedLoss}{A numeric vector of length one giving the expected
   loss.} \item{nScans}{An integer vector giving the number of scans used to
-  arrive at the supplied estimate.} \item{nPermutations}{An integer vector
-  giving the number of permutations actually performed.} }
+  arrive at the supplied estimate.} \item{probExploration}{The probability of
+  picking the second best micro-optimzation (instead of the best) for the
+  permutation yielding this result.} \item{nPermutations}{An integer giving
+  the number of permutations actually performed.} \item{batchSize}{An integer
+  giving the number of permutations per batch.} \item{curtailed}{A logical
+  indicating whether the search was cut short because the time exceeded the
+  threshold.}}
 }
 \description{
 This function provides a point estimate for a partition distribution using
@@ -78,8 +85,9 @@ Dependence Structures and their Applications" in Oaxaca, Mexico on December
 <https://www.birs.ca/events/2017/5-day-workshops/17w5060/schedule>.
 }
 \examples{
+# Use parallel=FALSE per CRAN rules for examples but, in practice, omit this.
 probs <- psm(iris.clusterings, parallel=FALSE)
-salso(probs, nPermutations=50, parallel=FALSE)
+salso(probs, parallel=FALSE)
 
 }
 \references{

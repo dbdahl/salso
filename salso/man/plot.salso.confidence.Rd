@@ -35,11 +35,12 @@ best representative of a particular cluster. See \code{\link{confidence}} for
 further explanation.
 }
 \examples{
+# Use parallel=FALSE per CRAN rules for examples but, in practice, omit this.
 probs <- psm(iris.clusterings, parallel=FALSE)
-est <- salso(probs, nPermutations=50, parallel=FALSE)$estimate
+est <- salso(probs, parallel=FALSE)$estimate
 conf <- confidence(est, probs)
 plot(conf)
-plot(conf,data=iris)
+plot(conf, data=iris)
 
 }
 \seealso{
