@@ -2,7 +2,7 @@ Run 'install-R --devel'
 Bump version number in DESCRIPTION
 Update NEWS detailing changes (including the date)
 Make sure Cargo.toml dependencies are all to crates.io, not my own Git repositories.
-Commit everything to Git.
+Commit everything to Git, but another commit is coming for the final release.
 build-R-package --rust --post
 Test on Linux, Mac OS, and Windows
   For Linux, R CMD check --as-cran ...
@@ -10,6 +10,6 @@ Test on Linux, Mac OS, and Windows
   For Windows, use https://win-builder.r-project.org/
   Try rhub service.
 Commit everything to Git, including the package in the deliveries directory.
-Tag in Git the version using "bin/tag" script.
+Tag in Git the version by updating the version in "bin/tag" script and running it.
 Submit to CRAN
 Bump (development) version number in DESCRIPTION
