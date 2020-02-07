@@ -49,7 +49,7 @@
 #'   loss.} \item{nScans}{An integer vector giving the number of scans used to
 #'   arrive at the supplied estimate.} \item{probExploration}{The probability of
 #'   picking the second best micro-optimzation (instead of the best) for the
-#'   permutation yielding this result.} \item{nPermutations}{An integer giving
+#'   permutation yielding the supplied estimate.} \item{nPermutations}{An integer giving
 #'   the number of permutations actually performed.} \item{batchSize}{An integer
 #'   giving the number of permutations per batch.} \item{curtailed}{A logical
 #'   indicating whether the search was cut short because the time exceeded the
