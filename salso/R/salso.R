@@ -24,7 +24,7 @@
 #'   the most recent batch does not lead to a better result. Therefore, at least
 #'   two batches are performed (unless the \code{seconds} threshold is
 #'   exceeded.)
-#' @param seconds A time threshold in seconds after which the function will
+#' @param seconds A time threshold in seconds after which the function will be
 #'   curtailed (with a warning) instead of performing another batch of
 #'   permutations. Note that the function could take considerably longer because
 #'   the threshold is only checked after each batch is completed.
@@ -33,7 +33,7 @@
 #'   since the method stops if the result does not change between scans.
 #' @param probExplorationProbAtZero The probability of the point mass at zero
 #'   for the spike-and-slab distribution of the probability of exploration, i.e.
-#'   the probability of picking the second best micro-optimzation (instead of
+#'   the probability of picking the second best micro-optimization (instead of
 #'   the best).  This probability is randomly sampled for (and constant within)
 #'   each permutation.
 #' @param probExplorationShape The shape of the gamma distribution for the slab
@@ -48,7 +48,7 @@
 #'   \item{expectedLoss}{A numeric vector of length one giving the expected
 #'   loss.} \item{nScans}{An integer vector giving the number of scans used to
 #'   arrive at the supplied estimate.} \item{probExploration}{The probability of
-#'   picking the second best micro-optimzation (instead of the best) for the
+#'   picking the second best micro-optimization (instead of the best) for the
 #'   permutation yielding this result.} \item{nPermutations}{An integer giving
 #'   the number of permutations actually performed.} \item{batchSize}{An integer
 #'   giving the number of permutations per batch.} \item{curtailed}{A logical
@@ -84,7 +84,7 @@
 #' 559-626.
 #'
 #' @examples
-#' # Use parallel=FALSE per CRAN rules for examples but, in practice, omit this.
+#' # Use 'parallel=FALSE' per CRAN rules for examples but, in practice, omit this.
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' salso(probs, parallel=FALSE)
 #'

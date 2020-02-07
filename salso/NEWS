@@ -1,5 +1,17 @@
+0.1.15 (2020-02-07)
+  * Added a new stopping rule for the number of permutations.  See the
+    'batchSize' argument of the 'salso' function.  To recover the old behavior,
+    set 'seconds' to zero and 'batchSize' to the desired number of permutations.
+  * Tweaked handling of probability of exploration, i.e. the probability of
+    picking the second best micro-optimization (instead of the best).
+  * 'salso' function returns more information, including 'probExploration',
+    'curtailed', 'batchSize', and 'subsetSizes'.
+  * 'maxScans' argument of the 'salso' function defaults to 10 instead of 5.
+  * Removed 'parallel' argument to 'dlso' function since it was ignored.
+  * Clarifications in DESCRIPTION and INSTALL files, per CRAN requests. 
+
 0.1.11 (2020-01-06)
-  * Fixed bug related to maxSize argument to salso function.
+  * Fixed bug related to 'maxSize' argument of the 'salso' function.
 
 0.1.9 (2019-11-28)
   * Improved the algorithm by adding the 'probExploration' argument to the

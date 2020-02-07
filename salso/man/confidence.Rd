@@ -31,7 +31,7 @@ This function computes the confidence values for \code{n} observations based
 on a clustering estimate and the pairwise similarity matrix.
 }
 \examples{
-# Use parallel=FALSE per CRAN rules for examples but, in practice, omit this.
+# Use 'parallel=FALSE' per CRAN rules for examples but, in practice, omit this.
 probs <- psm(iris.clusterings, parallel=FALSE)
 est <- salso(probs, parallel=FALSE)$estimate
 conf <- confidence(est, probs)
