@@ -5,7 +5,7 @@ set -e
 #echo "Not yet implemented."
 #exit 1
 
-MAJOR=0.1.15
+MAJOR=0.1.16
 
 git pull
 git push
