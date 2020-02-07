@@ -4,7 +4,7 @@
 \alias{dlso}
 \title{Draws-Based Latent Structure Optimization}
 \usage{
-dlso(psm, loss = c("VI.lb", "binder")[1], draws)
+dlso(psm, loss = c("VI.lb", "binder")[1], draws, parallel = FALSE)
 }
 \arguments{
 \item{psm}{A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
@@ -19,6 +19,9 @@ loss function.}
 represents a clustering of \code{n} items using cluster labels. For
 clustering \code{b}, items \code{i} and \code{j} are in the same cluster if
 \code{x[b,i] == x[b,j]}.}
+
+\item{parallel}{Should the search use all CPU cores?  (Currently ignored
+since parallelization is not implemented.)}
 }
 \value{
 A list of the following elements: \describe{ \item{estimate}{An

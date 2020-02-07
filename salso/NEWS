@@ -1,4 +1,4 @@
-0.1.15 (2020-02-07)
+0.1.16 (2020-02-07)
   * Added a new stopping rule for the number of permutations.  See the
     'batchSize' argument of the 'salso' function.  To recover the old behavior,
     set 'seconds' to zero and 'batchSize' to the desired number of permutations.
