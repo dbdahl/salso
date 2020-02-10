@@ -1,8 +1,10 @@
 #' Compute a Partition Loss Function
 #'
-#' These functions compute the expectation of the Binder loss and the lower
-#' bound of the expectation of the variation of information loss for given
-#' partitions based on the supplied pairwise similarity matrix.
+#' Based on the supplied pairwise similarity matrix, these functions compute,
+#' for the given partitions, 1. the expectation of the Binder loss
+#' (\code{binder}), 2. the loss for the adjusted Rand index with the posterior
+#' expected clustering (\code{lpear}), and 3. the lower bound of the expectation
+#' of the variation of information loss (\code{VI.lb}).
 #'
 #' @param partitions An integer matrix of cluster labels, where each row is a
 #'   partition given as cluster labels. Two items are in the same subset (i.e.,
@@ -19,22 +21,30 @@
 #' @examples
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' binder(iris.clusterings[1:5,], probs)
+#' lpear(iris.clusterings[1:5,], probs)
 #' VI.lb(iris.clusterings[1:5,], probs)
 #'
 binder <- function(partitions, psm) {
-  expectedLoss(partitions, psm, FALSE)
+  expectedLoss(partitions, psm, 0L)
+}
+
+#' @export
+#' @rdname binder
+#'
+lpear <- function(partitions, psm) {
+  expectedLoss(partitions, psm, 1L)
 }
 
 #' @export
 #' @rdname binder
 #'
 VI.lb <- function(partitions, psm) {
-  expectedLoss(partitions, psm, TRUE)
+  expectedLoss(partitions, psm, 2L)
 }
 
 #' @useDynLib salso .expected_loss
 #'
-expectedLoss <- function(partitions, psm, use.vilb) {
+expectedLoss <- function(partitions, psm, lossCode) {
   if ( ! ( isSymmetric(psm) && all(0 <= psm) && all(psm <= 1) && all(diag(psm)==1) ) ) {
     stop("'psm' should be symmetric with diagonal elements equal to 1 and off-diagonal elements in [0, 1].")
   }
@@ -44,5 +54,5 @@ expectedLoss <- function(partitions, psm, use.vilb) {
   if ( ncol(partitions) != nrow(psm) ) {
     stop("The length of 'partitions' is not equal to the number of rows of 'psm'.")
   }
-  .Call(.expected_loss, partitions, psm, use.vilb)
+  .Call(.expected_loss, partitions, psm, lossCode)
 }

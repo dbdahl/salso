@@ -2,10 +2,13 @@
 % Please edit documentation in R/loss.R
 \name{binder}
 \alias{binder}
+\alias{lpear}
 \alias{VI.lb}
 \title{Compute a Partition Loss Function}
 \usage{
 binder(partitions, psm)
+
+lpear(partitions, psm)
 
 VI.lb(partitions, psm)
 }
@@ -24,13 +27,16 @@ A numeric vector of length equal to the number of rows of
   \code{partitions}, where each element gives the value of the loss function.
 }
 \description{
-These functions compute the expectation of the Binder loss and the lower
-bound of the expectation of the variation of information loss for given
-partitions based on the supplied pairwise similarity matrix.
+Based on the supplied pairwise similarity matrix, these functions compute,
+for the given partitions, 1. the expectation of the Binder loss
+(\code{binder}), 2. the loss for the adjusted Rand index with the posterior
+expected clustering (\code{lpear}), and 3. the lower bound of the expectation
+of the variation of information loss (\code{VI.lb}).
 }
 \examples{
 probs <- psm(iris.clusterings, parallel=FALSE)
 binder(iris.clusterings[1:5,], probs)
+lpear(iris.clusterings[1:5,], probs)
 VI.lb(iris.clusterings[1:5,], probs)
 
 }
