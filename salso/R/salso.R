@@ -71,7 +71,7 @@
 #' J. W. Lau and P. J. Green (2007), Bayesian model based clustering procedures,
 #' \emph{Journal of Computational and Graphical Statistics} \bold{16}, 526-558.
 #
-#' D. B. Dahl, M. A. Newton (2007), Multiple Hypothesis Testing by Clustering
+#' D. B. Dahl and M. A. Newton (2007), Multiple Hypothesis Testing by Clustering
 #' Treatment Effects, \emph{Journal of the American Statistical Association},
 #' \bold{102}, 517-526.
 #'

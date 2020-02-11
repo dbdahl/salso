@@ -23,7 +23,7 @@ SEXP psm(SEXP partitions_sexp, SEXP parallel_sexp) {
   return counts;
 }
 
-SEXP expected_loss(SEXP partitions_sexp, SEXP psm_sexp, SEXP use_vilb_sexp) {
+SEXP expected_loss(SEXP partitions_sexp, SEXP psm_sexp, SEXP loss_sexp) {
   int n_partitions = Rf_nrows(partitions_sexp);
   int n_items = Rf_ncols(partitions_sexp);
   partitions_sexp = PROTECT(Rf_coerceVector(partitions_sexp, INTSXP));
@@ -32,7 +32,7 @@ SEXP expected_loss(SEXP partitions_sexp, SEXP psm_sexp, SEXP use_vilb_sexp) {
   double *psm = REAL(psm_sexp);
   SEXP results_sexp = PROTECT(Rf_allocVector(REALSXP, n_partitions));
   double *results = REAL(results_sexp);
-  int loss = Rf_asLogical(use_vilb_sexp);
+  int loss = Rf_asInteger(loss_sexp);
   dahl_salso__expected_loss(n_partitions, n_items, partitions, psm, loss, results);
   UNPROTECT(3);
   return results_sexp;
