@@ -1,5 +1,5 @@
 0.1.17 (2020-xx-xx)
-  * Added 'lpear' function to compute the loss for the adjusted Rand index with
+  * Added 'adjRand' function to compute the loss for the adjusted Rand index with
     the posterior expected clustering.
 
 0.1.16 (2020-02-07)
