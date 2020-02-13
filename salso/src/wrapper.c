@@ -63,12 +63,12 @@ SEXP enumerate_partitions(SEXP n_items_sexp) {
   return partitions;
 }
 
-SEXP minimize_by_enumeration(SEXP n_items_sexp, SEXP psm_sexp, SEXP use_vilb_sexp) {
+SEXP minimize_by_enumeration(SEXP n_items_sexp, SEXP psm_sexp, SEXP loss_sexp) {
   n_items_sexp = PROTECT(Rf_coerceVector(n_items_sexp, INTSXP));
   int n_items = Rf_asInteger(n_items_sexp);
   psm_sexp = PROTECT(Rf_coerceVector(psm_sexp, REALSXP));
   double *psm = REAL(psm_sexp);
-  int loss = Rf_asLogical(use_vilb_sexp);
+  int loss = Rf_asInteger(loss_sexp);
   SEXP results_labels_sexp = PROTECT(Rf_allocVector(INTSXP, n_items));
   int *results_labels = INTEGER(results_labels_sexp);
   dahl_salso__minimize_by_enumeration(n_items, psm, loss, results_labels);
@@ -76,11 +76,11 @@ SEXP minimize_by_enumeration(SEXP n_items_sexp, SEXP psm_sexp, SEXP use_vilb_sex
   return results_labels_sexp;
 }
 
-SEXP minimize_by_salso(SEXP n_items_sexp, SEXP psm_sexp, SEXP use_vilb_sexp, SEXP max_size_sexp, SEXP max_scans_sexp, SEXP batch_size_sexp, SEXP probability_of_exploration_probability_at_zero_sexp, SEXP probability_of_exploration_shape_sexp, SEXP probability_of_exploration_rate_sexp, SEXP seconds_sexp, SEXP parallel_sexp, SEXP seed_sexp) {
+SEXP minimize_by_salso(SEXP n_items_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_size_sexp, SEXP max_scans_sexp, SEXP batch_size_sexp, SEXP probability_of_exploration_probability_at_zero_sexp, SEXP probability_of_exploration_shape_sexp, SEXP probability_of_exploration_rate_sexp, SEXP seconds_sexp, SEXP parallel_sexp, SEXP seed_sexp) {
   int n_items = Rf_asInteger(n_items_sexp);
   psm_sexp = PROTECT(Rf_coerceVector(psm_sexp, REALSXP));
   double *psm = REAL(psm_sexp);
-  int loss = Rf_asLogical(use_vilb_sexp);
+  int loss = Rf_asInteger(loss_sexp);
   int max_size = Rf_asInteger(max_size_sexp);
   int max_scans = Rf_asInteger(max_scans_sexp);
   int batch_size = Rf_asInteger(batch_size_sexp);
