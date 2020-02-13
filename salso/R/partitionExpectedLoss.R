@@ -2,13 +2,15 @@
 #'
 #' Based on the supplied pairwise similarity matrix,
 #' \code{\link{partitionExpectedLoss}} computes the (approximation of the)
-#' expectation of one of three partition losses for the given partitions.
+#' expectation of one of three partition losses for the supplied partitions.
 #' Smaller values of the expected loss indicate a better partition estimate. The
 #' functions \code{\link{binder}}, \code{\link{pear}}, and \code{\link{VI.lb}}
-#' are provided for backwards compatibility with the \pkg{mcclust} and
-#' \pkg{mcclust.ext} packages.  Note that
-#' \code{partitionExpectedLoss(partitions, psm, "pear") = 1 - pear(partitions,
-#' psm)}.
+#' are convenience functions.  Note that:
+#' \itemize{
+#' \item \code{partitionExpectedLoss(partitions, psm, "binder") = binder(partitions, psm)}
+#' \item \code{partitionExpectedLoss(partitions, psm, "pear") = 1 - pear(partitions, psm)}
+#' \item \code{partitionExpectedLoss(partitions, psm, "VI.lb") = VI.lb(partitions, psm)}
+#' }
 #'
 #' Three partition estimation criteria can be specified using the \code{loss}
 #' argument: \describe{
@@ -49,6 +51,8 @@
 #' @return A numeric vector of length equal to the number of rows of
 #'   \code{partitions}, where each element gives the value of the expected loss.
 #'
+#' @seealso \code{\link{psm}}, \code{\link{salso}}, \code{\link{dlso}}
+#
 #' @references
 #'
 #' W. M. Rand (1971), Objective Criteria for the Evaluation of Clustering
@@ -87,10 +91,15 @@
 #' @examples
 #' # Use 'parallel=FALSE' per CRAN rules for examples but, in practice, omit this.
 #' probs <- psm(iris.clusterings, parallel=FALSE)
+#' partitions <- iris.clusterings[1:5,]
 #'
-#' partitionExpectedLoss(iris.clusterings[1:5,], probs, loss="VI.lb")
-#' partitionExpectedLoss(iris.clusterings[1:5,], probs, loss="pear")
-#' partitionExpectedLoss(iris.clusterings[1:5,], probs, loss="binder")
+#' partitionExpectedLoss(partitions, probs, loss="binder")
+#' partitionExpectedLoss(partitions, probs, loss="pear")
+#' partitionExpectedLoss(partitions, probs, loss="VI.lb")
+#'
+#' all.equal(partitionExpectedLoss(partitions, probs, "binder"), binder(partitions, probs))
+#' all.equal(partitionExpectedLoss(partitions, probs, "pear"), 1 - pear(partitions, probs))
+#' all.equal(partitionExpectedLoss(partitions, probs, "VI.lb"),   VI.lb(partitions, probs))
 #'
 partitionExpectedLoss <- function(partitions, psm, loss=c("binder", "pear", "VI.lb")[3]) {
   expectedLoss(partitions, psm, lossCode(loss))

@@ -1,6 +1,8 @@
 0.1.17 (2020-xx-xx)
-  * Added 'adjRand' function to compute the loss for the adjusted Rand index with
-    the posterior expected clustering.
+  * In addition to "binder" and "VI.lb" expected losses, added support for
+    the a third expected loss: "pear".
+  * New functions added: partitionExpectedLoss, partitionLoss, pear, randi,
+    arandi, vi.dist.
 
 0.1.16 (2020-02-07)
   * Added a new stopping rule for the number of permutations.  See the

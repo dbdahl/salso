@@ -3,7 +3,7 @@
 #' This function provides a partition to summarize a partition distribution
 #' based a pairwise similarity matrix using the sequentially-allocated latent
 #' structure optimization (SALSO) method. The implementation currently supports
-#' the minimization one of three partition estimation criteria: "binder",
+#' the minimization of three partition estimation criteria: "binder",
 #' "pear", and "VI.lb". For details on these criteria, see
 #' \code{\link{partitionExpectedLoss}}.
 #'
@@ -84,7 +84,8 @@ salso <- function(psm, loss=c("binder", "pear", "VI.lb")[3], maxSize=0, batchSiz
   names(y$estimate) <- colnames(psm)
   y$loss <- loss
   y$batchSize <- batchSize
-  y$subsetSizes <- table(y$estimate)
+  estimate <- y$estimate
+  y$subsetSizes <- table(estimate)
   proportionSingletons <- sum(y$subsetSizes==1)/length(y$subsetSizes)
   if ( proportionSingletons >= 0.5 ) {
     warning(sprintf("%2.0f%% of the subsets are singletons.  For the sake of interpretability, consider using the 'maxSize' argument.",100*proportionSingletons))

@@ -78,7 +78,7 @@ A list of the following elements: \describe{ \item{estimate}{An
 This function provides a partition to summarize a partition distribution
 based a pairwise similarity matrix using the sequentially-allocated latent
 structure optimization (SALSO) method. The implementation currently supports
-the minimization one of three partition estimation criteria: "binder",
+the minimization of three partition estimation criteria: "binder",
 "pear", and "VI.lb". For details on these criteria, see
 \code{\link{partitionExpectedLoss}}.
 }
