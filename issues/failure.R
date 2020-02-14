@@ -1,23 +1,34 @@
 set.seed(77551264L)
 
 library(salso)
+library(mcclust.ext)
 
 load("probs.Rbin")
 probs
-salso(probs)                    # We get it
 
-library(mcclust.ext)
-minVI(probs, method="greedy")   # But they don't
+# VI.lb
 
-salso:::minimize.by.enumeration(probs, loss="VI.lb")
+a <- salso(probs)$estimate
+b <- minVI(probs, method="greedy")$cl   # But they don't
+d <- salso:::minimize.by.enumeration(probs)
+
+VI.lb(d, probs)   # Global minimum
+VI.lb(a, probs)   # SALSO gets it
+VI.lb(b, probs)   # W & G don't
+
+all.equal(d,a)
+all.equal(d,b)
 
 
-data("cls.draw1.5")
-probs2 <- psm(cls.draw1.5)
+n <- 3
+partitions <- salso::enumerate.partitions(n)
+nPartitions <- nrow(partitions)
+partitions <- split(partitions, rep(1:nrow(partitions), each = ncol(partitions)))
+adjMatrices <- lapply(partitions, salso:::mkAdjacencyMatrix)
 
-library(microbenchmark)
-microbenchmark(
-  salso(probs2, probExploration = 0.001),
-  times=2
-)
+mkPSM <- function() {
+  x <- diff(c(0,sort(runif(nPartitions)),1))
+  mapply(function(x,y) x * y, x, adjMatrices)
+}
+mkPSM()
 

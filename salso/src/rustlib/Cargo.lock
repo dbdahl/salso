@@ -137,7 +137,6 @@ dependencies = [
 [[package]]
 name = "dahl-salso"
 version = "0.4.0"
-source = "git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git#11c1124246851c69d29239fae22ece6ae4113682"
 dependencies = [
  "approx",
  "crossbeam",
