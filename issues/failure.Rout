@@ -1,6 +1,6 @@
 
-R Under development (unstable) (2019-09-26 r77224) -- "Unsuffered Consequences"
-Copyright (C) 2019 The R Foundation for Statistical Computing
+R Under development (unstable) (2020-02-11 r77792) -- "Unsuffered Consequences"
+Copyright (C) 2020 The R Foundation for Statistical Computing
 Platform: x86_64-pc-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -18,52 +18,15 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(salso)
-> 
-> load("probs.Rbin")
-> result <- salso(probs)
-> result
-$estimate
-[1] 0 1 2 2 2 3 4 5 6
-
-$loss
-[1] "VI.lb"
-
-$expectedLoss
-[1] 0.563926
-
-$nScans
-[1] 2
-
-$nPermutations
-[1] 5000
-
-> 
-> salso(probs, loss="binder")
-$estimate
-[1] 0 1 2 3 4 5 6 7 8
-
-$loss
-[1] "binder"
-
-$expectedLoss
-[1] 2.4311
-
-$nScans
-[1] 2
-
-$nPermutations
-[1] 5000
-
-> 
 > library(mcclust.ext)
 Loading required package: mcclust
 Loading required package: lpSolve
 
 Attaching package: ‘mcclust’
 
-The following object is masked from ‘package:salso’:
+The following objects are masked from ‘package:salso’:
 
-    binder
+    arandi, binder, pear, vi.dist
 
 
 Attaching package: ‘mcclust.ext’
@@ -72,214 +35,101 @@ The following object is masked from ‘package:salso’:
 
     VI.lb
 
-> minVI(probs, method="greedy")
-$cl
-[1] 1 2 3 4 5 6 7 8 9
-
-$value
+> 
+> load("probs.Rbin")
+> probs
+        [,1]   [,2]   [,3]   [,4]   [,5]   [,6]   [,7]   [,8]   [,9]
+ [1,] 1.0000 0.3975 0.0752 0.0319 0.0158 0.0001 0.0001 0.0001 0.0001
+ [2,] 0.3975 1.0000 0.1399 0.0791 0.0487 0.0001 0.0001 0.0001 0.0001
+ [3,] 0.0752 0.1399 1.0000 0.4077 0.3560 0.0001 0.0001 0.0001 0.0001
+ [4,] 0.0319 0.0791 0.4077 1.0000 0.4093 0.0001 0.0001 0.0001 0.0001
+ [5,] 0.0158 0.0487 0.3560 0.4093 1.0000 0.0001 0.0001 0.0001 0.0001
+ [6,] 0.0001 0.0001 0.0001 0.0001 0.0001 1.0000 0.0112 0.0111 0.0003
+ [7,] 0.0001 0.0001 0.0001 0.0001 0.0001 0.0112 1.0000 0.2617 0.0842
+ [8,] 0.0001 0.0001 0.0001 0.0001 0.0001 0.0111 0.2617 1.0000 0.0995
+ [9,] 0.0001 0.0001 0.0001 0.0001 0.0001 0.0003 0.0842 0.0995 1.0000
+> 
+> # VI.lb
+> 
+> a <- salso(probs)$estimate
+Warning message:
+In salso(probs) :
+  86% of the subsets are singletons.  For the sake of interpretability, consider using the 'maxSize' argument.
+> b <- minVI(probs, method="greedy")$cl   # But they don't
+> d <- salso:::minimize.by.enumeration(probs)
+> 
+> VI.lb(d, probs)   # Global minimum
+[1] 0.563926
+> VI.lb(a, probs)   # SALSO gets it
+[1] 0.563926
+> VI.lb(b, probs)   # W & G don't
 [1] 0.5911779
-
-$iter.greedy
-[1] 1
-
-$method
-[1] "greedy"
-
-attr(,"class")
-[1] "c.estimate"
 > 
-> library(mcclust)
-> data(cls.draw1.5)
-> probs <- psm(cls.draw1.5)
+> all.equal(d,a)
+[1] TRUE
+> all.equal(d,b)
+[1] "Mean relative difference: 0.3928571"
 > 
-> r1 <- salso(probs, nPermutations=5000, probExploration=0.001)
-Warning message:
-In salso(probs, nPermutations = 5000, probExploration = 0.001) :
-  Only 3784 permutations of 5000 were tried. Adjust the 'seconds' and/or 'nPermutations' parameters.
-> r2 <- salso(probs, nPermutations=5000, probExploration=0.0)
-Warning message:
-In salso(probs, nPermutations = 5000, probExploration = 0) :
-  Only 4494 permutations of 5000 were tried. Adjust the 'seconds' and/or 'nPermutations' parameters.
-> table(r1$estimate,r2$estimate)
-   
-     0  1  2  3  4  5  6  7
-  0 40  0  0  0  0  0  0  0
-  1  0 69  0  0  0  0  0  0
-  2  0  0 67  0  0  0  0  0
-  3  0  0  0 50  1  0  0  0
-  4  0  0  0  0 44  0  0  0
-  5  0  0  0  0  0 43  0  0
-  6  0  0  0  0  0  0 51  0
-  7  0  0  0  0  0  0  0 35
-> r1
-$estimate
-  V1   V2   V3   V4   V5   V6   V7   V8   V9  V10  V11  V12  V13  V14  V15  V16 
-   0    1    0    0    0    0    0    2    0    2    0    0    0    0    0    1 
- V17  V18  V19  V20  V21  V22  V23  V24  V25  V26  V27  V28  V29  V30  V31  V32 
-   0    0    0    3    1    0    0    0    0    0    1    1    0    0    0    0 
- V33  V34  V35  V36  V37  V38  V39  V40  V41  V42  V43  V44  V45  V46  V47  V48 
-   2    0    2    1    0    0    0    0    3    0    0    0    1    0    0    0 
- V49  V50  V51  V52  V53  V54  V55  V56  V57  V58  V59  V60  V61  V62  V63  V64 
-   0    0    4    1    0    1    1    1    1    1    1    1    1    1    1    1 
- V65  V66  V67  V68  V69  V70  V71  V72  V73  V74  V75  V76  V77  V78  V79  V80 
-   1    1    1    1    1    1    1    1    1    1    1    1    3    1    1    1 
- V81  V82  V83  V84  V85  V86  V87  V88  V89  V90  V91  V92  V93  V94  V95  V96 
-   1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    0 
- V97  V98  V99 V100 V101 V102 V103 V104 V105 V106 V107 V108 V109 V110 V111 V112 
-   1    1    1    1    3    3    3    3    3    3    3    3    3    3    3    3 
-V113 V114 V115 V116 V117 V118 V119 V120 V121 V122 V123 V124 V125 V126 V127 V128 
-   3    5    3    3    3    3    3    3    3    3    3    3    5    3    3    3 
-V129 V130 V131 V132 V133 V134 V135 V136 V137 V138 V139 V140 V141 V142 V143 V144 
-   3    3    3    0    3    3    3    3    4    5    2    3    3    4    3    5 
-V145 V146 V147 V148 V149 V150 V151 V152 V153 V154 V155 V156 V157 V158 V159 V160 
-   3    3    3    3    3    5    2    2    2    2    2    2    2    2    2    2 
-V161 V162 V163 V164 V165 V166 V167 V168 V169 V170 V171 V172 V173 V174 V175 V176 
-   2    2    2    2    2    2    2    2    2    2    2    2    2    2    2    2 
-V177 V178 V179 V180 V181 V182 V183 V184 V185 V186 V187 V188 V189 V190 V191 V192 
-   2    2    2    2    2    2    2    2    2    2    2    2    2    2    2    2 
-V193 V194 V195 V196 V197 V198 V199 V200 V201 V202 V203 V204 V205 V206 V207 V208 
-   2    2    5    2    2    2    2    2    4    4    4    4    4    4    3    4 
-V209 V210 V211 V212 V213 V214 V215 V216 V217 V218 V219 V220 V221 V222 V223 V224 
-   1    4    4    4    4    4    4    1    4    1    3    4    4    4    4    4 
-V225 V226 V227 V228 V229 V230 V231 V232 V233 V234 V235 V236 V237 V238 V239 V240 
-   6    4    4    4    4    6    1    4    4    4    4    4    4    4    4    4 
-V241 V242 V243 V244 V245 V246 V247 V248 V249 V250 V251 V252 V253 V254 V255 V256 
-   4    6    4    4    6    4    4    4    4    4    1    7    7    1    7    7 
-V257 V258 V259 V260 V261 V262 V263 V264 V265 V266 V267 V268 V269 V270 V271 V272 
-   7    7    7    7    7    2    7    7    6    7    2    1    7    7    7    7 
-V273 V274 V275 V276 V277 V278 V279 V280 V281 V282 V283 V284 V285 V286 V287 V288 
-   7    7    1    1    7    7    7    1    1    7    1    7    7    7    7    1 
-V289 V290 V291 V292 V293 V294 V295 V296 V297 V298 V299 V300 V301 V302 V303 V304 
-   7    2    7    7    7    1    1    7    1    2    2    2    5    6    5    3 
-V305 V306 V307 V308 V309 V310 V311 V312 V313 V314 V315 V316 V317 V318 V319 V320 
-   5    5    5    5    5    3    5    3    5    5    5    5    5    5    5    3 
-V321 V322 V323 V324 V325 V326 V327 V328 V329 V330 V331 V332 V333 V334 V335 V336 
-   5    5    5    5    6    3    5    6    5    6    5    2    5    5    2    5 
-V337 V338 V339 V340 V341 V342 V343 V344 V345 V346 V347 V348 V349 V350 V351 V352 
-   5    5    5    5    5    5    2    5    5    5    5    2    2    5    7    6 
-V353 V354 V355 V356 V357 V358 V359 V360 V361 V362 V363 V364 V365 V366 V367 V368 
-   6    6    2    6    6    6    7    6    6    7    6    6    6    6    6    6 
-V369 V370 V371 V372 V373 V374 V375 V376 V377 V378 V379 V380 V381 V382 V383 V384 
-   6    6    6    6    6    4    7    6    6    6    6    6    6    6    6    6 
-V385 V386 V387 V388 V389 V390 V391 V392 V393 V394 V395 V396 V397 V398 V399 V400 
-   6    6    6    6    6    6    6    6    6    2    6    6    6    5    6    6 
-
-$loss
-[1] "VI.lb"
-
-$expectedLoss
-[1] 1.964327
-
-$nScans
-[1] 3
-
-$nPermutations
-[1] 3784
-
-> r2
-$estimate
-  V1   V2   V3   V4   V5   V6   V7   V8   V9  V10  V11  V12  V13  V14  V15  V16 
-   0    1    0    0    0    0    0    2    0    2    0    0    0    0    0    1 
- V17  V18  V19  V20  V21  V22  V23  V24  V25  V26  V27  V28  V29  V30  V31  V32 
-   0    0    0    3    1    0    0    0    0    0    1    1    0    0    0    0 
- V33  V34  V35  V36  V37  V38  V39  V40  V41  V42  V43  V44  V45  V46  V47  V48 
-   2    0    2    1    0    0    0    0    3    0    0    0    1    0    0    0 
- V49  V50  V51  V52  V53  V54  V55  V56  V57  V58  V59  V60  V61  V62  V63  V64 
-   0    0    4    1    0    1    1    1    1    1    1    1    1    1    1    1 
- V65  V66  V67  V68  V69  V70  V71  V72  V73  V74  V75  V76  V77  V78  V79  V80 
-   1    1    1    1    1    1    1    1    1    1    1    1    3    1    1    1 
- V81  V82  V83  V84  V85  V86  V87  V88  V89  V90  V91  V92  V93  V94  V95  V96 
-   1    1    1    1    1    1    1    1    1    1    1    1    1    1    1    0 
- V97  V98  V99 V100 V101 V102 V103 V104 V105 V106 V107 V108 V109 V110 V111 V112 
-   1    1    1    1    3    4    3    3    3    3    3    3    3    3    3    3 
-V113 V114 V115 V116 V117 V118 V119 V120 V121 V122 V123 V124 V125 V126 V127 V128 
-   3    5    3    3    3    3    3    3    3    3    3    3    5    3    3    3 
-V129 V130 V131 V132 V133 V134 V135 V136 V137 V138 V139 V140 V141 V142 V143 V144 
-   3    3    3    0    3    3    3    3    4    5    2    3    3    4    3    5 
-V145 V146 V147 V148 V149 V150 V151 V152 V153 V154 V155 V156 V157 V158 V159 V160 
-   3    3    3    3    3    5    2    2    2    2    2    2    2    2    2    2 
-V161 V162 V163 V164 V165 V166 V167 V168 V169 V170 V171 V172 V173 V174 V175 V176 
-   2    2    2    2    2    2    2    2    2    2    2    2    2    2    2    2 
-V177 V178 V179 V180 V181 V182 V183 V184 V185 V186 V187 V188 V189 V190 V191 V192 
-   2    2    2    2    2    2    2    2    2    2    2    2    2    2    2    2 
-V193 V194 V195 V196 V197 V198 V199 V200 V201 V202 V203 V204 V205 V206 V207 V208 
-   2    2    5    2    2    2    2    2    4    4    4    4    4    4    3    4 
-V209 V210 V211 V212 V213 V214 V215 V216 V217 V218 V219 V220 V221 V222 V223 V224 
-   1    4    4    4    4    4    4    1    4    1    3    4    4    4    4    4 
-V225 V226 V227 V228 V229 V230 V231 V232 V233 V234 V235 V236 V237 V238 V239 V240 
-   6    4    4    4    4    6    1    4    4    4    4    4    4    4    4    4 
-V241 V242 V243 V244 V245 V246 V247 V248 V249 V250 V251 V252 V253 V254 V255 V256 
-   4    6    4    4    6    4    4    4    4    4    1    7    7    1    7    7 
-V257 V258 V259 V260 V261 V262 V263 V264 V265 V266 V267 V268 V269 V270 V271 V272 
-   7    7    7    7    7    2    7    7    6    7    2    1    7    7    7    7 
-V273 V274 V275 V276 V277 V278 V279 V280 V281 V282 V283 V284 V285 V286 V287 V288 
-   7    7    1    1    7    7    7    1    1    7    1    7    7    7    7    1 
-V289 V290 V291 V292 V293 V294 V295 V296 V297 V298 V299 V300 V301 V302 V303 V304 
-   7    2    7    7    7    1    1    7    1    2    2    2    5    6    5    3 
-V305 V306 V307 V308 V309 V310 V311 V312 V313 V314 V315 V316 V317 V318 V319 V320 
-   5    5    5    5    5    3    5    3    5    5    5    5    5    5    5    3 
-V321 V322 V323 V324 V325 V326 V327 V328 V329 V330 V331 V332 V333 V334 V335 V336 
-   5    5    5    5    6    3    5    6    5    6    5    2    5    5    2    5 
-V337 V338 V339 V340 V341 V342 V343 V344 V345 V346 V347 V348 V349 V350 V351 V352 
-   5    5    5    5    5    5    2    5    5    5    5    2    2    5    7    6 
-V353 V354 V355 V356 V357 V358 V359 V360 V361 V362 V363 V364 V365 V366 V367 V368 
-   6    6    2    6    6    6    7    6    6    7    6    6    6    6    6    6 
-V369 V370 V371 V372 V373 V374 V375 V376 V377 V378 V379 V380 V381 V382 V383 V384 
-   6    6    6    6    6    4    7    6    6    6    6    6    6    6    6    6 
-V385 V386 V387 V388 V389 V390 V391 V392 V393 V394 V395 V396 V397 V398 V399 V400 
-   6    6    6    6    6    6    6    6    6    2    6    6    6    5    6    6 
-
-$loss
-[1] "VI.lb"
-
-$expectedLoss
-[1] 1.964182
-
-$nScans
-[1] 3
-
-$nPermutations
-[1] 4494
-
 > 
-> minVI(probs, method="greedy")
-$cl
-  [1]   1   2   3   4   5   6   7   8   9  10  11  12  13  14   5  15  16  17
- [19]  18  19   2   6  20  21  13  16  22  23  20   2  21   9  24  25  26  27
- [37]   7   1  28  25  29  30  14  11  14  11   4  28  18  12  31  32  17  27
- [55]  33  30  34  35  36  37  38  39  34  40  39  23  41  42  43  32  44  45
- [73]  46  47  38  48  49  47  50  42  35  51  51  15  45  52  41  48  22  53
- [91]  54  34  40  43  36   3  46  54  37  44  55  56  57  58  59  60  61  49
-[109]  62  63  64  65  61  66  67  57  58  68  19  69  63  70  19  29  71  72
-[127]  73  73  69  74  60  25  64  75  70  57  76  77  78  68  75  79  74  80
-[145]  65  59  67  49  55  81  82  26  24  83  84  85  10  84  86  87  88  89
-[163]  90  91  92  93  94  95  96   8  97  92  98  87  90  99 100  82 101  91
-[181]  98 102  99 103 104  86 105  83 106 102 100   8  88  88  80  97  95  94
-[199] 104 106 107 108 109 110 111 112  56 112 113 114  76 115 116 117  31 113
-[217] 118  33  72 119 109 116 117 109  31 113  79 115 118 120  36 121 118 122
-[235] 123 121 119 107 122 111 114 124 125 126 127 110 123 125 126 108 128 129
-[253] 130  53 131 132 133 134 135 136 137 106 138 139 140 141 142  52 138 143
-[271] 133 144 134 139 145  50 130 144 143 146 145 143 128 144 147 131 139 145
-[289] 148 105 136 147 148  46 149 132 149  93  89  93 150 151 152 153  81 154
-[307] 155 156 157  62 158 153 159 155 160 161 161  71 162 153  80 158 163 164
-[325] 165  60 150 151 157 166 167 168 154  77  85 101 162 169 167 152 170 169
-[343] 171 156 164 160 159 101 171 170 141 172 173 151 103 165 174 175 135 176
-[361] 177 135 178 175 179 172 166 180 176 181 182 173 120 112 129 137 181 140
-[379] 183 184 140 137 180 184 185 177 186 187 182 185 186 127 166 187 127 183
-[397] 179 163 178 174
-
-$value
-[1] 5.2212
-
-$iter.greedy
-[1] 214
-
-$method
-[1] "greedy"
-
-attr(,"class")
-[1] "c.estimate"
+> 
+> 
+> 
+> seed <- runif(1,0,.Machine$integer.max)
+> set.seed(seed)
+> 
+> n <- 4
+> partitions <- salso::enumerate.partitions(n)
+> nPartitions <- nrow(partitions)
+> adjMatrices <- lapply(lapply(asplit(partitions,1), as.vector), salso:::mkAdjacencyMatrix)
+> 
+> mkPSM <- function() {
++   x <- diff(c(0,sort(runif(nPartitions-1)),1))
++   y <- mapply(function(x,y) x * y, x, adjMatrices, SIMPLIFY=FALSE)
++   list(weights=x, probs=Reduce("+", y))
++ }
+> 
+> while ( TRUE ) {
++   x <- mkPSM()
++   a <- suppressWarnings(salso(x$probs, loss="binder")$estimate)
++   if ( max(a) < 2 ) next
++   b1 <- minbinder(x$probs, method="laugreen")$cl
++   if ( isTRUE(all.equal(a,b1)) ) next
++   b2 <- minbinder.ext(x$probs, method="greedy")$cl
++   if ( isTRUE(all.equal(a,b2)) ) next
++   b3 <- minbinder(x$probs, method="avg", max.k=n)$cl
++   if ( isTRUE(all.equal(a,b3)) ) next
++   b4 <- minbinder(x$probs, method="comp", max.k=n)$cl
++   if ( isTRUE(all.equal(a,b4)) ) next
++   break
++ }
+> 
+> binder(a,x$probs)
+[1] 2.800814
+> binder(b1,x$probs)
+[1] 2.806241
+> binder(b2,x$probs)
+[1] 2.806241
+> binder(b3,x$probs)
+[1] 2.806241
+> binder(b4,x$probs)
+[1] 2.806241
+> 
+> d <- salso:::minimize.by.enumeration(x$probs, loss="binder")
+> binder(d,x$probs)
+[1] 2.800814
+> 
+> x$seed <- seed
+> x$salso <- a
+> x$lg <- b1
+> x$wg <- b2
+> x$avg <- b3
+> x$comp <- b4
+> x$enum <- d
+> x$adjMatrices <- adjMatrices
+> 
+> saveRDS(x,sprintf("only-salso-wins-%s.rds",runif(1,0,100000)))
+> 
 > 
 > proc.time()
-     user    system   elapsed 
-28674.797     0.067 28534.755 
+   user  system elapsed 
+  6.361   1.055   5.450 
