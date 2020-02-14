@@ -5,7 +5,7 @@
 #' structure optimization (SALSO) method. The implementation currently supports
 #' the minimization of three partition estimation criteria: "binder",
 #' "pear", and "VI.lb". For details on these criteria, see
-#' \code{\link{partitionExpectedLoss}}.
+#' \code{\link{partition.expected.loss}}.
 #'
 #' The SALSO method was first presented at the workshop "Bayesian Nonparametric
 #' Inference: Dependence Structures and their Applications" in Oaxaca, Mexico on
@@ -17,7 +17,7 @@
 #'   items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
 #'   partition (i.e., clustering).
 #' @param loss One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-#'   \code{\link{partitionExpectedLoss}} for details on these loss functions.
+#'   \code{\link{partition.expected.loss}} for details on these loss functions.
 #' @param maxSize The maximum number of subsets (i.e, clusters).  The
 #'   optimization is constrained to produce solutions whose number of subsets is
 #'   no more than the supplied value. If zero, the size is not constrained.
@@ -58,7 +58,7 @@
 #'   \item{curtailed}{A logical indicating whether the search was cut short
 #'   because the time exceeded the threshold.}}
 #'
-#' @seealso \code{\link{partitionExpectedLoss}}, \code{\link{psm}},
+#' @seealso \code{\link{partition.expected.loss}}, \code{\link{psm}},
 #'   \code{\link{confidence}}, \code{\link{dlso}}
 #'
 #' @export

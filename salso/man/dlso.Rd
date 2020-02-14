@@ -14,7 +14,7 @@ partition (i.e., clustering).  If not provided, this argument is computed
 from the \code{draws} argument.}
 
 \item{loss}{One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-\code{\link{partitionExpectedLoss}} for details on these loss functions.}
+\code{\link{partition.expected.loss}} for details on these loss functions.}
 
 \item{draws}{A \code{B}-by-\code{n} matrix, where each of the \code{B} rows
 represents a clustering of \code{n} items using cluster labels. For
@@ -39,7 +39,7 @@ clustering method (Dahl 2006). The method seeks to estimation criteria by
 picking the minimizer among the partitions supplied by the \code{draws}
 argument. The implementation currently supports the minimization of three
 partition estimation criteria: "binder", "pear", and "VI.lb". For details on
-these criteria, see \code{\link{partitionExpectedLoss}}.
+these criteria, see \code{\link{partition.expected.loss}}.
 }
 \examples{
 dlso(draws=iris.clusterings, loss="binder")
@@ -48,6 +48,6 @@ dlso(draws=iris.clusterings, loss="VI.lb")
 
 }
 \seealso{
-\code{\link{partitionExpectedLoss}}, \code{\link{psm}},
+\code{\link{partition.expected.loss}}, \code{\link{psm}},
   \code{\link{confidence}}, \code{\link{salso}}
 }

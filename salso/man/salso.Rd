@@ -24,7 +24,7 @@ items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
 partition (i.e., clustering).}
 
 \item{loss}{One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-\code{\link{partitionExpectedLoss}} for details on these loss functions.}
+\code{\link{partition.expected.loss}} for details on these loss functions.}
 
 \item{maxSize}{The maximum number of subsets (i.e, clusters).  The
 optimization is constrained to produce solutions whose number of subsets is
@@ -80,7 +80,7 @@ based a pairwise similarity matrix using the sequentially-allocated latent
 structure optimization (SALSO) method. The implementation currently supports
 the minimization of three partition estimation criteria: "binder",
 "pear", and "VI.lb". For details on these criteria, see
-\code{\link{partitionExpectedLoss}}.
+\code{\link{partition.expected.loss}}.
 }
 \details{
 The SALSO method was first presented at the workshop "Bayesian Nonparametric
@@ -95,6 +95,6 @@ salso(probs, parallel=FALSE)
 
 }
 \seealso{
-\code{\link{partitionExpectedLoss}}, \code{\link{psm}},
+\code{\link{partition.expected.loss}}, \code{\link{psm}},
   \code{\link{confidence}}, \code{\link{dlso}}
 }

@@ -1,7 +1,7 @@
 0.1.17 (2020-xx-xx)
   * In addition to "binder" and "VI.lb" expected losses, added support for
     the a third expected loss: "pear".
-  * New functions added: partitionExpectedLoss, partitionLoss, pear, randi,
+  * New functions added: partition.expected.loss, partition.loss, pear, randi,
     arandi, vi.dist.
 
 0.1.16 (2020-02-07)

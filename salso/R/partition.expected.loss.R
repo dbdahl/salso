@@ -1,15 +1,15 @@
 #' Compute the Expectation of a Partition Loss
 #'
 #' Based on the supplied pairwise similarity matrix,
-#' \code{\link{partitionExpectedLoss}} computes the (approximation of the)
+#' \code{\link{partition.expected.loss}} computes the (approximation of the)
 #' expectation of one of three partition losses for the supplied partitions.
 #' Smaller values of the expected loss indicate a better partition estimate. The
 #' functions \code{\link{binder}}, \code{\link{pear}}, and \code{\link{VI.lb}}
 #' are convenience functions.  Note that:
 #' \itemize{
-#' \item \code{partitionExpectedLoss(partitions, psm, "binder") = binder(partitions, psm)}
-#' \item \code{partitionExpectedLoss(partitions, psm, "pear") = 1 - pear(partitions, psm)}
-#' \item \code{partitionExpectedLoss(partitions, psm, "VI.lb") = VI.lb(partitions, psm)}
+#' \item \code{partition.expected.loss(partitions, psm, "binder") = binder(partitions, psm)}
+#' \item \code{partition.expected.loss(partitions, psm, "pear") = 1 - pear(partitions, psm)}
+#' \item \code{partition.expected.loss(partitions, psm, "VI.lb") = VI.lb(partitions, psm)}
 #' }
 #'
 #' Three partition estimation criteria can be specified using the \code{loss}
@@ -93,39 +93,39 @@
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' partitions <- iris.clusterings[1:5,]
 #'
-#' partitionExpectedLoss(partitions, probs, loss="binder")
-#' partitionExpectedLoss(partitions, probs, loss="pear")
-#' partitionExpectedLoss(partitions, probs, loss="VI.lb")
+#' partition.expected.loss(partitions, probs, loss="binder")
+#' partition.expected.loss(partitions, probs, loss="pear")
+#' partition.expected.loss(partitions, probs, loss="VI.lb")
 #'
-#' all.equal(partitionExpectedLoss(partitions, probs, "binder"), binder(partitions, probs))
-#' all.equal(partitionExpectedLoss(partitions, probs, "pear"), 1 - pear(partitions, probs))
-#' all.equal(partitionExpectedLoss(partitions, probs, "VI.lb"),   VI.lb(partitions, probs))
+#' all.equal(partition.expected.loss(partitions, probs, "binder"), binder(partitions, probs))
+#' all.equal(partition.expected.loss(partitions, probs, "pear"), 1 - pear(partitions, probs))
+#' all.equal(partition.expected.loss(partitions, probs, "VI.lb"),   VI.lb(partitions, probs))
 #'
-partitionExpectedLoss <- function(partitions, psm, loss=c("binder", "pear", "VI.lb")[3]) {
-  expectedLoss(partitions, psm, lossCode(loss))
+partition.expected.loss <- function(partitions, psm, loss=c("binder", "pear", "VI.lb")[3]) {
+  expected.loss(partitions, psm, lossCode(loss))
 }
 
 #' @export
-#' @rdname partitionExpectedLoss
+#' @rdname partition.expected.loss
 binder <- function(partitions, psm) {
-  expectedLoss(partitions, psm, lossCode("binder"))
+  expected.loss(partitions, psm, lossCode("binder"))
 }
 
 #' @export
-#' @rdname partitionExpectedLoss
+#' @rdname partition.expected.loss
 pear <- function(partitions, psm) {
-  1-expectedLoss(partitions, psm, lossCode("pear"))
+  1-expected.loss(partitions, psm, lossCode("pear"))
 }
 
 #' @export
-#' @rdname partitionExpectedLoss
+#' @rdname partition.expected.loss
 VI.lb <- function(partitions, psm) {
-  expectedLoss(partitions, psm, lossCode("VI.lb"))
+  expected.loss(partitions, psm, lossCode("VI.lb"))
 }
 
 #' @useDynLib salso .expected_loss
 #'
-expectedLoss <- function(partitions, psm, lossCode) {
+expected.loss <- function(partitions, psm, lossCode) {
   if ( ! ( isSymmetric(psm) && all(0 <= psm) && all(psm <= 1) && all(diag(psm)==1) ) ) {
     stop("'psm' should be symmetric with diagonal elements equal to 1 and off-diagonal elements in [0, 1].")
   }
