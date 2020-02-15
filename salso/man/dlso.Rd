@@ -7,18 +7,18 @@
 dlso(psm, loss = c("binder", "pears", "VI.lb")[3], draws, parallel = FALSE)
 }
 \arguments{
-\item{psm}{A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
-matrix whose \code{(i,j)} element gives the (estimated) probability that
-items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
+\item{psm}{A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
+matrix whose \eqn{(i,j)} element gives the (estimated) probability that
+items \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a
 partition (i.e., clustering).  If not provided, this argument is computed
 from the \code{draws} argument.}
 
 \item{loss}{One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
 \code{\link{partition.expected.loss}} for details on these loss functions.}
 
-\item{draws}{A \code{B}-by-\code{n} matrix, where each of the \code{B} rows
-represents a clustering of \code{n} items using cluster labels. For
-clustering \code{b}, items \code{i} and \code{j} are in the same cluster if
+\item{draws}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
+represents a clustering of \eqn{n} items using cluster labels. For
+clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
 \code{x[b,i] == x[b,j]}.}
 
 \item{parallel}{Should the search use all CPU cores?  (Currently ignored

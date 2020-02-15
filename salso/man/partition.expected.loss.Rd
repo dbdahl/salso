@@ -20,13 +20,13 @@ pear(partitions, psm)
 VI.lb(partitions, psm)
 }
 \arguments{
-\item{partitions}{An integer matrix of cluster labels with \code{n} columns,
-where each row is a partition of \code{n} items given as cluster labels.
+\item{partitions}{An integer matrix of cluster labels with \eqn{n} columns,
+where each row is a partition of \eqn{n} items given as cluster labels.
 Two items are in the same subset (i.e., cluster) if their labels are equal.}
 
-\item{psm}{A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
-matrix whose \code{(i,j)} element gives the (estimated) probability that
-items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
+\item{psm}{A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
+matrix whose \eqn{(i,j)} element gives the (estimated) probability that
+items \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a
 partition (i.e., clustering).}
 
 \item{loss}{One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See

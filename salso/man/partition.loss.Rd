@@ -16,7 +16,7 @@ arandi(partition1, partition2)
 vi.dist(partition1, partition2)
 }
 \arguments{
-\item{partition1}{An integer vector of cluster labels for \code{n} items. Two
+\item{partition1}{An integer vector of cluster labels for \eqn{n} items. Two
 items are in the same subset (i.e., cluster) if their labels are equal.}
 
 \item{partition2}{An integer vector of cluster labels having the same length

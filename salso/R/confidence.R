@@ -1,14 +1,14 @@
 #' Compute Clustering Confidence
 #'
-#' This function computes the confidence values for \code{n} observations based
+#' This function computes the confidence values for \eqn{n} observations based
 #' on a clustering estimate and the pairwise similarity matrix.
 #'
-#' @param estimate A vector of length \code{n}, where \code{i} and \code{j} are
+#' @param estimate A vector of length \eqn{n}, where \eqn{i} and \eqn{j} are
 #'   in the same subset (i.e., cluster) if and only if \code{estimate[i] ==
 #'   estimate[j]}.
-#' @param psm A pairwise similarity matrix, i.e., \code{n}-by-\code{n} symmetric
-#'   matrix whose \code{(i,j)} element gives the (estimated) probability that
-#'   items \code{i} and \code{j} are in the same subset (i.e., cluster) of a
+#' @param psm A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
+#'   matrix whose \eqn{(i,j)} element gives the (estimated) probability that
+#'   items \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a
 #'   partition (i.e., clustering).
 #'
 #' @return A list of the following elements: \describe{

@@ -6,7 +6,7 @@
 #' further explanation.
 #'
 #' @param x An object returned by the \code{\link{confidence}} function.
-#' @param estimate A vector of length \code{n}, where \code{i} and \code{j} are
+#' @param estimate A vector of length \eqn{n}, where \eqn{i} and \eqn{j} are
 #'   in the same subset (i.e., cluster) if and only if \code{estimate[i] ==
 #'   estimate[j]}.'  If \code{NULL}, the \code{x$estimate} in used.
 #' @param data The data from which the distances were computed.

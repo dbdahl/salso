@@ -2,6 +2,7 @@
 
 S3method(plot,salso.confidence)
 export(VI.lb)
+export(adjacency.matrix)
 export(arandi)
 export(bell)
 export(binder)

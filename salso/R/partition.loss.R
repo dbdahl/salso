@@ -16,7 +16,7 @@
 #' \item \code{partition.loss(p1, p2, "VI.lb") = vi.dist(p1, p2)}
 #' }
 #'
-#' @param partition1 An integer vector of cluster labels for \code{n} items. Two
+#' @param partition1 An integer vector of cluster labels for \eqn{n} items. Two
 #'   items are in the same subset (i.e., cluster) if their labels are equal.
 #' @param partition2 An integer vector of cluster labels having the same length
 #'   as \code{partition1}.
@@ -41,13 +41,7 @@
 #' all.equal(partition.loss(p1, p2, "VI.lb"), vi.dist(p1, p2))
 #'
 partition.loss <- function(partition1, partition2, loss=c("binder", "pear", "VI.lb")[3]) {
-  expected.loss(partition1, mk.adjancency.matrix(partition2), lossCode(loss))
-}
-
-mk.adjancency.matrix <- function(partition) {
-  if ( ! is.vector(partition) ) stop("'partition' should be a vector.")
-  n <- length(partition)
-  matrix( 1L*( rep(partition,times=n) == rep(partition,each=n) ), nrow=n)
+  expected.loss(partition1, adjacency.matrix(partition2), lossCode(loss))
 }
 
 #' @export

@@ -2,7 +2,7 @@
   * In addition to "binder" and "VI.lb" expected losses, added support for
     the a third expected loss: "pear".
   * New functions added: partition.expected.loss, partition.loss, pear, randi,
-    arandi, vi.dist.
+    arandi, vi.dist, adjacency.matrix.
 
 0.1.16 (2020-02-07)
   * Added a new stopping rule for the number of permutations.  See the

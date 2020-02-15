@@ -15,7 +15,7 @@
 \arguments{
 \item{x}{An object returned by the \code{\link{confidence}} function.}
 
-\item{estimate}{A vector of length \code{n}, where \code{i} and \code{j} are
+\item{estimate}{A vector of length \eqn{n}, where \eqn{i} and \eqn{j} are
 in the same subset (i.e., cluster) if and only if \code{estimate[i] ==
 estimate[j]}.'  If \code{NULL}, the \code{x$estimate} in used.}
 

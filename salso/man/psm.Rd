@@ -7,23 +7,24 @@
 psm(x, parallel = TRUE)
 }
 \arguments{
-\item{x}{A \code{B}-by-\code{n} matrix, where each of the \code{B} rows
-represents a clustering of \code{n} items using cluster labels. For
-clustering \code{b}, items \code{i} and \code{j} are in the same cluster if
+\item{x}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
+represents a clustering of \eqn{n} items using cluster labels. For
+clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
 \code{x[b,i] == x[b,j]}.}
 
 \item{parallel}{Should the computation use all CPU cores?}
 }
 \value{
-A \code{n}-by-\code{n} symmetric matrix whose \code{(i,j)} element
-  gives the estimated expected number of times that items \code{i} and
-  \code{j} are in the same subset (i.e., cluster or feature) based on the
+A \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element
+  gives the estimated expected number of times that items \eqn{i} and
+  \eqn{j} are in the same subset (i.e., cluster or feature) based on the
   frequencies from the supplied clusterings or feature allocations.
 }
 \description{
-This function computes the \code{n}-by-\code{n} matrix whose \code{(i,j)}
-element gives the (estimated) probability that items \code{i} and \code{j}
-are in the same subset (i.e., cluster).
+Based on the provided samples, this function computes the \eqn{n}-by-\eqn{n}
+matrix whose \eqn{(i,j)} element gives the (estimated) probability that items
+\eqn{i} and \eqn{j} are in the same subset (i.e., cluster).  This is the mean
+of the adjacency matrices of the provided samples.
 }
 \examples{
 dim(iris.clusterings)
@@ -32,4 +33,7 @@ probs <- psm(iris.clusterings, parallel=FALSE)
 dim(probs)
 probs[1:6, 1:6]
 
+}
+\seealso{
+\code{\link{adjacency.matrix}}
 }
