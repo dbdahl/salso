@@ -18,7 +18,7 @@
 #'   partition (i.e., clustering).
 #' @param loss One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
 #'   \code{\link{partition.expected.loss}} for details on these loss functions.
-#' @param maxSize The maximum number of subsets (i.e, clusters).  The
+#' @param maxSize The maximum number of subsets (i.e., clusters).  The
 #'   optimization is constrained to produce solutions whose number of subsets is
 #'   no more than the supplied value. If zero, the size is not constrained.
 #' @param batchSize The number of permutations to consider per batch (although
@@ -35,7 +35,7 @@
 #'   allocation. The actual number of scans may be less than \code{maxScans}
 #'   since the method stops if the result does not change between scans.
 #' @param probExplorationProbAtZero The probability of the point mass at zero
-#'   for the spike-and-slab distribution of the probability of exploration, i.e.
+#'   for the spike-and-slab distribution of the probability of exploration, i.e.,
 #'   the probability of picking the second best micro-optimization (instead of
 #'   the best).  This probability is randomly sampled for (and constant within)
 #'   each permutation.

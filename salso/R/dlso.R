@@ -3,7 +3,7 @@
 #' This function provides a partition to summarize a partition distribution
 #' based a pairwise similarity matrix using the draws latent structure
 #' optimization (DLSO) method, which is also known as the least-squares
-#' clustering method (Dahl 2006). The method seeks to estimation criteria by
+#' clustering method (Dahl 2006). The method seeks to minimize an estimation criterion by
 #' picking the minimizer among the partitions supplied by the \code{draws}
 #' argument. The implementation currently supports the minimization of three
 #' partition estimation criteria: "binder", "pear", and "VI.lb". For details on
@@ -38,7 +38,7 @@
 #' dlso(draws=iris.clusterings, loss="pear")
 #' dlso(draws=iris.clusterings, loss="VI.lb")
 #'
-dlso <- function(psm, loss=c("binder", "pears", "VI.lb")[3], draws, parallel=FALSE) {
+dlso <- function(psm, loss=c("binder", "pear", "VI.lb")[3], draws, parallel=FALSE) {
   if ( missing(psm) ) psm <- salso::psm(draws)
   expectedLoss <- partition.expected.loss(draws, psm, loss)
   index <- which.min(expectedLoss)

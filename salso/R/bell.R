@@ -3,7 +3,7 @@
 #' These functions compute the Bell number (the number of partitions of a set)
 #' or its natural logarithm.
 #'
-#' @param nItems The size of the set \eqn{\{1, 2, ..., n\}}.
+#' @param nItems The size of the set \eqn{{1, 2, ..., n}}.
 #'
 #' @return A numeric vector of length one giving the Bell number or its natural
 #'   logarithm.

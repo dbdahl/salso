@@ -1,6 +1,6 @@
 #' Compute an Adjacency Matrix
 #'
-#' Given partition, this function computes an adjacency matrix, i.e., binary
+#' Given a partition, this function computes an adjacency matrix, i.e., binary
 #' matrix whose \eqn{(i,j)} element is one if and only if elements \eqn{i} and
 #' \eqn{j} in the partition have the same cluster label.
 #'
@@ -15,7 +15,9 @@
 #'
 #' @export
 #' @examples
-#' adjacency.matrix(iris.clusterings[1,])
+#' partition <- iris.clusterings[1,]
+#'
+#' adjacency.matrix(partition)
 #'
 adjacency.matrix <- function(partition) {
   if ( ! is.vector(partition) ) stop("'partition' should be a vector.")

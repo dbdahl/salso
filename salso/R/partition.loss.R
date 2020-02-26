@@ -2,7 +2,7 @@
 #'
 #' Given partitions \eqn{\pi*} and \eqn{\pi}, \code{\link{partition.loss}}
 #' computes the loss when using \eqn{\pi*} to estimate \eqn{\pi}, based on one
-#' of three partition losses. Smaller values of a loss indicate higher
+#' of three partition losses. Smaller computed loss values indicate higher
 #' concordance between the partitions. The implementation currently supports the
 #' computation of the following partition loss functions: "binder", "pear", and
 #' "VI.lb". For details on these criteria, see
