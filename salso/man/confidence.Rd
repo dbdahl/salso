@@ -22,7 +22,7 @@ A list of the following elements: \describe{
   \item{psm}{The value of the \code{psm} argument.}
   \item{confidence}{A numeric vector with the same length as \code{estimate} that contains the mean probability that each item is paired with all of the other items in its subset (i.e., cluster).}
   \item{confidenceMatrix}{A matrix containing the mean confidences of items in each subset on the diagonal. In the off-diagonal elements, the mean confidence among all pairs from the two subsets. High probabilities on the diagonal and low probabilities everywhere else indicate good separability among the subsets.}
-  \item{exemplar}{A numeric vector containing the exemplar for each subset (i.e, cluster). The "exemplar" of a subset has the highest probability of being clustered with all of the other items in its subset.}
+  \item{exemplar}{A numeric vector containing the exemplar for each subset (i.e., cluster). The "exemplar" of a subset has the highest probability of being clustered with all of the other items in its subset.}
   \item{order}{A vector giving the permutation of the original observations used in plotting.}
   }
 }

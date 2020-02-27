@@ -3,8 +3,8 @@
 #' This function provides a partition to summarize a partition distribution
 #' based a pairwise similarity matrix using the sequentially-allocated latent
 #' structure optimization (SALSO) method. The implementation currently supports
-#' the minimization of three partition estimation criteria: "binder",
-#' "pear", and "VI.lb". For details on these criteria, see
+#' the minimization of three partition estimation criteria: "binder", "pear",
+#' and "VI.lb". For details on these criteria, see
 #' \code{\link{partition.expected.loss}}.
 #'
 #' The SALSO method was first presented at the workshop "Bayesian Nonparametric

@@ -2,11 +2,10 @@
 #'
 #' Given partitions \eqn{\pi*} and \eqn{\pi}, \code{\link{partition.loss}}
 #' computes the loss when using \eqn{\pi*} to estimate \eqn{\pi}, based on one
-#' of three partition losses. Smaller computed loss values indicate higher
-#' concordance between the partitions. The implementation currently supports the
-#' computation of the following partition loss functions: "binder", "pear", and
-#' "VI.lb". For details on these criteria, see
-#' \code{\link{partition.expected.loss}}.
+#' of three partition losses. Smaller loss values indicate higher concordance
+#' between partitions. The implementation currently supports the computation of
+#' the following partition loss functions: "binder", "pear", and "VI.lb". For
+#' details on these criteria, see \code{\link{partition.expected.loss}}.
 #'
 #' The functions \code{\link{randi}}, \code{\link{arandi}}, and
 #' \code{\link{vi.dist}} are convenience functions. Note that:

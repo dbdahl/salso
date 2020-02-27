@@ -10,7 +10,7 @@ bell(nItems)
 lbell(nItems)
 }
 \arguments{
-\item{nItems}{The size of the set \eqn{\{1, 2, ..., n\}}.}
+\item{nItems}{The size of the set \eqn{{1, 2, ..., n}}.}
 }
 \value{
 A numeric vector of length one giving the Bell number or its natural

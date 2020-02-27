@@ -16,12 +16,14 @@ An adjacency matrix, i.e., binary matrix whose \eqn{(i,j)} element is
   supplied partition.
 }
 \description{
-Given partition, this function computes an adjacency matrix, i.e., binary
+Given a partition, this function computes an adjacency matrix, i.e., binary
 matrix whose \eqn{(i,j)} element is one if and only if elements \eqn{i} and
 \eqn{j} in the partition have the same cluster label.
 }
 \examples{
-adjacency.matrix(iris.clusterings[1,])
+partition <- iris.clusterings[1,]
+
+adjacency.matrix(partition)
 
 }
 \seealso{

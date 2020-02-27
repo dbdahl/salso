@@ -3,11 +3,11 @@
 #' This function provides a partition to summarize a partition distribution
 #' based a pairwise similarity matrix using the draws latent structure
 #' optimization (DLSO) method, which is also known as the least-squares
-#' clustering method (Dahl 2006). The method seeks to minimize an estimation criterion by
-#' picking the minimizer among the partitions supplied by the \code{draws}
-#' argument. The implementation currently supports the minimization of three
-#' partition estimation criteria: "binder", "pear", and "VI.lb". For details on
-#' these criteria, see \code{\link{partition.expected.loss}}.
+#' clustering method (Dahl 2006). The method seeks to minimize an estimation
+#' criterion by picking the minimizer among the partitions supplied by the
+#' \code{draws} argument. The implementation currently supports the minimization
+#' of three partition estimation criteria: "binder", "pear", and "VI.lb". For
+#' details on these criteria, see \code{\link{partition.expected.loss}}.
 #'
 #' @param psm A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
 #'   matrix whose \eqn{(i,j)} element gives the (estimated) probability that

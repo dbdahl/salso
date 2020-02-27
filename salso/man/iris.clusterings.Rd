@@ -5,7 +5,7 @@
 \alias{iris.clusterings}
 \title{Clusterings of the Iris Data}
 \format{A 1000-by-150 matrix of 1000 randomly generated clusterings of the
-  150 observations in the iris dataset.}
+  150 observations in the \code{iris} dataset.}
 \source{
 Unknown.
 }
@@ -13,7 +13,7 @@ Unknown.
 iris.clusterings
 }
 \description{
-Randomly generated clusterings of the iris dataset.
+Randomly generated clusterings of the \code{iris} dataset.
 }
 \seealso{
 \code{\link[datasets]{iris}}

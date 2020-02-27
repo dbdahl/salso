@@ -7,7 +7,7 @@
 enumerate.partitions(nItems)
 }
 \arguments{
-\item{nItems}{The size of the set \eqn{\{0, 1, ..., n-1\}}, i.e., \eqn{n}.}
+\item{nItems}{The size of the set \eqn{{0, 1, ..., n-1}}, i.e., \eqn{n}.}
 }
 \value{
 A matrix of integers, where each row is a partition encoded as a
@@ -15,8 +15,8 @@ A matrix of integers, where each row is a partition encoded as a
 }
 \description{
 This function produces a matrix whose rows provide all possible partitions of
-the set of integers \eqn{\{0, 1, ..., n-1\}}. These partitions are provided
-as cluster labels, where two items are in the same subset (i.e., cluster) if
+the set of integers \eqn{{0, 1, ..., n-1}}. These partitions are provided as
+cluster labels, where two items are in the same subset (i.e., cluster) if
 their labels are equal.
 }
 \examples{

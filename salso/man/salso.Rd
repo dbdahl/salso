@@ -26,7 +26,7 @@ partition (i.e., clustering).}
 \item{loss}{One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
 \code{\link{partition.expected.loss}} for details on these loss functions.}
 
-\item{maxSize}{The maximum number of subsets (i.e, clusters).  The
+\item{maxSize}{The maximum number of subsets (i.e., clusters).  The
 optimization is constrained to produce solutions whose number of subsets is
 no more than the supplied value. If zero, the size is not constrained.}
 
@@ -47,7 +47,7 @@ allocation. The actual number of scans may be less than \code{maxScans}
 since the method stops if the result does not change between scans.}
 
 \item{probExplorationProbAtZero}{The probability of the point mass at zero
-for the spike-and-slab distribution of the probability of exploration, i.e.
+for the spike-and-slab distribution of the probability of exploration, i.e.,
 the probability of picking the second best micro-optimization (instead of
 the best).  This probability is randomly sampled for (and constant within)
 each permutation.}
@@ -78,8 +78,8 @@ A list of the following elements: \describe{ \item{estimate}{An
 This function provides a partition to summarize a partition distribution
 based a pairwise similarity matrix using the sequentially-allocated latent
 structure optimization (SALSO) method. The implementation currently supports
-the minimization of three partition estimation criteria: "binder",
-"pear", and "VI.lb". For details on these criteria, see
+the minimization of three partition estimation criteria: "binder", "pear",
+and "VI.lb". For details on these criteria, see
 \code{\link{partition.expected.loss}}.
 }
 \details{
