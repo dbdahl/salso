@@ -77,7 +77,7 @@ salso <- function(psm, loss=c("binder", "pear", "VI.lb")[3], maxSize=0, batchSiz
   if ( maxSize < 0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
   if ( maxScans < 0 ) stop("'maxScans' may not be negative.")
-  if ( batchSize < 0 ) stop("'batchSize' may not be negative.")
+  if ( batchSize <= 0 ) stop("'batchSize' may be strictly positive.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
   y <- .Call(.minimize_by_salso, nrow(psm), psm, lossCode, maxSize, maxScans, batchSize, probExplorationProbAtZero, probExplorationShape, probExplorationRate, seconds, parallel, seed)
   names(y) <- c("estimate","loss","expectedLoss","nScans","probExploration","nPermutations","batchSize","curtailed","subsetSizes")
