@@ -90,7 +90,7 @@ salso <- function(psm, loss=c("binder", "pear", "VI.lb")[3], maxSize=0, batchSiz
   if ( proportionSingletons >= 0.5 ) {
     warning(sprintf("%2.0f%% of the subsets are singletons.  For the sake of interpretability, consider using the 'maxSize' argument.",100*proportionSingletons))
   }
-  if ( y$curtailed ) {
+  if ( y$curtailed && ( seconds > 0 ) ) {
     warning("The search was curtailed since the time threshold was reached.  Consider increasing 'seconds' or lowering 'batchSize'.")
   }
   y
