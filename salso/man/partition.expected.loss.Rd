@@ -5,11 +5,13 @@
 \alias{binder}
 \alias{pear}
 \alias{VI.lb}
+\alias{VI}
 \title{Compute the Expectation of a Partition Loss}
 \usage{
 partition.expected.loss(
   partitions,
-  psm,
+  psm = NULL,
+  draws = NULL,
   loss = c("binder", "pear", "VI.lb")[3]
 )
 
@@ -18,6 +20,8 @@ binder(partitions, psm)
 pear(partitions, psm)
 
 VI.lb(partitions, psm)
+
+VI(partitions, draws)
 }
 \arguments{
 \item{partitions}{An integer matrix of cluster labels with \eqn{n} columns,

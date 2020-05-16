@@ -39,7 +39,7 @@
 #' all.equal(partition.loss(p1, p2, "pear"), 1 - arandi(p1, p2))
 #' all.equal(partition.loss(p1, p2, "VI.lb"), vi.dist(p1, p2))
 #'
-partition.loss <- function(partition1, partition2, loss=c("binder", "pear", "VI.lb")[3]) {
+partition.loss <- function(partition1, partition2, loss=c("binder", "pear", "VI")[3]) {
   expected.loss(partition1, adjacency.matrix(partition2), lossCode(loss))
 }
 
@@ -58,5 +58,5 @@ arandi <- function(partition1, partition2) {
 #' @export
 #' @rdname partition.loss
 vi.dist <- function(partition1, partition2) {
-  partition.loss(partition1, partition2, "VI.lb")
+  VI(partition1, partition2)
 }

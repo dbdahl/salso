@@ -1,4 +1,4 @@
-lossMapping <- c("binder" = 0L, "pear" = 1L, "VI.lb" = 2L)
+lossMapping <- c("binder" = 0L, "pear" = 1L, "VI.lb" = 2L, "VI" = 3L)
 
 lossCode <- function(loss) {
   if ( ( length(loss) != 1 ) || ! ( loss %in% names(lossMapping) ) ) {

@@ -23,18 +23,21 @@ SEXP psm(SEXP partitions_sexp, SEXP parallel_sexp) {
   return counts;
 }
 
-SEXP expected_loss(SEXP partitions_sexp, SEXP psm_sexp, SEXP loss_sexp) {
+SEXP expected_loss(SEXP partitions_sexp, SEXP psm_sexp, SEXP draws_sexp, SEXP loss_sexp) {
   int n_partitions = Rf_nrows(partitions_sexp);
   int n_items = Rf_ncols(partitions_sexp);
   partitions_sexp = PROTECT(Rf_coerceVector(partitions_sexp, INTSXP));
   int *partitions = INTEGER(partitions_sexp);
   psm_sexp = PROTECT(Rf_coerceVector(psm_sexp, REALSXP));
   double *psm = REAL(psm_sexp);
+  int n_draws = Rf_nrows(draws_sexp);
+  draws_sexp = PROTECT(Rf_coerceVector(draws_sexp, INTSXP));
+  int *draws = INTEGER(draws_sexp);
   SEXP results_sexp = PROTECT(Rf_allocVector(REALSXP, n_partitions));
   double *results = REAL(results_sexp);
   int loss = Rf_asInteger(loss_sexp);
-  dahl_salso__expected_loss(n_partitions, n_items, partitions, psm, loss, results);
-  UNPROTECT(3);
+  dahl_salso__expected_loss(n_partitions, n_items, partitions, psm, n_draws, draws, loss, results);
+  UNPROTECT(4);
   return results_sexp;
 }
 
@@ -117,7 +120,7 @@ SEXP minimize_by_salso(SEXP n_items_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP ma
 // Standard R package stuff
 static const R_CallMethodDef CallEntries[] = {
   {".psm", (DL_FUNC) &psm, 2},
-  {".expected_loss", (DL_FUNC) &expected_loss, 3},
+  {".expected_loss", (DL_FUNC) &expected_loss, 4},
   {".bell", (DL_FUNC) &bell, 1},
   {".lbell", (DL_FUNC) &lbell, 1},
   {".enumerate_partitions", (DL_FUNC) &enumerate_partitions, 1},

@@ -7,7 +7,7 @@
 \alias{vi.dist}
 \title{Compute a Partition Loss}
 \usage{
-partition.loss(partition1, partition2, loss = c("binder", "pear", "VI.lb")[3])
+partition.loss(partition1, partition2, loss = c("binder", "pear", "VI")[3])
 
 randi(partition1, partition2)
 

@@ -101,39 +101,63 @@
 #' all.equal(partition.expected.loss(partitions, probs, "pear"), 1 - pear(partitions, probs))
 #' all.equal(partition.expected.loss(partitions, probs, "VI.lb"),   VI.lb(partitions, probs))
 #'
-partition.expected.loss <- function(partitions, psm, loss=c("binder", "pear", "VI.lb")[3]) {
-  expected.loss(partitions, psm, lossCode(loss))
+partition.expected.loss <- function(partitions, psm=NULL, draws=NULL, loss=c("binder", "pear", "VI.lb")[3]) {
+  expected.loss(partitions, psm, draws, lossCode(loss))
 }
 
 #' @export
 #' @rdname partition.expected.loss
 binder <- function(partitions, psm) {
-  expected.loss(partitions, psm, lossCode("binder"))
+  expected.loss(partitions, psm, NULL, lossCode("binder"))
 }
 
 #' @export
 #' @rdname partition.expected.loss
 pear <- function(partitions, psm) {
-  1-expected.loss(partitions, psm, lossCode("pear"))
+  1-expected.loss(partitions, psm, NULL, lossCode("pear"))
 }
 
 #' @export
 #' @rdname partition.expected.loss
 VI.lb <- function(partitions, psm) {
-  expected.loss(partitions, psm, lossCode("VI.lb"))
+  expected.loss(partitions, psm, NULL, lossCode("VI.lb"))
+}
+
+#' @export
+#' @rdname partition.expected.loss
+VI <- function(partitions, draws) {
+  expected.loss(partitions, NULL, draws, lossCode("VI"))
 }
 
 #' @useDynLib salso .expected_loss
 #'
-expected.loss <- function(partitions, psm, lossCode) {
-  if ( ! ( isSymmetric(psm) && all(0 <= psm) && all(psm <= 1) && all(diag(psm)==1) ) ) {
-    stop("'psm' should be symmetric with diagonal elements equal to 1 and off-diagonal elements in [0, 1].")
+expected.loss <- function(partitions, psm, draws, lossCode) {
+  if ( is.null(psm) && is.null(draws) ) {
+    stop("Depending on the loss function, either 'psm' or 'draws' must be supplied.")
   }
   if ( ! is.matrix(partitions) ) {
     dim(partitions) <- c(1,length(partitions))
   }
-  if ( ncol(partitions) != nrow(psm) ) {
-    stop("The length of 'partitions' is not equal to the number of rows of 'psm'.")
+  if ( ! is.null(draws) ) {
+    if ( ! is.matrix(draws) ) {
+      dim(draws) <- c(1,length(draws))
+    }
+    if ( ncol(draws) != ncol(partitions) ) {
+      stop("The number of items (i.e., number of columns) in 'partitions' and 'draws' are not the same.")
+    }
   }
-  .Call(.expected_loss, partitions, psm, lossCode)
+  if ( lossCode %in% sapply(c("VI.lb","pear","binder"),lossCode) ) {
+    if ( is.null(psm) ) psm <- psm(draws)
+    else {
+      if ( ! ( isSymmetric(psm) && all(0 <= psm) && all(psm <= 1) && all(diag(psm)==1) ) ) {
+        stop("'psm' should be symmetric with diagonal elements equal to 1 and off-diagonal elements in [0, 1].")
+      }
+      if ( ncol(partitions) != nrow(psm) ) {
+        stop("The number of items (i.e., number of columns) in 'partitions' is not equal to the number of rows of 'psm'.")
+      }
+    }
+  } else if ( lossCode %in% sapply(c("VI"),lossCode) ) {
+    if ( is.null(draws) ) stop("For this loss, 'draws' must be supplied.")
+  } else stop("Unrecognized loss.")
+  .Call(.expected_loss, partitions, psm, draws, lossCode)
 }
