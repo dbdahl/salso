@@ -13,8 +13,8 @@ enumerate.permutations(nItems)
 A matrix of integers, where each row is a permutation.
 }
 \description{
-This function produces a matrix whose rows provide all possible permutations of
-the set of integers \code{\{0, 1, ..., n-1\}}.
+This function produces a matrix whose rows provide all possible permutations
+of the set of integers \code{\{0, 1, ..., n-1\}}.
 }
 \examples{
 enumerate.permutations(5)

@@ -1,62 +1,201 @@
-#' Compute a Partition Loss
+#' Compute Partition Loss or the Expectation of Partition Loss
 #'
-#' Given partitions \eqn{\pi*} and \eqn{\pi}, \code{\link{partition.loss}}
-#' computes the loss when using \eqn{\pi*} to estimate \eqn{\pi}, based on one
-#' of three partition losses. Smaller loss values indicate higher concordance
-#' between partitions. The implementation currently supports the computation of
-#' the following partition loss functions: "binder", "pear", and "VI.lb". For
-#' details on these criteria, see \code{\link{partition.expected.loss}}.
+#' Given two partitions \eqn{\pi*} and \eqn{\pi}, these functions compute the
+#' specified loss when using \eqn{\pi*} to estimate \eqn{\pi}.  Smaller loss
+#' values indicate higher concordance between partitions.  These functions also
+#' compute a Monte Carlo estimate of the expectation for the specified loss
+#' based on samples or a pairwise similarity matrix. The implementation
+#' currently supports the computation of the following criteria: "binder",
+#' "pear", "VI.lb", and "VI".
 #'
-#' The functions \code{\link{randi}}, \code{\link{arandi}}, and
-#' \code{\link{vi.dist}} are convenience functions. Note that:
+#' The partition estimation criteria can be specified using the \code{loss}
+#' argument: \describe{
+#'
+#' \item{\code{"binder"}}{Binder loss. Whereas high values of the Rand index
+#' \eqn{R} between \eqn{\pi*} and \eqn{\pi} correspond to high concordance
+#' between these partitions, the Binder loss \eqn{L} for a partition \eqn{\pi*}
+#' in estimating \eqn{\pi} is \eqn{L = n*(n-1)*(1-R)/2}. See also Dahl (2006),
+#' Lau and Green (2007), Dahl and Newton (2007).}
+#'
+#' \item{\code{"pear"}}{PEAR loss. Computes with the first-order approximation
+#' of the expectation of the loss associated with the adjusted Rand index
+#' (Hubert and Arabie, 1985).  Whereas high values of the adjusted Rand index
+#' between \eqn{\pi*} and \eqn{\pi} correspond to high concordance between these
+#' partitions, the loss associated with the adjusted Rand index for a partition
+#' \eqn{\pi*} in estimating \eqn{\pi} is one minus the adjusted Rand index
+#' between these partitions.  The adjusted Rand index involves a ratio and the
+#' first-order approximation of the expectation is based on \eqn{E(X/Y) \approx
+#' E(X)/E(Y)}.  See Fritsch and Ickstadt (2009).}
+#'
+#' \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information.  Computes
+#' with the lower bound of the expectation of the variation of information loss,
+#' where the lower bound is obtained from Jensen's inequality.  See Wade and
+#' Ghahramani (2018).}
+#'
+#' \item{\code{"VI"}}{Variation of Information. Computes with the variation of
+#' information loss. See Meilă (2007), Wade and Ghahramani (2018), and Rastelli
+#' and Friel (2018).}
+#'
+#' }
+#'
+#' The functions \code{\link{randi}} and \code{\link{arandi}} are convenience
+#' functions. Note that:
 #' \itemize{
-#' \item \code{partition.loss(p1, p2, "binder") = choose(length(p1), 2) * ( 1 - randi(p1, p2) )}
-#' \item \code{partition.loss(p1, p2, "pear") = 1 - arandi(p1, p2)}
-#' \item \code{partition.loss(p1, p2, "VI.lb") = vi.dist(p1, p2)}
+#' \item \code{binder(p1, p2) = choose(length(p1), 2) * ( 1 - randi(p1, p2) )}
+#' \item \code{pear(p1, p2) = 1 - arandi(p1, p2)}
 #' }
 #'
 #' @param partition1 An integer vector of cluster labels for \eqn{n} items. Two
 #'   items are in the same subset (i.e., cluster) if their labels are equal.
 #' @param partition2 An integer vector of cluster labels having the same length
 #'   as \code{partition1}.
-#' @param loss One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-#'   \code{\link{partition.expected.loss}} for details on these loss functions.
+#' @param partitions An integer matrix of cluster labels with \eqn{n} columns,
+#'   where each row is a partition of \eqn{n} items given as cluster labels. Two
+#'   items are in the same subset (i.e., cluster) if their labels are equal.
+#' @param psm A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
+#'   matrix whose \eqn{(i,j)} element gives the (estimated) probability that
+#'   items \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a
+#'   partition (i.e., clustering).
+#' @param draws A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
+#'   represents a clustering of \eqn{n} items using cluster labels. For
+#'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
+#'   \code{x[b,i] == x[b,j]}.
+#' @param loss One of \code{"binder"}, \code{"pear"}, \code{"VI.lb"}, or
+#'   \code{"VI"}.
 #'
-#' @return A numeric scalar giving the loss.
+#' @return A numeric vector.
 #'
-#' @seealso \code{\link{partition.expected.loss}}
+#' @seealso \code{\link{psm}}, \code{\link{salso}}, \code{\link{dlso}}
+#
+#' @references
+#'
+#' W. M. Rand (1971), Objective Criteria for the Evaluation of Clustering
+#' Methods. \emph{Journal of the American Statistical Association}, \bold{66}:
+#' 846–850.
+#'
+#' D. A. Binder (1978), Bayesian cluster analysis, \emph{Biometrika} \bold{65},
+#' 31-38.
+#'
+#' L. Hubert and P. Arabie (1985), Comparing Partitions. \emph{Journal of
+#' Classification}, \bold{2}, 193–218.
+#'
+#' D. B. Dahl (2006), Model-Based Clustering for Expression Data via a Dirichlet
+#' Process Mixture Model, in \emph{Bayesian Inference for Gene Expression and
+#' Proteomics}, Kim-Anh Do, Peter Müller, Marina Vannucci (Eds.), Cambridge
+#' University Press.
+#'
+#' J. W. Lau and P. J. Green (2007), Bayesian model based clustering procedures,
+#' \emph{Journal of Computational and Graphical Statistics} \bold{16}, 526-558.
+#'
+#' M. Meilă (2007), Comparing Clusterings - an Information Based Distance.
+#' \emph{Journal of Multivariate Analysis}, \bold{98}: 873–895.
+#'
+#' D. B. Dahl and M. A. Newton (2007), Multiple Hypothesis Testing by Clustering
+#' Treatment Effects, \emph{Journal of the American Statistical Association},
+#' \bold{102}, 517-526.
+#'
+#' A. Fritsch and K. Ickstadt (2009), An improved criterion for clustering based
+#' on the posterior similarity matrix, \emph{Bayesian Analysis}, \bold{4},
+#' 367-391.
+#'
+#' S. Wade and Z. Ghahramani (2018), Bayesian cluster analysis: Point estimation
+#' and credible balls. \emph{Bayesian Analysis}, \bold{13:2}, 559-626.
+#'
+#' R. Rastelli and N. Friel (2018), Optimal Bayesian estimators for latent
+#' variable cluster models. \emph{Statistics and Computing}, \bold{28},
+#' 1169-1186.
 #'
 #' @export
 #' @examples
 #' p1 <- iris.clusterings[1,]
 #' p2 <- iris.clusterings[2,]
 #'
-#' partition.loss(p1, p2, loss="binder")
-#' partition.loss(p1, p2, loss="pear")
-#' partition.loss(p1, p2, loss="VI.lb")
+#' all.equal(binder(p1, psm(p2)), choose(length(p1), 2) * ( 1 - randi(p1, p2) ))
+#' all.equal(pear(p1, psm(p2)), 1 - arandi(p1, p2))
 #'
-#' all.equal(partition.loss(p1, p2, "binder"), choose(length(p1), 2) * ( 1 - randi(p1, p2) ))
-#' all.equal(partition.loss(p1, p2, "pear"), 1 - arandi(p1, p2))
-#' all.equal(partition.loss(p1, p2, "VI.lb"), vi.dist(p1, p2))
+#' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
+#' probs <- psm(iris.clusterings, parallel=FALSE)
+#' partitions <- iris.clusterings[1:5,]
 #'
-partition.loss <- function(partition1, partition2, loss=c("binder", "pear", "VI")[3]) {
-  expected.loss(partition1, adjacency.matrix(partition2), lossCode(loss))
+#' partition.loss(partitions, probs, loss="binder")
+#' partition.loss(partitions, probs, loss="pear")
+#' partition.loss(partitions, probs, loss="VI.lb")
+#' partition.loss(partitions, draws=partitions, loss="VI")
+#'
+#' all.equal(partition.loss(partitions, probs, loss="binder"), binder(partitions, probs))
+#' all.equal(partition.loss(partitions, probs, loss="pear"), 1 - pear(partitions, probs))
+#' all.equal(partition.loss(partitions, probs, loss="VI.lb"), VI.lb(partitions, probs))
+#' all.equal(partition.loss(partitions, draws=partitions, loss="VI"), VI(partitions, partitions))
+#'
+partition.loss <- function(partitions, psm=NULL, draws=NULL, loss=c("binder", "pear", "VI.lb", "VI")[3]) {
+  expected.loss(partitions, psm, draws, lossCode(loss))
+}
+
+#' @export
+#' @rdname partition.loss
+binder <- function(partitions, psm) {
+  expected.loss(partitions, psm, NULL, lossCode("binder"))
 }
 
 #' @export
 #' @rdname partition.loss
 randi <- function(partition1, partition2) {
-  1 - ( partition.loss(partition1, partition2, "binder") / choose(length(partition1),2) )
+  1 - ( binder(partition1, psm(partition2)) / choose(length(partition1),2) )
+}
+
+#' @export
+#' @rdname partition.loss
+pear <- function(partitions, psm) {
+  1 - expected.loss(partitions, psm, NULL, lossCode("pear"))
 }
 
 #' @export
 #' @rdname partition.loss
 arandi <- function(partition1, partition2) {
-  1 - partition.loss(partition1, partition2, "pear")
+  1 - pear(partition1, psm(partition2))
 }
 
 #' @export
 #' @rdname partition.loss
-vi.dist <- function(partition1, partition2) {
-  VI(partition1, partition2)
+VI.lb <- function(partitions, psm) {
+  expected.loss(partitions, psm, NULL, lossCode("VI.lb"))
+}
+
+#' @export
+#' @rdname partition.loss
+VI <- function(partitions, draws) {
+  expected.loss(partitions, NULL, draws, lossCode("VI"))
+}
+
+#' @useDynLib salso .expected_loss
+#'
+expected.loss <- function(partitions, psm, draws, lossCode) {
+  if ( is.null(psm) && is.null(draws) ) {
+    stop("Depending on the loss function, either 'psm' or 'draws' must be supplied.")
+  }
+  if ( ! is.matrix(partitions) ) {
+    dim(partitions) <- c(1,length(partitions))
+  }
+  if ( ! is.null(draws) ) {
+    if ( ! is.matrix(draws) ) {
+      dim(draws) <- c(1,length(draws))
+    }
+    if ( ncol(draws) != ncol(partitions) ) {
+      stop("The number of items (i.e., number of columns) in 'partitions' and 'draws' are not the same.")
+    }
+  }
+  if ( lossCode %in% sapply(c("VI.lb","pear","binder"),lossCode) ) {
+    if ( is.null(psm) ) psm <- psm(draws)
+    else {
+      if ( ! ( isSymmetric(psm) && all(0 <= psm) && all(psm <= 1) && all(diag(psm)==1) ) ) {
+        stop("'psm' should be symmetric with diagonal elements equal to 1 and off-diagonal elements in [0, 1].")
+      }
+      if ( ncol(partitions) != nrow(psm) ) {
+        stop("The number of items (i.e., number of columns) in 'partitions' is not equal to the number of rows of 'psm'.")
+      }
+    }
+  } else if ( lossCode %in% sapply(c("VI"),lossCode) ) {
+    if ( is.null(draws) ) stop("For this loss, 'draws' must be supplied.")
+  } else stop("Unrecognized loss.")
+  .Call(.expected_loss, partitions, psm, draws, lossCode)
 }

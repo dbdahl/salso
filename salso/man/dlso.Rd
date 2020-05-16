@@ -4,7 +4,12 @@
 \alias{dlso}
 \title{Draws-Based Latent Structure Optimization}
 \usage{
-dlso(psm, loss = c("binder", "pear", "VI.lb")[3], draws, parallel = FALSE)
+dlso(
+  psm = NULL,
+  draws = NULL,
+  loss = c("binder", "pear", "VI.lb", "VI")[3],
+  parallel = FALSE
+)
 }
 \arguments{
 \item{psm}{A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
@@ -13,13 +18,13 @@ items \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a
 partition (i.e., clustering).  If not provided, this argument is computed
 from the \code{draws} argument.}
 
-\item{loss}{One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-\code{\link{partition.expected.loss}} for details on these loss functions.}
-
 \item{draws}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
 represents a clustering of \eqn{n} items using cluster labels. For
 clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
 \code{x[b,i] == x[b,j]}.}
+
+\item{loss}{One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
+\code{\link{partition.loss}} for details on these loss functions.}
 
 \item{parallel}{Should the search use all CPU cores?  (Currently ignored
 since parallelization is not implemented.)}
@@ -39,15 +44,16 @@ clustering method (Dahl 2006). The method seeks to minimize an estimation
 criterion by picking the minimizer among the partitions supplied by the
 \code{draws} argument. The implementation currently supports the minimization
 of three partition estimation criteria: "binder", "pear", and "VI.lb". For
-details on these criteria, see \code{\link{partition.expected.loss}}.
+details on these criteria, see \code{\link{partition.loss}}.
 }
 \examples{
 dlso(draws=iris.clusterings, loss="binder")
 dlso(draws=iris.clusterings, loss="pear")
 dlso(draws=iris.clusterings, loss="VI.lb")
+dlso(draws=iris.clusterings, loss="VI")
 
 }
 \seealso{
-\code{\link{partition.expected.loss}}, \code{\link{psm}},
+\code{\link{partition.loss}}, \code{\link{psm}},
   \code{\link{confidence}}, \code{\link{salso}}
 }

@@ -4,8 +4,7 @@
 #' based a pairwise similarity matrix using the sequentially-allocated latent
 #' structure optimization (SALSO) method. The implementation currently supports
 #' the minimization of three partition estimation criteria: "binder", "pear",
-#' and "VI.lb". For details on these criteria, see
-#' \code{\link{partition.expected.loss}}.
+#' and "VI.lb". For details on these criteria, see \code{\link{partition.loss}}.
 #'
 #' The SALSO method was first presented at the workshop "Bayesian Nonparametric
 #' Inference: Dependence Structures and their Applications" in Oaxaca, Mexico on
@@ -17,7 +16,7 @@
 #'   items \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a
 #'   partition (i.e., clustering).
 #' @param loss One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-#'   \code{\link{partition.expected.loss}} for details on these loss functions.
+#'   \code{\link{partition.loss}} for details on these loss functions.
 #' @param maxSize The maximum number of subsets (i.e., clusters).  The
 #'   optimization is constrained to produce solutions whose number of subsets is
 #'   no more than the supplied value. If zero, the size is not constrained.
@@ -35,10 +34,10 @@
 #'   allocation. The actual number of scans may be less than \code{maxScans}
 #'   since the method stops if the result does not change between scans.
 #' @param probExplorationProbAtZero The probability of the point mass at zero
-#'   for the spike-and-slab distribution of the probability of exploration, i.e.,
-#'   the probability of picking the second best micro-optimization (instead of
-#'   the best).  This probability is randomly sampled for (and constant within)
-#'   each permutation.
+#'   for the spike-and-slab distribution of the probability of exploration,
+#'   i.e., the probability of picking the second best micro-optimization
+#'   (instead of the best).  This probability is randomly sampled for (and
+#'   constant within) each permutation.
 #' @param probExplorationShape The shape of the gamma distribution for the slab
 #'   in the spike-and-slab distribution of the probability of exploration.
 #' @param probExplorationRate The rate of the gamma distribution for the slab in
@@ -58,14 +57,14 @@
 #'   \item{curtailed}{A logical indicating whether the search was cut short
 #'   because the time exceeded the threshold.}}
 #'
-#' @seealso \code{\link{partition.expected.loss}}, \code{\link{psm}},
+#' @seealso \code{\link{partition.loss}}, \code{\link{psm}},
 #'   \code{\link{confidence}}, \code{\link{dlso}}
 #'
 #' @export
 #' @useDynLib salso .minimize_by_salso
 #'
 #' @examples
-#' # Use 'parallel=FALSE' per CRAN rules for examples but, in practice, omit this.
+#' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' salso(probs, parallel=FALSE)
 #'

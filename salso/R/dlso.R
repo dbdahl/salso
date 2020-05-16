@@ -7,7 +7,7 @@
 #' criterion by picking the minimizer among the partitions supplied by the
 #' \code{draws} argument. The implementation currently supports the minimization
 #' of three partition estimation criteria: "binder", "pear", and "VI.lb". For
-#' details on these criteria, see \code{\link{partition.expected.loss}}.
+#' details on these criteria, see \code{\link{partition.loss}}.
 #'
 #' @param psm A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
 #'   matrix whose \eqn{(i,j)} element gives the (estimated) probability that
@@ -15,7 +15,7 @@
 #'   partition (i.e., clustering).  If not provided, this argument is computed
 #'   from the \code{draws} argument.
 #' @param loss One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-#'   \code{\link{partition.expected.loss}} for details on these loss functions.
+#'   \code{\link{partition.loss}} for details on these loss functions.
 #' @param draws A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
 #'   represents a clustering of \eqn{n} items using cluster labels. For
 #'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
@@ -29,7 +29,7 @@
 #'   \item{expectedLoss}{A numeric vector of length one giving the expected
 #'   loss.} }
 #'
-#' @seealso \code{\link{partition.expected.loss}}, \code{\link{psm}},
+#' @seealso \code{\link{partition.loss}}, \code{\link{psm}},
 #'   \code{\link{confidence}}, \code{\link{salso}}
 #'
 #' @export
@@ -37,10 +37,11 @@
 #' dlso(draws=iris.clusterings, loss="binder")
 #' dlso(draws=iris.clusterings, loss="pear")
 #' dlso(draws=iris.clusterings, loss="VI.lb")
+#' dlso(draws=iris.clusterings, loss="VI")
 #'
-dlso <- function(psm, loss=c("binder", "pear", "VI.lb")[3], draws, parallel=FALSE) {
-  if ( missing(psm) ) psm <- salso::psm(draws)
-  expectedLoss <- partition.expected.loss(draws, psm, loss)
+dlso <- function(psm=NULL, draws=NULL, loss=c("binder", "pear", "VI.lb", "VI")[3], parallel=FALSE) {
+  if ( is.null(draws) ) stop("The 'draws' argument must be supplied.")
+  expectedLoss <- partition.loss(draws, psm, draws, loss)
   index <- which.min(expectedLoss)
   estimate <-  draws[index,]
   subsetSizes <- table(estimate)

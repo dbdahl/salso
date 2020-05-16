@@ -1,7 +1,7 @@
 #' Enumerate Permutations of Items
 #'
-#' This function produces a matrix whose rows provide all possible permutations of
-#' the set of integers \code{\{0, 1, ..., n-1\}}.
+#' This function produces a matrix whose rows provide all possible permutations
+#' of the set of integers \code{\{0, 1, ..., n-1\}}.
 #'
 #' @param nItems The size of the set \code{\{0, 1, ..., n-1\}}, i.e., \code{n}.
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/psm.R
 \name{psm}
 \alias{psm}
-\title{Compute the Pairwise Similarity Matrix}
+\title{Compute an Adjacency or Pairwise Similarity Matrix}
 \usage{
 psm(x, parallel = TRUE)
 }
@@ -15,25 +15,28 @@ clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
 \item{parallel}{Should the computation use all CPU cores?}
 }
 \value{
-A \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element
-  gives the estimated expected number of times that items \eqn{i} and
-  \eqn{j} are in the same subset (i.e., cluster or feature) based on the
-  frequencies from the supplied clusterings or feature allocations.
+A \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives
+  the relative frequency that that items \eqn{i} and \eqn{j} are in the same
+  subset (i.e., cluster).
 }
 \description{
-Based on the provided samples, this function computes the \eqn{n}-by-\eqn{n}
-matrix whose \eqn{(i,j)} element gives the (estimated) probability that items
-\eqn{i} and \eqn{j} are in the same subset (i.e., cluster).  This is the mean
-of the adjacency matrices of the provided samples.
+If only one sample is provided, this function computes an adjacency matrix,
+i.e., a binary matrix whose \eqn{(i,j)} element is one if and only if
+elements \eqn{i} and \eqn{j} in the partition have the same cluster label. If
+multiple samples are provided (as rows of the \code{x} matrix), this function
+computes the \eqn{n}-by-\eqn{n} matrix whose \eqn{(i,j)} element gives the
+relative frequency (i.e., estimated probability) that items \eqn{i} and
+\eqn{j} are in the same subset (i.e., cluster).  This is the mean of the
+adjacency matrices of the provided samples.
 }
 \examples{
+partition <- iris.clusterings[1,]
+psm(partition)
+
 dim(iris.clusterings)
-# Use 'parallel=FALSE' per CRAN rules for examples but, in practice, omit this.
+# For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 probs <- psm(iris.clusterings, parallel=FALSE)
 dim(probs)
 probs[1:6, 1:6]
 
-}
-\seealso{
-\code{\link{adjacency.matrix}}
 }

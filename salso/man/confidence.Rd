@@ -7,8 +7,8 @@
 confidence(estimate, psm)
 }
 \arguments{
-\item{estimate}{A vector of length \eqn{n}, where \eqn{i} and \eqn{j} are
-in the same subset (i.e., cluster) if and only if \code{estimate[i] ==
+\item{estimate}{A vector of length \eqn{n}, where \eqn{i} and \eqn{j} are in
+the same subset (i.e., cluster) if and only if \code{estimate[i] ==
 estimate[j]}.}
 
 \item{psm}{A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
@@ -31,7 +31,7 @@ This function computes the confidence values for \eqn{n} observations based
 on a clustering estimate and the pairwise similarity matrix.
 }
 \examples{
-# Use 'parallel=FALSE' per CRAN rules for examples but, in practice, omit this.
+# For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 probs <- psm(iris.clusterings, parallel=FALSE)
 est <- salso(probs, parallel=FALSE)$estimate
 conf <- confidence(est, probs)

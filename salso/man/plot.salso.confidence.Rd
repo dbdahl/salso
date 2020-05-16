@@ -15,8 +15,8 @@
 \arguments{
 \item{x}{An object returned by the \code{\link{confidence}} function.}
 
-\item{estimate}{A vector of length \eqn{n}, where \eqn{i} and \eqn{j} are
-in the same subset (i.e., cluster) if and only if \code{estimate[i] ==
+\item{estimate}{A vector of length \eqn{n}, where \eqn{i} and \eqn{j} are in
+the same subset (i.e., cluster) if and only if \code{estimate[i] ==
 estimate[j]}.'  If \code{NULL}, the \code{x$estimate} in used.}
 
 \item{data}{The data from which the distances were computed.}
@@ -35,7 +35,7 @@ best representative of a particular cluster. See \code{\link{confidence}} for
 further explanation.
 }
 \examples{
-# Use 'parallel=FALSE' per CRAN rules for examples but, in practice, omit this.
+# For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 probs <- psm(iris.clusterings, parallel=FALSE)
 est <- salso(probs, parallel=FALSE)$estimate
 conf <- confidence(est, probs)
@@ -44,7 +44,8 @@ plot(conf, data=iris)
 
 }
 \seealso{
-\code{\link{confidence}}, \code{\link{psm}}, \code{\link{dlso}}, \code{\link{salso}}
+\code{\link{confidence}}, \code{\link{psm}}, \code{\link{dlso}},
+  \code{\link{salso}}
 }
 \author{
 David B. Dahl \email{dahl@stat.byu.edu}

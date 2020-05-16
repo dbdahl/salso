@@ -6,8 +6,8 @@
 #' further explanation.
 #'
 #' @param x An object returned by the \code{\link{confidence}} function.
-#' @param estimate A vector of length \eqn{n}, where \eqn{i} and \eqn{j} are
-#'   in the same subset (i.e., cluster) if and only if \code{estimate[i] ==
+#' @param estimate A vector of length \eqn{n}, where \eqn{i} and \eqn{j} are in
+#'   the same subset (i.e., cluster) if and only if \code{estimate[i] ==
 #'   estimate[j]}.'  If \code{NULL}, the \code{x$estimate} in used.
 #' @param data The data from which the distances were computed.
 #' @param showLabels Should the names of items be shown in the plot?
@@ -18,14 +18,15 @@
 #' @author David B. Dahl \email{dahl@stat.byu.edu}
 #'
 #' @examples
-#' # Use 'parallel=FALSE' per CRAN rules for examples but, in practice, omit this.
+#' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' est <- salso(probs, parallel=FALSE)$estimate
 #' conf <- confidence(est, probs)
 #' plot(conf)
 #' plot(conf, data=iris)
 #'
-#' @seealso \code{\link{confidence}}, \code{\link{psm}}, \code{\link{dlso}}, \code{\link{salso}}
+#' @seealso \code{\link{confidence}}, \code{\link{psm}}, \code{\link{dlso}},
+#'   \code{\link{salso}}
 #'
 #' @importFrom grDevices heat.colors rainbow topo.colors
 #' @importFrom graphics abline axis box image pairs par points polygon segments
