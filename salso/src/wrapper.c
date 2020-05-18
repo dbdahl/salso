@@ -66,16 +66,15 @@ SEXP enumerate_partitions(SEXP n_items_sexp) {
   return partitions;
 }
 
-SEXP minimize_by_enumeration(SEXP n_items_sexp, SEXP psm_sexp, SEXP loss_sexp) {
-  n_items_sexp = PROTECT(Rf_coerceVector(n_items_sexp, INTSXP));
-  int n_items = Rf_asInteger(n_items_sexp);
+SEXP minimize_by_enumeration(SEXP psm_sexp, SEXP loss_sexp) {
+  int n_items = Rf_ncols(psm_sexp);
   psm_sexp = PROTECT(Rf_coerceVector(psm_sexp, REALSXP));
   double *psm = REAL(psm_sexp);
   int loss = Rf_asInteger(loss_sexp);
   SEXP results_labels_sexp = PROTECT(Rf_allocVector(INTSXP, n_items));
   int *results_labels = INTEGER(results_labels_sexp);
   dahl_salso__minimize_by_enumeration(n_items, psm, loss, results_labels);
-  UNPROTECT(3);
+  UNPROTECT(2);
   return results_labels_sexp;
 }
 
@@ -134,7 +133,7 @@ static const R_CallMethodDef CallEntries[] = {
   {".bell", (DL_FUNC) &bell, 1},
   {".lbell", (DL_FUNC) &lbell, 1},
   {".enumerate_partitions", (DL_FUNC) &enumerate_partitions, 1},
-  {".minimize_by_enumeration", (DL_FUNC) &minimize_by_enumeration, 3},
+  {".minimize_by_enumeration", (DL_FUNC) &minimize_by_enumeration, 2},
   {".minimize_by_salso", (DL_FUNC) &minimize_by_salso, 12},
   {NULL, NULL, 0}
 };

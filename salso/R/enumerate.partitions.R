@@ -17,7 +17,7 @@
 #'
 enumerate.partitions <- function(nItems) {
   if ( nItems > 13 ) stop("Long vectors are not supported; 'nItems' may be at most 13.")
-  y <- .Call(.enumerate_partitions, nItems)
+  y <- .Call(.enumerate_partitions, nItems) + 1L
   dim(y) <- c(length(y)/nItems, nItems)
   y
 }

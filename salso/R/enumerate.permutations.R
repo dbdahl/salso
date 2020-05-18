@@ -1,9 +1,9 @@
 #' Enumerate Permutations of Items
 #'
 #' This function produces a matrix whose rows provide all possible permutations
-#' of the set of integers \code{\{0, 1, ..., n-1\}}.
+#' of the set of integers \code{\{1, 2, ..., n\}}.
 #'
-#' @param nItems The size of the set \code{\{0, 1, ..., n-1\}}, i.e., \code{n}.
+#' @param nItems The size of the set \code{\{1, 2, ..., n\}}, i.e., \code{n}.
 #'
 #' @return A matrix of integers, where each row is a permutation.
 #'
@@ -24,6 +24,6 @@ enumerate.permutations <- function(nItems) {
       result
     }
   }
-  engine(as.integer(0:(nItems-1L)))
+  engine(as.integer(1:nItems))
 }
 
