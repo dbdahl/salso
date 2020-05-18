@@ -6,9 +6,9 @@
 void dahl_salso__expected_loss(int32_t n_partitions,
                                int32_t n_items,
                                int32_t *partition_ptr,
-                               double *psm_ptr,
                                int32_t n_draws,
                                int32_t *draws_ptr,
+                               double *psm_ptr,
                                int32_t loss,
                                double *results_ptr);
 
@@ -18,6 +18,8 @@ void dahl_salso__minimize_by_enumeration(int32_t n_items,
                                          int32_t *results_label_ptr);
 
 void dahl_salso__minimize_by_salso(int32_t n_items,
+                                   int32_t n_draws,
+                                   int32_t *draws_ptr,
                                    double *psm_ptr,
                                    int32_t loss,
                                    int32_t max_size,

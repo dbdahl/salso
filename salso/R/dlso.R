@@ -1,27 +1,35 @@
 #' Draws-Based Latent Structure Optimization
 #'
 #' This function provides a partition to summarize a partition distribution
-#' based a pairwise similarity matrix using the draws latent structure
-#' optimization (DLSO) method, which is also known as the least-squares
-#' clustering method (Dahl 2006). The method seeks to minimize an estimation
-#' criterion by picking the minimizer among the partitions supplied by the
-#' \code{draws} argument. The implementation currently supports the minimization
-#' of three partition estimation criteria: "binder", "pear", and "VI.lb". For
-#' details on these criteria, see \code{\link{partition.loss}}.
+#' using the draws latent structure optimization (DLSO) method, which is also
+#' known as the least-squares clustering method (Dahl 2006). The method seeks to
+#' minimize an estimation criterion by picking the minimizer among the
+#' partitions supplied by the \code{draws} argument. The implementation
+#' currently supports the minimization of the following partition estimation
+#' criteria: "binder", "pear", "VI.lb", and "VI". For details on these criteria,
+#' see \code{\link{partition.loss}}.
 #'
-#' @param psm A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
-#'   matrix whose \eqn{(i,j)} element gives the (estimated) probability that
-#'   items \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a
-#'   partition (i.e., clustering).  If not provided, this argument is computed
-#'   from the \code{draws} argument.
-#' @param loss One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-#'   \code{\link{partition.loss}} for details on these loss functions.
-#' @param draws A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
+#' This function provides a partition to summarize a partition distribution
+#' using the sequentially-allocated latent structure optimization (SALSO)
+#' method. The implementation currently supports the minimization of the
+#' following partition estimation criteria: "binder", "pear", "VI.lb", and "VI".
+#' For details on these criteria, see \code{\link{partition.loss}}.
+#'
+#' @param candidates A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
 #'   represents a clustering of \eqn{n} items using cluster labels. For
 #'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
-#'   \code{x[b,i] == x[b,j]}.
-#' @param parallel Should the search use all CPU cores?  (Currently ignored
-#'   since parallelization is not implemented.)
+#'   \code{x[b,i] == x[b,j]}.  One of the rows will be used as the paritition
+#'   estimate.
+#' @param loss One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
+#'   \code{\link{partition.loss}} for details on these loss functions.
+#' @param x Either: 1. A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B}
+#'   rows represents a clustering of \eqn{n} items using cluster labels. (For
+#'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
+#'   \code{x[b,i] == x[b,j]}.), or 2. A pairwise similarity matrix, i.e.,
+#'   \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives the
+#'   (estimated) probability that items \eqn{i} and \eqn{j} are in the same
+#'   subset (i.e., cluster) of a partition (i.e., clustering).  If \code{NULL},
+#'   this argument is set equal to \code{candidates}.
 #'
 #' @return A list of the following elements: \describe{ \item{estimate}{An
 #'   integer vector giving a partition encoded using cluster labels.}
@@ -34,16 +42,19 @@
 #'
 #' @export
 #' @examples
-#' dlso(draws=iris.clusterings, loss="binder")
-#' dlso(draws=iris.clusterings, loss="pear")
-#' dlso(draws=iris.clusterings, loss="VI.lb")
-#' dlso(draws=iris.clusterings, loss="VI")
+#' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
+#' probs <- psm(iris.clusterings, parallel=FALSE)
+#' dlso(iris.clusterings, loss="binder", x=probs)
+#' dlso(iris.clusterings, loss="pear", x=probs)
+#' dlso(iris.clusterings, loss="VI.lb")  # The psm will be computed if not provided.
+#' dlso(iris.clusterings, loss="VI")
+#' dlso(iris.clusterings[1:10,], loss="VI", x=iris.clusterings)  # Candidates can be constrained.
 #'
-dlso <- function(psm=NULL, draws=NULL, loss=c("binder", "pear", "VI.lb", "VI")[3], parallel=FALSE) {
-  if ( is.null(draws) ) stop("The 'draws' argument must be supplied.")
-  expectedLoss <- partition.loss(draws, psm, draws, loss)
+dlso <- function(candidates, loss=c("binder", "pear", "VI.lb", "VI")[3], x=NULL) {
+  if ( is.null(x) ) x <- candidates
+  expectedLoss <- partition.loss(candidates, x, loss)
   index <- which.min(expectedLoss)
-  estimate <-  draws[index,]
+  estimate <-  candidates[index,]
   subsetSizes <- table(estimate)
   list(estimate=estimate, loss=loss, expectedLoss=expectedLoss[index], subsetSizes=subsetSizes)
 }

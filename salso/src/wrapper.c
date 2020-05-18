@@ -23,20 +23,20 @@ SEXP psm(SEXP partitions_sexp, SEXP parallel_sexp) {
   return counts;
 }
 
-SEXP expected_loss(SEXP partitions_sexp, SEXP psm_sexp, SEXP draws_sexp, SEXP loss_sexp) {
+SEXP expected_loss(SEXP partitions_sexp, SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp) {
   int n_partitions = Rf_nrows(partitions_sexp);
   int n_items = Rf_ncols(partitions_sexp);
   partitions_sexp = PROTECT(Rf_coerceVector(partitions_sexp, INTSXP));
   int *partitions = INTEGER(partitions_sexp);
-  psm_sexp = PROTECT(Rf_coerceVector(psm_sexp, REALSXP));
-  double *psm = REAL(psm_sexp);
   int n_draws = Rf_nrows(draws_sexp);
   draws_sexp = PROTECT(Rf_coerceVector(draws_sexp, INTSXP));
   int *draws = INTEGER(draws_sexp);
+  psm_sexp = PROTECT(Rf_coerceVector(psm_sexp, REALSXP));
+  double *psm = REAL(psm_sexp);
   SEXP results_sexp = PROTECT(Rf_allocVector(REALSXP, n_partitions));
   double *results = REAL(results_sexp);
   int loss = Rf_asInteger(loss_sexp);
-  dahl_salso__expected_loss(n_partitions, n_items, partitions, psm, n_draws, draws, loss, results);
+  dahl_salso__expected_loss(n_partitions, n_items, partitions, n_draws, draws, psm, loss, results);
   UNPROTECT(4);
   return results_sexp;
 }
@@ -79,8 +79,18 @@ SEXP minimize_by_enumeration(SEXP n_items_sexp, SEXP psm_sexp, SEXP loss_sexp) {
   return results_labels_sexp;
 }
 
-SEXP minimize_by_salso(SEXP n_items_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_size_sexp, SEXP max_scans_sexp, SEXP batch_size_sexp, SEXP probability_of_exploration_probability_at_zero_sexp, SEXP probability_of_exploration_shape_sexp, SEXP probability_of_exploration_rate_sexp, SEXP seconds_sexp, SEXP parallel_sexp, SEXP seed_sexp) {
-  int n_items = Rf_asInteger(n_items_sexp);
+SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_size_sexp, SEXP max_scans_sexp, SEXP batch_size_sexp, SEXP probability_of_exploration_probability_at_zero_sexp, SEXP probability_of_exploration_shape_sexp, SEXP probability_of_exploration_rate_sexp, SEXP seconds_sexp, SEXP parallel_sexp, SEXP seed_sexp) {
+  int n_items;
+  int n_draws;
+  if ( ! Rf_isNull(draws_sexp) ) {
+    n_items = Rf_ncols(draws_sexp);
+    n_draws = Rf_nrows(draws_sexp);
+  } else {
+    n_items = Rf_ncols(psm_sexp);
+    n_draws = 0;
+  }
+  draws_sexp = PROTECT(Rf_coerceVector(draws_sexp, INTSXP));
+  int *draws = INTEGER(draws_sexp);
   psm_sexp = PROTECT(Rf_coerceVector(psm_sexp, REALSXP));
   double *psm = REAL(psm_sexp);
   int loss = Rf_asInteger(loss_sexp);
@@ -105,7 +115,7 @@ SEXP minimize_by_salso(SEXP n_items_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP ma
   int *seed = INTEGER(seed_sexp);
   SEXP results_curtailed_sexp = PROTECT(Rf_allocVector(LGLSXP,1));
   int *results_curtailed = LOGICAL(results_curtailed_sexp);
-  dahl_salso__minimize_by_salso(n_items, psm, loss, max_size, max_scans, batch_size, probability_of_exploration_probability_at_zero, probability_of_exploration_shape, probability_of_exploration_rate, seconds, parallel, results_labels, results_expected_loss, results_n_scans, results_probability_of_exploration, results_n_permutations, results_curtailed, seed);
+  dahl_salso__minimize_by_salso(n_items, n_draws, draws, psm, loss, max_size, max_scans, batch_size, probability_of_exploration_probability_at_zero, probability_of_exploration_shape, probability_of_exploration_rate, seconds, parallel, results_labels, results_expected_loss, results_n_scans, results_probability_of_exploration, results_n_permutations, results_curtailed, seed);
   SEXP results = PROTECT(Rf_allocVector(VECSXP, 9));
   SET_VECTOR_ELT(results, 0, results_labels_sexp);
   SET_VECTOR_ELT(results, 2, results_expected_loss_sexp);
@@ -113,7 +123,7 @@ SEXP minimize_by_salso(SEXP n_items_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP ma
   SET_VECTOR_ELT(results, 4, results_probability_of_exploration_sexp);
   SET_VECTOR_ELT(results, 5, results_n_permutations_sexp);
   SET_VECTOR_ELT(results, 7, results_curtailed_sexp);
-  UNPROTECT(8);
+  UNPROTECT(9);
   return results;
 }
 

@@ -6,3 +6,19 @@ lossCode <- function(loss) {
   }
   unname(lossMapping[loss])
 }
+
+x2drawspsm <- function(x, loss) {
+  draws <- NULL
+  psm <- NULL
+  if ( isSymmetric(x) && all(0 <= x) && all(x <= 1) && all(diag(x)==1) ) {
+    psm <- x
+  } else {
+    draws <- x
+  }
+  if ( loss %in% c("VI.lb","pear","binder") ) {
+    if ( is.null(psm) ) psm <- salso::psm(draws)
+  } else if ( loss %in% c("VI") ) {
+    if ( is.null(draws) ) stop(sprintf("For the '%s' criterion, 'x' must be samples from a partition distribution.",loss))
+  } else stop("Unrecognized loss.")
+  list(draws=draws, psm=psm)
+}

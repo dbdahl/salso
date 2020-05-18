@@ -5,8 +5,8 @@
 \title{Sequentially-Allocated Latent Structure Optimization}
 \usage{
 salso(
-  psm,
-  loss = c("binder", "pear", "VI.lb")[3],
+  x,
+  loss = c("binder", "pear", "VI.lb", "VI")[3],
   maxSize = 0,
   batchSize = 100,
   seconds = Inf,
@@ -18,10 +18,13 @@ salso(
 )
 }
 \arguments{
-\item{psm}{A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
-matrix whose \eqn{(i,j)} element gives the (estimated) probability that
-items \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a
-partition (i.e., clustering).}
+\item{x}{Either: 1. A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B}
+rows represents a clustering of \eqn{n} items using cluster labels. (For
+clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
+\code{x[b,i] == x[b,j]}.), or 2. A pairwise similarity matrix, i.e.,
+\eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives the
+(estimated) probability that items \eqn{i} and \eqn{j} are in the same
+subset (i.e., cluster) of a partition (i.e., clustering).}
 
 \item{loss}{One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
 \code{\link{partition.loss}} for details on these loss functions.}
@@ -76,10 +79,10 @@ A list of the following elements: \describe{ \item{estimate}{An
 }
 \description{
 This function provides a partition to summarize a partition distribution
-based a pairwise similarity matrix using the sequentially-allocated latent
-structure optimization (SALSO) method. The implementation currently supports
-the minimization of three partition estimation criteria: "binder", "pear",
-and "VI.lb". For details on these criteria, see \code{\link{partition.loss}}.
+using the sequentially-allocated latent structure optimization (SALSO)
+method. The implementation currently supports the minimization of the
+following partition estimation criteria: "binder", "pear", "VI.lb", and "VI".
+For details on these criteria, see \code{\link{partition.loss}}.
 }
 \details{
 The SALSO method was first presented at the workshop "Bayesian Nonparametric

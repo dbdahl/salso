@@ -4,18 +4,25 @@
 #' specified loss when using \eqn{\pi*} to estimate \eqn{\pi}.  Smaller loss
 #' values indicate higher concordance between partitions.  These functions also
 #' compute a Monte Carlo estimate of the expectation for the specified loss
-#' based on samples or a pairwise similarity matrix. The implementation
-#' currently supports the computation of the following criteria: "binder",
-#' "pear", "VI.lb", and "VI".
+#' based on samples or a pairwise similarity matrix.  This function also
+#' supports computing approximations to the expectation of several losses.
+#' Supported criteria are "binder", "pear", "VI.lb", and "VI" and are described
+#' below.  Some criteria only require the pairwise similarity matrix (as
+#' computed, for example, by \code{\link{psm}}) whereas others require samples
+#' from a partition distribution.  For those criteria that only need the
+#' pairwise similarity matrix, posterior samples can still be provided in the
+#' \code{x} argument and the pairwise similarity matrix will automatically be
+#' computed as needed.
 #'
-#' The partition estimation criteria can be specified using the \code{loss}
+#' The partition estimation criterion can be specified using the \code{loss}
 #' argument: \describe{
 #'
 #' \item{\code{"binder"}}{Binder loss. Whereas high values of the Rand index
 #' \eqn{R} between \eqn{\pi*} and \eqn{\pi} correspond to high concordance
 #' between these partitions, the Binder loss \eqn{L} for a partition \eqn{\pi*}
-#' in estimating \eqn{\pi} is \eqn{L = n*(n-1)*(1-R)/2}. See also Dahl (2006),
-#' Lau and Green (2007), Dahl and Newton (2007).}
+#' in estimating \eqn{\pi} is \eqn{L = n*(n-1)*(1-R)/2}.  Only the pairwise
+#' similarity matrix is required for "binder".  See also Dahl (2006), Lau and
+#' Green (2007), Dahl and Newton (2007).}
 #'
 #' \item{\code{"pear"}}{PEAR loss. Computes with the first-order approximation
 #' of the expectation of the loss associated with the adjusted Rand index
@@ -23,18 +30,21 @@
 #' between \eqn{\pi*} and \eqn{\pi} correspond to high concordance between these
 #' partitions, the loss associated with the adjusted Rand index for a partition
 #' \eqn{\pi*} in estimating \eqn{\pi} is one minus the adjusted Rand index
-#' between these partitions.  The adjusted Rand index involves a ratio and the
-#' first-order approximation of the expectation is based on \eqn{E(X/Y) \approx
-#' E(X)/E(Y)}.  See Fritsch and Ickstadt (2009).}
+#' between these partitions.  Only the pairwise similarity matrix is required
+#' for "pear".  The adjusted Rand index involves a ratio and the first-order
+#' approximation of the expectation is based on \eqn{E(X/Y) \approx E(X)/E(Y)}.
+#' See Fritsch and Ickstadt (2009).}
 #'
 #' \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information.  Computes
 #' with the lower bound of the expectation of the variation of information loss,
-#' where the lower bound is obtained from Jensen's inequality.  See Wade and
-#' Ghahramani (2018).}
+#' where the lower bound is obtained from Jensen's inequality.  Only the
+#' pairwise similarity matrix is required for "VI.lb".  See Wade and Ghahramani
+#' (2018).}
 #'
 #' \item{\code{"VI"}}{Variation of Information. Computes with the variation of
-#' information loss. See Meilă (2007), Wade and Ghahramani (2018), and Rastelli
-#' and Friel (2018).}
+#' information loss.  Samples from a partition distribution are required for
+#' "VI". See Meilă (2007), Wade and Ghahramani (2018), and Rastelli and Friel
+#' (2018).}
 #'
 #' }
 #'
@@ -52,14 +62,13 @@
 #' @param partitions An integer matrix of cluster labels with \eqn{n} columns,
 #'   where each row is a partition of \eqn{n} items given as cluster labels. Two
 #'   items are in the same subset (i.e., cluster) if their labels are equal.
-#' @param psm A pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric
-#'   matrix whose \eqn{(i,j)} element gives the (estimated) probability that
-#'   items \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a
-#'   partition (i.e., clustering).
-#' @param draws A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
-#'   represents a clustering of \eqn{n} items using cluster labels. For
+#' @param x Either: 1. A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B}
+#'   rows represents a clustering of \eqn{n} items using cluster labels. (For
 #'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
-#'   \code{x[b,i] == x[b,j]}.
+#'   \code{x[b,i] == x[b,j]}.), or 2. A pairwise similarity matrix, i.e.,
+#'   \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives the
+#'   (estimated) probability that items \eqn{i} and \eqn{j} are in the same
+#'   subset (i.e., cluster) of a partition (i.e., clustering).
 #' @param loss One of \code{"binder"}, \code{"pear"}, \code{"VI.lb"}, or
 #'   \code{"VI"}.
 #'
@@ -110,8 +119,8 @@
 #' p1 <- iris.clusterings[1,]
 #' p2 <- iris.clusterings[2,]
 #'
-#' all.equal(binder(p1, psm(p2)), choose(length(p1), 2) * ( 1 - randi(p1, p2) ))
-#' all.equal(pear(p1, psm(p2)), 1 - arandi(p1, p2))
+#' all.equal(binder(p1, p2), choose(length(p1), 2) * ( 1 - randi(p1, p2) ))
+#' all.equal(pear(p1, p2), 1 - arandi(p1, p2))
 #'
 #' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 #' probs <- psm(iris.clusterings, parallel=FALSE)
@@ -120,21 +129,21 @@
 #' partition.loss(partitions, probs, loss="binder")
 #' partition.loss(partitions, probs, loss="pear")
 #' partition.loss(partitions, probs, loss="VI.lb")
-#' partition.loss(partitions, draws=partitions, loss="VI")
+#' partition.loss(partitions, partitions, loss="VI")
 #'
 #' all.equal(partition.loss(partitions, probs, loss="binder"), binder(partitions, probs))
 #' all.equal(partition.loss(partitions, probs, loss="pear"), 1 - pear(partitions, probs))
 #' all.equal(partition.loss(partitions, probs, loss="VI.lb"), VI.lb(partitions, probs))
-#' all.equal(partition.loss(partitions, draws=partitions, loss="VI"), VI(partitions, partitions))
+#' all.equal(partition.loss(partitions, partitions, loss="VI"), VI(partitions, partitions))
 #'
-partition.loss <- function(partitions, psm=NULL, draws=NULL, loss=c("binder", "pear", "VI.lb", "VI")[3]) {
-  expected.loss(partitions, psm, draws, lossCode(loss))
+partition.loss <- function(partitions, x, loss=c("binder", "pear", "VI.lb", "VI")[3]) {
+  expected.loss(partitions, x, loss)
 }
 
 #' @export
 #' @rdname partition.loss
-binder <- function(partitions, psm) {
-  expected.loss(partitions, psm, NULL, lossCode("binder"))
+binder <- function(partitions, x) {
+  expected.loss(partitions, x, "binder")
 }
 
 #' @export
@@ -145,8 +154,8 @@ randi <- function(partition1, partition2) {
 
 #' @export
 #' @rdname partition.loss
-pear <- function(partitions, psm) {
-  1 - expected.loss(partitions, psm, NULL, lossCode("pear"))
+pear <- function(partitions, x) {
+  1 - expected.loss(partitions, x, "pear")
 }
 
 #' @export
@@ -157,45 +166,24 @@ arandi <- function(partition1, partition2) {
 
 #' @export
 #' @rdname partition.loss
-VI.lb <- function(partitions, psm) {
-  expected.loss(partitions, psm, NULL, lossCode("VI.lb"))
+VI.lb <- function(partitions, x) {
+  expected.loss(partitions, x, "VI.lb")
 }
 
 #' @export
 #' @rdname partition.loss
-VI <- function(partitions, draws) {
-  expected.loss(partitions, NULL, draws, lossCode("VI"))
+VI <- function(partitions, x) {
+  expected.loss(partitions, x, "VI")
 }
 
 #' @useDynLib salso .expected_loss
 #'
-expected.loss <- function(partitions, psm, draws, lossCode) {
-  if ( is.null(psm) && is.null(draws) ) {
-    stop("Depending on the loss function, either 'psm' or 'draws' must be supplied.")
+expected.loss <- function(partitions, x, loss) {
+  if ( ! is.matrix(partitions) ) dim(partitions) <- c(1,length(partitions))
+  if ( ! is.matrix(x) ) dim(x) <- c(1,length(x))
+  if ( ncol(x) != ncol(partitions) ) {
+    stop("The number of items (i.e., number of columns) in 'partitions' and 'x' are not the same.")
   }
-  if ( ! is.matrix(partitions) ) {
-    dim(partitions) <- c(1,length(partitions))
-  }
-  if ( ! is.null(draws) ) {
-    if ( ! is.matrix(draws) ) {
-      dim(draws) <- c(1,length(draws))
-    }
-    if ( ncol(draws) != ncol(partitions) ) {
-      stop("The number of items (i.e., number of columns) in 'partitions' and 'draws' are not the same.")
-    }
-  }
-  if ( lossCode %in% sapply(c("VI.lb","pear","binder"),lossCode) ) {
-    if ( is.null(psm) ) psm <- psm(draws)
-    else {
-      if ( ! ( isSymmetric(psm) && all(0 <= psm) && all(psm <= 1) && all(diag(psm)==1) ) ) {
-        stop("'psm' should be symmetric with diagonal elements equal to 1 and off-diagonal elements in [0, 1].")
-      }
-      if ( ncol(partitions) != nrow(psm) ) {
-        stop("The number of items (i.e., number of columns) in 'partitions' is not equal to the number of rows of 'psm'.")
-      }
-    }
-  } else if ( lossCode %in% sapply(c("VI"),lossCode) ) {
-    if ( is.null(draws) ) stop("For this loss, 'draws' must be supplied.")
-  } else stop("Unrecognized loss.")
-  .Call(.expected_loss, partitions, psm, draws, lossCode)
+  y <- x2drawspsm(x, loss)
+  .Call(.expected_loss, partitions, y$draws, y$psm, lossCode(loss))
 }
