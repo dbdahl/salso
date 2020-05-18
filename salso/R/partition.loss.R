@@ -19,10 +19,13 @@
 #'
 #' \item{\code{"binder"}}{Binder loss. Whereas high values of the Rand index
 #' \eqn{R} between \eqn{\pi*} and \eqn{\pi} correspond to high concordance
-#' between these partitions, the Binder loss \eqn{L} for a partition \eqn{\pi*}
-#' in estimating \eqn{\pi} is \eqn{L = n*(n-1)*(1-R)/2}.  Only the pairwise
+#' between these partitions, the N-invariant Binder loss \eqn{L} for a partition
+#' \eqn{\pi*} in estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}.  This package
+#' reports the N-invariant Binder loss and the original Binder loss equals the
+#' N-invariant Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise
 #' similarity matrix is required for "binder".  See also Dahl (2006), Lau and
-#' Green (2007), Dahl and Newton (2007).}
+#' Green (2007), Dahl and Newton (2007), Fritsch and Ickstadt (2009), and Wade
+#' and Ghahramani (2018).}
 #'
 #' \item{\code{"pear"}}{PEAR loss. Computes with the first-order approximation
 #' of the expectation of the loss associated with the adjusted Rand index
@@ -51,7 +54,7 @@
 #' The functions \code{\link{randi}} and \code{\link{arandi}} are convenience
 #' functions. Note that:
 #' \itemize{
-#' \item \code{binder(p1, p2) = choose(length(p1), 2) * ( 1 - randi(p1, p2) )}
+#' \item \code{binder(p1, p2) = ( 1 - randi(p1, p2) )*(n-1)/n}
 #' \item \code{pear(p1, p2) = 1 - arandi(p1, p2)}
 #' }
 #'
@@ -119,7 +122,7 @@
 #' p1 <- iris.clusterings[1,]
 #' p2 <- iris.clusterings[2,]
 #'
-#' all.equal(binder(p1, p2), choose(length(p1), 2) * ( 1 - randi(p1, p2) ))
+#' all.equal(binder(p1, p2), ( 1 - randi(p1, p2) ) * (length(p1)-1) / length(p1))
 #' all.equal(pear(p1, p2), 1 - arandi(p1, p2))
 #'
 #' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
@@ -149,7 +152,7 @@ binder <- function(partitions, x) {
 #' @export
 #' @rdname partition.loss
 randi <- function(partition1, partition2) {
-  1 - ( binder(partition1, psm(partition2)) / choose(length(partition1),2) )
+  1 - binder(partition1, psm(partition2)) * length(partition1) / (length(partition1)-1)
 }
 
 #' @export
