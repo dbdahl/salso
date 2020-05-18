@@ -2,9 +2,9 @@
 #'
 #' This function provides a partition to summarize a partition distribution
 #' using the sequentially-allocated latent structure optimization (SALSO)
-#' method. The implementation currently supports the minimization of the
-#' following partition estimation criteria: "binder", "pear", "VI.lb", and "VI".
-#' For details on these criteria, see \code{\link{partition.loss}}.
+#' method. The implementation currently supports the minimization of several
+#' partition estimation criteria. For details on these criteria, see
+#' \code{\link{partition.loss}}.
 #'
 #' The SALSO method was first presented at the workshop "Bayesian Nonparametric
 #' Inference: Dependence Structures and their Applications" in Oaxaca, Mexico on
@@ -18,8 +18,9 @@
 #'   \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives the
 #'   (estimated) probability that items \eqn{i} and \eqn{j} are in the same
 #'   subset (i.e., cluster) of a partition (i.e., clustering).
-#' @param loss One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-#'   \code{\link{partition.loss}} for details on these loss functions.
+#' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
+#'   \code{"VI"}, or \code{"VI.lb"}.  See \code{\link{partition.loss}} for
+#'   details on these loss functions.
 #' @param maxSize The maximum number of subsets (i.e., clusters).  The
 #'   optimization is constrained to produce solutions whose number of subsets is
 #'   no more than the supplied value. If zero, the size is not constrained.
@@ -71,14 +72,17 @@
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' salso(probs, parallel=FALSE)
 #'
-salso <- function(x, loss=c("binder", "pear", "VI.lb", "VI")[3], maxSize=0, batchSize=100, seconds=Inf, maxScans=10, probExplorationProbAtZero=0.5, probExplorationShape=0.5, probExplorationRate=50, parallel=TRUE) {
+salso <- function(x, loss="VI.lb", maxSize=0, batchSize=100, seconds=Inf, maxScans=10, probExplorationProbAtZero=0.5, probExplorationShape=0.5, probExplorationRate=50, parallel=TRUE) {
   z <- x2drawspsm(x, loss)
   if ( maxSize < 0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
   if ( maxScans < 0 ) stop("'maxScans' may not be negative.")
   if ( batchSize <= 0 ) stop("'batchSize' may be strictly positive.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
-  if ( loss == "VI" ) z$psm <- psm(z$draws)
+  if ( loss %in% c("omARI","VI") ) {
+    warning("DBD: Using a hack for development only!")
+    z$psm <- psm(z$draws)
+  }
   y <- .Call(.minimize_by_salso, z$draws, z$psm, lossCode(loss), maxSize, maxScans, batchSize, probExplorationProbAtZero, probExplorationShape, probExplorationRate, seconds, parallel, seed)
   names(y) <- c("estimate","loss","expectedLoss","nScans","probExploration","nPermutations","batchSize","curtailed","subsetSizes")
   names(y$estimate) <- colnames(psm)

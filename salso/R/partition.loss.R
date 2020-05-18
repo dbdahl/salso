@@ -6,20 +6,19 @@
 #' compute a Monte Carlo estimate of the expectation for the specified loss
 #' based on samples or a pairwise similarity matrix.  This function also
 #' supports computing approximations to the expectation of several losses.
-#' Supported criteria are "binder", "pear", "VI.lb", and "VI" and are described
-#' below.  Some criteria only require the pairwise similarity matrix (as
-#' computed, for example, by \code{\link{psm}}) whereas others require samples
-#' from a partition distribution.  For those criteria that only need the
-#' pairwise similarity matrix, posterior samples can still be provided in the
-#' \code{x} argument and the pairwise similarity matrix will automatically be
-#' computed as needed.
+#' Supported criteria are described below. Some criteria only require the
+#' pairwise similarity matrix (as computed, for example, by \code{\link{psm}})
+#' whereas others require samples from a partition distribution.  For those
+#' criteria that only need the pairwise similarity matrix, posterior samples can
+#' still be provided in the \code{x} argument and the pairwise similarity matrix
+#' will automatically be computed as needed.
 #'
 #' The partition estimation criterion can be specified using the \code{loss}
 #' argument: \describe{
 #'
 #' \item{\code{"binder"}}{Binder loss. Whereas high values of the Rand index
 #' \eqn{R} between \eqn{\pi*} and \eqn{\pi} correspond to high concordance
-#' between these partitions, the N-invariant Binder loss \eqn{L} for a partition
+#' between the partitions, the N-invariant Binder loss \eqn{L} for a partition
 #' \eqn{\pi*} in estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}.  This package
 #' reports the N-invariant Binder loss and the original Binder loss equals the
 #' N-invariant Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise
@@ -27,27 +26,31 @@
 #' Green (2007), Dahl and Newton (2007), Fritsch and Ickstadt (2009), and Wade
 #' and Ghahramani (2018).}
 #'
-#' \item{\code{"pear"}}{PEAR loss. Computes with the first-order approximation
-#' of the expectation of the loss associated with the adjusted Rand index
-#' (Hubert and Arabie, 1985).  Whereas high values of the adjusted Rand index
-#' between \eqn{\pi*} and \eqn{\pi} correspond to high concordance between these
-#' partitions, the loss associated with the adjusted Rand index for a partition
-#' \eqn{\pi*} in estimating \eqn{\pi} is one minus the adjusted Rand index
-#' between these partitions.  Only the pairwise similarity matrix is required
-#' for "pear".  The adjusted Rand index involves a ratio and the first-order
-#' approximation of the expectation is based on \eqn{E(X/Y) \approx E(X)/E(Y)}.
-#' See Fritsch and Ickstadt (2009).}
+#' \item{\code{"omARI"}}{One Minus Adjusted Rand Index. Computes the expectation
+#' of the one minus the adjusted Rand index (Hubert and Arabie, 1985).  Whereas
+#' high values of the adjusted Rand index between \eqn{\pi*} and \eqn{\pi}
+#' correspond to high concordance between the partitions, the loss associated
+#' with the adjusted Rand index for a partition \eqn{\pi*} in estimating
+#' \eqn{\pi} is one minus the adjusted Rand index between the partitions.
+#' Samples from a partition distribution are required for "omARI".  See Fritsch
+#' and Ickstadt (2009).}
+#'
+#' \item{\code{"omARI.approx"}}{Approximation of One Minus Adjusted Rand Index.
+#' Computes the first-order approximation of the expectation of the one
+#' minus the adjusted Rand index. The adjusted Rand index involves a ratio and
+#' the first-order approximation of the expectation is based on \eqn{E(X/Y)
+#' \approx E(X)/E(Y)}. Only the pairwise similarity matrix is required for
+#' "omARI.approx". See Fritsch and Ickstadt (2009).}
+#'
+#' \item{\code{"VI"}}{Variation of Information. Computes the expectations of
+#' variation of information loss.  Samples from a partition distribution are
+#' required for "VI". See Meilă (2007), Wade and Ghahramani (2018), and Rastelli
+#' and Friel (2018).}
 #'
 #' \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information.  Computes
-#' with the lower bound of the expectation of the variation of information loss,
-#' where the lower bound is obtained from Jensen's inequality.  Only the
-#' pairwise similarity matrix is required for "VI.lb".  See Wade and Ghahramani
-#' (2018).}
-#'
-#' \item{\code{"VI"}}{Variation of Information. Computes with the variation of
-#' information loss.  Samples from a partition distribution are required for
-#' "VI". See Meilă (2007), Wade and Ghahramani (2018), and Rastelli and Friel
-#' (2018).}
+#' the lower bound of the expectation of the variation of information loss,
+#' where the lower bound is obtained by Jensen's inequality.  Only the pairwise
+#' similarity matrix is required for "VI.lb".  See Wade and Ghahramani (2018).}
 #'
 #' }
 #'
@@ -55,7 +58,7 @@
 #' functions. Note that:
 #' \itemize{
 #' \item \code{binder(p1, p2) = ( 1 - randi(p1, p2) )*(n-1)/n}
-#' \item \code{pear(p1, p2) = 1 - arandi(p1, p2)}
+#' \item \code{omARI(p1, p2) = 1 - arandi(p1, p2)}
 #' }
 #'
 #' @param partition1 An integer vector of cluster labels for \eqn{n} items. Two
@@ -72,8 +75,8 @@
 #'   \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives the
 #'   (estimated) probability that items \eqn{i} and \eqn{j} are in the same
 #'   subset (i.e., cluster) of a partition (i.e., clustering).
-#' @param loss One of \code{"binder"}, \code{"pear"}, \code{"VI.lb"}, or
-#'   \code{"VI"}.
+#' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
+#'   \code{"VI"}, or \code{"VI.lb"}.
 #'
 #' @return A numeric vector.
 #'
@@ -119,27 +122,26 @@
 #'
 #' @export
 #' @examples
-#' p1 <- iris.clusterings[1,]
-#' p2 <- iris.clusterings[2,]
-#'
-#' all.equal(binder(p1, p2), ( 1 - randi(p1, p2) ) * (length(p1)-1) / length(p1))
-#' all.equal(pear(p1, p2), 1 - arandi(p1, p2))
-#'
 #' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' partitions <- iris.clusterings[1:5,]
 #'
-#' partition.loss(partitions, probs, loss="binder")
-#' partition.loss(partitions, probs, loss="pear")
-#' partition.loss(partitions, probs, loss="VI.lb")
-#' partition.loss(partitions, partitions, loss="VI")
-#'
 #' all.equal(partition.loss(partitions, probs, loss="binder"), binder(partitions, probs))
-#' all.equal(partition.loss(partitions, probs, loss="pear"), 1 - pear(partitions, probs))
-#' all.equal(partition.loss(partitions, probs, loss="VI.lb"), VI.lb(partitions, probs))
-#' all.equal(partition.loss(partitions, partitions, loss="VI"), VI(partitions, partitions))
 #'
-partition.loss <- function(partitions, x, loss=c("binder", "pear", "VI.lb", "VI")[3]) {
+#' all.equal(partition.loss(partitions, partitions, loss="omARI"),   omARI(partitions, partitions))
+#' all.equal(partition.loss(partitions, probs, loss="omARI.approx"), omARI.approx(partitions, probs))
+#'
+#' all.equal(partition.loss(partitions, partitions, loss="VI"), VI(partitions, partitions))
+#' all.equal(partition.loss(partitions, probs, loss="VI.lb"),   VI.lb(partitions, probs))
+#'
+#' p1 <- iris.clusterings[1,]
+#' p2 <- iris.clusterings[2,]
+#'
+#' VI(p1, p2)
+#' all.equal(binder(p1, p2), ( 1 - randi(p1, p2) ) * (length(p1)-1) / length(p1))
+#' all.equal(omARI(p1, p2), 1 - arandi(p1, p2))
+#'
+partition.loss <- function(partitions, x, loss="VI.lb") {
   expected.loss(partitions, x, loss)
 }
 
@@ -151,20 +153,20 @@ binder <- function(partitions, x) {
 
 #' @export
 #' @rdname partition.loss
-randi <- function(partition1, partition2) {
-  1 - binder(partition1, psm(partition2)) * length(partition1) / (length(partition1)-1)
+omARI <- function(partitions, x) {
+  expected.loss(partitions, x, "omARI")
 }
 
 #' @export
 #' @rdname partition.loss
-pear <- function(partitions, x) {
-  1 - expected.loss(partitions, x, "pear")
+omARI.approx <- function(partitions, x) {
+  expected.loss(partitions, x, "omARI.approx")
 }
 
 #' @export
 #' @rdname partition.loss
-arandi <- function(partition1, partition2) {
-  1 - pear(partition1, psm(partition2))
+VI <- function(partitions, x) {
+  expected.loss(partitions, x, "VI")
 }
 
 #' @export
@@ -175,8 +177,14 @@ VI.lb <- function(partitions, x) {
 
 #' @export
 #' @rdname partition.loss
-VI <- function(partitions, x) {
-  expected.loss(partitions, x, "VI")
+randi <- function(partition1, partition2) {
+  1 - binder(partition1, psm(partition2)) * length(partition1) / (length(partition1)-1)
+}
+
+#' @export
+#' @rdname partition.loss
+arandi <- function(partition1, partition2) {
+  1 - omARI(partition1, partition2)
 }
 
 #' @useDynLib salso .expected_loss

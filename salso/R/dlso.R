@@ -5,9 +5,8 @@
 #' known as the least-squares clustering method (Dahl 2006). The method seeks to
 #' minimize an estimation criterion by picking the minimizer among the
 #' partitions supplied by the \code{draws} argument. The implementation
-#' currently supports the minimization of the following partition estimation
-#' criteria: "binder", "pear", "VI.lb", and "VI". For details on these criteria,
-#' see \code{\link{partition.loss}}.
+#' currently supports the minimization of several partition estimation criteria.
+#' For details on these criteria, see \code{\link{partition.loss}}.
 #'
 #' This function provides a partition to summarize a partition distribution
 #' using the sequentially-allocated latent structure optimization (SALSO)
@@ -45,9 +44,10 @@
 #' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 #' probs <- psm(iris.clusterings, parallel=FALSE)
 #' dlso(iris.clusterings, loss="binder", x=probs)
-#' dlso(iris.clusterings, loss="pear", x=probs)
-#' dlso(iris.clusterings, loss="VI.lb")  # The psm will be computed if not provided.
+#' dlso(iris.clusterings, loss="omARI")
+#' dlso(iris.clusterings, loss="omARI.approx")  # The psm will be computed if not provided.
 #' dlso(iris.clusterings, loss="VI")
+#' dlso(iris.clusterings, loss="VI.lb", x=probs)
 #' dlso(iris.clusterings[1:10,], loss="VI", x=iris.clusterings)  # Candidates can be constrained.
 #'
 dlso <- function(candidates, loss=c("binder", "pear", "VI.lb", "VI")[3], x=NULL) {

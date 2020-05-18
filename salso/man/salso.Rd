@@ -6,7 +6,7 @@
 \usage{
 salso(
   x,
-  loss = c("binder", "pear", "VI.lb", "VI")[3],
+  loss = "VI.lb",
   maxSize = 0,
   batchSize = 100,
   seconds = Inf,
@@ -26,8 +26,9 @@ clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
 (estimated) probability that items \eqn{i} and \eqn{j} are in the same
 subset (i.e., cluster) of a partition (i.e., clustering).}
 
-\item{loss}{One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-\code{\link{partition.loss}} for details on these loss functions.}
+\item{loss}{One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
+\code{"VI"}, or \code{"VI.lb"}.  See \code{\link{partition.loss}} for
+details on these loss functions.}
 
 \item{maxSize}{The maximum number of subsets (i.e., clusters).  The
 optimization is constrained to produce solutions whose number of subsets is
@@ -80,9 +81,9 @@ A list of the following elements: \describe{ \item{estimate}{An
 \description{
 This function provides a partition to summarize a partition distribution
 using the sequentially-allocated latent structure optimization (SALSO)
-method. The implementation currently supports the minimization of the
-following partition estimation criteria: "binder", "pear", "VI.lb", and "VI".
-For details on these criteria, see \code{\link{partition.loss}}.
+method. The implementation currently supports the minimization of several
+partition estimation criteria. For details on these criteria, see
+\code{\link{partition.loss}}.
 }
 \details{
 The SALSO method was first presented at the workshop "Bayesian Nonparametric

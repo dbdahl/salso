@@ -1,4 +1,4 @@
-lossMapping <- c("binder" = 0L, "pear" = 1L, "VI.lb" = 2L, "VI" = 3L)
+lossMapping <- c("binder" = 0L, "omARI" = 1L, "omARI.approx" = 2L, "VI" = 3L, "VI.lb" = 4L)
 
 lossCode <- function(loss) {
   if ( ( length(loss) != 1 ) || ! ( loss %in% names(lossMapping) ) ) {
@@ -15,9 +15,9 @@ x2drawspsm <- function(x, loss) {
   } else {
     draws <- x
   }
-  if ( loss %in% c("VI.lb","pear","binder") ) {
+  if ( loss %in% c("binder","omARI.approx","VI.lb") ) {
     if ( is.null(psm) ) psm <- salso::psm(draws)
-  } else if ( loss %in% c("VI") ) {
+  } else if ( loss %in% c("omARI","VI") ) {
     if ( is.null(draws) ) stop(sprintf("For the '%s' criterion, 'x' must be samples from a partition distribution.",loss))
   } else stop("Unrecognized loss.")
   list(draws=draws, psm=psm)
