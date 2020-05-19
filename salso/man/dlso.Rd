@@ -4,7 +4,7 @@
 \alias{dlso}
 \title{Draws-Based Latent Structure Optimization}
 \usage{
-dlso(candidates, loss = c("binder", "pear", "VI.lb", "VI")[3], x = NULL)
+dlso(candidates, loss = "VI.lb", x = NULL)
 }
 \arguments{
 \item{candidates}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
@@ -13,8 +13,9 @@ clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
 \code{x[b,i] == x[b,j]}.  One of the rows will be used as the paritition
 estimate.}
 
-\item{loss}{One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-\code{\link{partition.loss}} for details on these loss functions.}
+\item{loss}{One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
+\code{"VI"}, or \code{"VI.lb"}.  See \code{\link{partition.loss}} for
+details on these loss functions.}
 
 \item{x}{Either: 1. A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B}
 rows represents a clustering of \eqn{n} items using cluster labels. (For

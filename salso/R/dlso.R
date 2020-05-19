@@ -13,8 +13,9 @@
 #'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
 #'   \code{x[b,i] == x[b,j]}.  One of the rows will be used as the paritition
 #'   estimate.
-#' @param loss One of \code{"binder"}, \code{"pear"}, or \code{"VI.lb"}.  See
-#'   \code{\link{partition.loss}} for details on these loss functions.
+#' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
+#'   \code{"VI"}, or \code{"VI.lb"}.  See \code{\link{partition.loss}} for
+#'   details on these loss functions.
 #' @param x Either: 1. A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B}
 #'   rows represents a clustering of \eqn{n} items using cluster labels. (For
 #'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
@@ -44,7 +45,7 @@
 #' dlso(iris.clusterings, loss="VI.lb", x=probs)
 #' dlso(iris.clusterings[1:10,], loss="VI", x=iris.clusterings)  # Candidates can be constrained.
 #'
-dlso <- function(candidates, loss=c("binder", "pear", "VI.lb", "VI")[3], x=NULL) {
+dlso <- function(candidates, loss="VI.lb", x=NULL) {
   if ( is.null(x) ) x <- candidates
   expectedLoss <- partition.loss(candidates, x, loss)
   index <- which.min(expectedLoss)
