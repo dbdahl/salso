@@ -41,13 +41,6 @@ partitions supplied by the \code{draws} argument. The implementation
 currently supports the minimization of several partition estimation criteria.
 For details on these criteria, see \code{\link{partition.loss}}.
 }
-\details{
-This function provides a partition to summarize a partition distribution
-using the sequentially-allocated latent structure optimization (SALSO)
-method. The implementation currently supports the minimization of the
-following partition estimation criteria: "binder", "pear", "VI.lb", and "VI".
-For details on these criteria, see \code{\link{partition.loss}}.
-}
 \examples{
 # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 probs <- psm(iris.clusterings, parallel=FALSE)

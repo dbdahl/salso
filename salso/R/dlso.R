@@ -8,12 +8,6 @@
 #' currently supports the minimization of several partition estimation criteria.
 #' For details on these criteria, see \code{\link{partition.loss}}.
 #'
-#' This function provides a partition to summarize a partition distribution
-#' using the sequentially-allocated latent structure optimization (SALSO)
-#' method. The implementation currently supports the minimization of the
-#' following partition estimation criteria: "binder", "pear", "VI.lb", and "VI".
-#' For details on these criteria, see \code{\link{partition.loss}}.
-#'
 #' @param candidates A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
 #'   represents a clustering of \eqn{n} items using cluster labels. For
 #'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
