@@ -93,8 +93,13 @@ December 6, 2017. See
 }
 \examples{
 # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
-probs <- psm(iris.clusterings, parallel=FALSE)
-salso(probs, parallel=FALSE)
+
+draws <- iris.clusterings
+salso(draws, loss="VI", batchSize=1, parallel=FALSE)
+
+probs <- psm(draws, parallel=FALSE)
+salso(probs, loss="VI.lb", parallel=FALSE)
+salso(draws, loss="VI.lb", parallel=FALSE)
 
 }
 \seealso{

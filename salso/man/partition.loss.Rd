@@ -7,8 +7,8 @@
 \alias{omARI.approx}
 \alias{VI}
 \alias{VI.lb}
-\alias{randi}
-\alias{arandi}
+\alias{RI}
+\alias{ARI}
 \title{Compute Partition Loss or the Expectation of Partition Loss}
 \usage{
 partition.loss(partitions, x, loss = "VI.lb")
@@ -23,9 +23,9 @@ VI(partitions, x)
 
 VI.lb(partitions, x)
 
-randi(partition1, partition2)
+RI(partition1, partition2)
 
-arandi(partition1, partition2)
+ARI(partition1, partition2)
 }
 \arguments{
 \item{partitions}{An integer matrix of cluster labels with \eqn{n} columns,
@@ -108,11 +108,11 @@ similarity matrix is required for "VI.lb".  See Wade and Ghahramani (2018).}
 
 }
 
-The functions \code{\link{randi}} and \code{\link{arandi}} are convenience
+The functions \code{\link{RI}} and \code{\link{ARI}} are convenience
 functions. Note that:
 \itemize{
-\item \code{binder(p1, p2) = ( 1 - randi(p1, p2) )*(n-1)/n}
-\item \code{omARI(p1, p2) = 1 - arandi(p1, p2)}
+\item \code{binder(p1, p2) = ( 1 - RI(p1, p2) )*(n-1)/n}
+\item \code{omARI(p1, p2) = 1 - ARI(p1, p2)}
 }
 }
 \examples{
@@ -132,8 +132,8 @@ p1 <- iris.clusterings[1,]
 p2 <- iris.clusterings[2,]
 
 VI(p1, p2)
-all.equal(binder(p1, p2), ( 1 - randi(p1, p2) ) * (length(p1)-1) / length(p1))
-all.equal(omARI(p1, p2), 1 - arandi(p1, p2))
+all.equal(binder(p1, p2), ( 1 - RI(p1, p2) ) * (length(p1)-1) / length(p1))
+all.equal(omARI(p1, p2), 1 - ARI(p1, p2))
 
 }
 \references{

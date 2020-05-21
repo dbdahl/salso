@@ -54,11 +54,11 @@
 #'
 #' }
 #'
-#' The functions \code{\link{randi}} and \code{\link{arandi}} are convenience
+#' The functions \code{\link{RI}} and \code{\link{ARI}} are convenience
 #' functions. Note that:
 #' \itemize{
-#' \item \code{binder(p1, p2) = ( 1 - randi(p1, p2) )*(n-1)/n}
-#' \item \code{omARI(p1, p2) = 1 - arandi(p1, p2)}
+#' \item \code{binder(p1, p2) = ( 1 - RI(p1, p2) )*(n-1)/n}
+#' \item \code{omARI(p1, p2) = 1 - ARI(p1, p2)}
 #' }
 #'
 #' @param partition1 An integer vector of cluster labels for \eqn{n} items. Two
@@ -138,8 +138,8 @@
 #' p2 <- iris.clusterings[2,]
 #'
 #' VI(p1, p2)
-#' all.equal(binder(p1, p2), ( 1 - randi(p1, p2) ) * (length(p1)-1) / length(p1))
-#' all.equal(omARI(p1, p2), 1 - arandi(p1, p2))
+#' all.equal(binder(p1, p2), ( 1 - RI(p1, p2) ) * (length(p1)-1) / length(p1))
+#' all.equal(omARI(p1, p2), 1 - ARI(p1, p2))
 #'
 partition.loss <- function(partitions, x, loss="VI.lb") {
   expected.loss(partitions, x, loss)
@@ -177,13 +177,13 @@ VI.lb <- function(partitions, x) {
 
 #' @export
 #' @rdname partition.loss
-randi <- function(partition1, partition2) {
+RI <- function(partition1, partition2) {
   1 - binder(partition1, psm(partition2)) * length(partition1) / (length(partition1)-1)
 }
 
 #' @export
 #' @rdname partition.loss
-arandi <- function(partition1, partition2) {
+ARI <- function(partition1, partition2) {
   1 - omARI(partition1, partition2)
 }
 
