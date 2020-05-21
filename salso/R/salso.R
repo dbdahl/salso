@@ -69,8 +69,13 @@
 #'
 #' @examples
 #' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
-#' probs <- psm(iris.clusterings, parallel=FALSE)
-#' salso(probs, parallel=FALSE)
+#'
+#' draws <- iris.clusterings
+#' salso(draws, loss="VI", batchSize=1, parallel=FALSE)
+#'
+#' probs <- psm(draws, parallel=FALSE)
+#' salso(probs, loss="VI.lb", parallel=FALSE)
+#' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
 salso <- function(x, loss="VI.lb", maxSize=0, batchSize=100, seconds=Inf, maxScans=10, probExplorationProbAtZero=0.5, probExplorationShape=0.5, probExplorationRate=50, parallel=TRUE) {
   z <- x2drawspsm(x, loss)
@@ -79,10 +84,6 @@ salso <- function(x, loss="VI.lb", maxSize=0, batchSize=100, seconds=Inf, maxSca
   if ( maxScans < 0 ) stop("'maxScans' may not be negative.")
   if ( batchSize <= 0 ) stop("'batchSize' may be strictly positive.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
-  if ( loss %in% c("omARI","VI") ) {
-    warning("DBD: Using a hack for development only!")
-    z$psm <- psm(z$draws)
-  }
   y <- .Call(.minimize_by_salso, z$draws, z$psm, lossCode(loss), maxSize, maxScans, batchSize, probExplorationProbAtZero, probExplorationShape, probExplorationRate, seconds, parallel, seed)
   names(y) <- c("estimate","loss","expectedLoss","nScans","probExploration","nPermutations","batchSize","curtailed","subsetSizes")
   names(y$estimate) <- colnames(psm)
