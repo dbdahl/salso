@@ -6,6 +6,12 @@ test_that("binder", {
   expect_true(isTRUE(all.equal(s$expectedLoss,o)))
 })
 
+test_that("binder2", {
+  s <- salso::salso(draws, loss="binder2", batchSize=10)
+  o <- salso::partition.loss(s$estimate, psm, loss="binder")  # This should be changed to 'binder2'
+  expect_true(isTRUE(all.equal(s$expectedLoss,o)))
+})
+
 test_that("omARI", {
   s <- salso::salso(draws, loss="omARI", batchSize=10)
   o <- salso::partition.loss(s$estimate, draws, loss="omARI")
