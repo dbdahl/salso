@@ -10,6 +10,12 @@ test_that("SALSO minimizes binder", {
   expect_true(isTRUE(all.equal(s$estimate, o1)))
 })
 
+test_that("SALSO minimizes binder2", {
+  s <- salso::salso(draws.small, loss="binder2", seconds=0, batchSize=100)
+  o1 <- as.vector(salso:::minimize.by.enumeration(psm.small, loss="binder"))
+  expect_true(isTRUE(all.equal(s$estimate, o1)))
+})
+
 test_that("SALSO minimizes omARI", {
   s <- salso::salso(draws.small, loss="omARI", seconds=0, batchSize=100)
   o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss="omARI"))
