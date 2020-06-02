@@ -36,6 +36,42 @@ test_that("VI.lb", {
   expect_true(isTRUE(all.equal(s$expectedLoss,o)))
 })
 
+test_that("binder (nonparallel)", {
+  s <- salso::salso(psm, loss="binder", batchSize=10, parallel=FALSE)
+  o <- salso::partition.loss(s$estimate, psm, loss="binder")
+  expect_true(isTRUE(all.equal(s$expectedLoss,o)))
+})
+
+test_that("binder2 (nonparallel)", {
+  s <- salso::salso(draws, loss="binder2", batchSize=10, parallel=FALSE)
+  o <- salso::partition.loss(s$estimate, draws, loss="binder2")
+  expect_true(isTRUE(all.equal(s$expectedLoss,o)))
+})
+
+test_that("omARI (nonparallel)", {
+  s <- salso::salso(draws, loss="omARI", batchSize=10, parallel=FALSE)
+  o <- salso::partition.loss(s$estimate, draws, loss="omARI")
+  expect_true(isTRUE(all.equal(s$expectedLoss,o)))
+})
+
+test_that("omARI.approx (nonparallel)", {
+  s <- salso::salso(psm, loss="omARI.approx", batchSize=10, parallel=FALSE)
+  o <- salso::partition.loss(s$estimate, psm, loss="omARI.approx")
+  expect_true(isTRUE(all.equal(s$expectedLoss,o)))
+})
+
+test_that("VI (nonparallel)", {
+  s <- salso::salso(draws, loss="VI", batchSize=10, parallel=FALSE)
+  o <- salso::partition.loss(s$estimate, draws, loss="VI")
+  expect_true(isTRUE(all.equal(s$expectedLoss,o)))
+})
+
+test_that("VI.lb (nonparallel)", {
+  s <- salso::salso(psm, loss="VI.lb", batchSize=10, parallel=FALSE)
+  o <- salso::partition.loss(s$estimate, psm, loss="VI.lb")
+  expect_true(isTRUE(all.equal(s$expectedLoss,o)))
+})
+
 
 
 

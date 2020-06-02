@@ -1,3 +1,8 @@
 #!/bin/sh
 
+cd $(dirname $(readlink -f "$0"))
+
 R -s -e 'testthat::test_dir("testthat")'
+#R -s -e 'testthat::test_file("testthat/test-reported-expected-loss.R")'
+#R -s -e 'testthat::test_file("testthat/test-salso.R")'
+#R -s -e 'testthat::test_file("testthat/test-VI.R")'

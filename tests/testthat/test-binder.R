@@ -28,4 +28,10 @@ test_that("Computation of expectation of Binder loss", {
   expect_true(isTRUE(all.equal(s,o)))
 })
 
+test_that("Computation of expectation of Binder loss (alternative)", {
+  s <- salso::partition.loss(subset, draws, loss="binder2")
+  o <- mcclust::binder(subset, psm) / ( n^2 / 2 )
+  expect_true(isTRUE(all.equal(s,o)))
+})
+
 
