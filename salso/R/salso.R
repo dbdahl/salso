@@ -24,19 +24,18 @@
 #' @param maxSize The maximum number of subsets (i.e., clusters).  The
 #'   optimization is constrained to produce solutions whose number of subsets is
 #'   no more than the supplied value. If zero, the size is not constrained.
-#' @param batchSize The number of permutations to consider per batch (although
-#'   the actual number of permutations per batch is a multiple of the number of
-#'   cores when \code{parallel=TRUE}). Batches are sequentially performed until
-#'   the most recent batch does not lead to a better result. Therefore, at least
-#'   two batches are performed (unless the \code{seconds} threshold is
-#'   exceeded.)
+#' @param nPermutations The number of permutations to consider, although the
+#'   actual number by differ for the following reasons: 1. The actual number is
+#'   a multiple of the number of cores when \code{parallel=TRUE}, and 2. The
+#'   search is curtailed when the \code{seconds} threshold is exceeded.
 #' @param seconds A time threshold in seconds after which the function will be
-#'   curtailed (with a warning) instead of performing another batch of
-#'   permutations. Note that the function could take considerably longer because
-#'   the threshold is only checked after each batch is completed.
+#'   curtailed (with a warning) instead of performing all the requested number
+#'   of permutations. Note that the function could take longer because the
+#'   threshold is only checked after each permutation is completed.
 #' @param maxScans The maximum number of reallocation scans after the initial
-#'   allocation. The actual number of scans may be less than \code{maxScans}
-#'   since the method stops if the result does not change between scans.
+#'   sequential allocation. The actual number of scans may be less than
+#'   \code{maxScans} since the method stops if the result does not change
+#'   between scans.
 #' @param probExplorationProbAtZero The probability of the point mass at zero
 #'   for the spike-and-slab distribution of the probability of exploration,
 #'   i.e., the probability of picking the second best micro-optimization
@@ -56,10 +55,7 @@
 #'   arrive at the supplied estimate.} \item{probExploration}{The probability of
 #'   picking the second best micro-optimization (instead of the best) for the
 #'   permutation yielding the supplied estimate.} \item{nPermutations}{An
-#'   integer giving the number of permutations actually performed.}
-#'   \item{batchSize}{An integer giving the number of permutations per batch.}
-#'   \item{curtailed}{A logical indicating whether the search was cut short
-#'   because the time exceeded the threshold.}}
+#'   integer giving the number of permutations actually performed.}}
 #'
 #' @seealso \code{\link{partition.loss}}, \code{\link{psm}},
 #'   \code{\link{confidence}}, \code{\link{dlso}}
@@ -71,32 +67,25 @@
 #' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 #'
 #' draws <- iris.clusterings
-#' salso(draws, loss="VI", batchSize=1, parallel=FALSE)
+#' salso(draws, loss="VI", nPermutations=1, parallel=FALSE)
 #'
 #' probs <- psm(draws, parallel=FALSE)
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI.lb", maxSize=0, batchSize=100, seconds=Inf, maxScans=10, probExplorationProbAtZero=0.5, probExplorationShape=0.5, probExplorationRate=50, parallel=TRUE) {
+salso <- function(x, loss="VI.lb", maxSize=0, nPermutations=100, seconds=Inf, maxScans=10, probExplorationProbAtZero=0.5, probExplorationShape=0.5, probExplorationRate=50, parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
   if ( maxSize < 0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
   if ( maxScans < 0 ) stop("'maxScans' may not be negative.")
-  if ( batchSize <= 0 ) stop("'batchSize' may be strictly positive.")
+  if ( nPermutations <= 0 ) stop("'nPermutations' may be strictly positive.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, lossCode(loss), maxSize, maxScans, batchSize, probExplorationProbAtZero, probExplorationShape, probExplorationRate, seconds, parallel, seed)
-  names(y) <- c("estimate","loss","expectedLoss","nScans","probExploration","nPermutations","batchSize","subsetSizes")
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, lossCode(loss), maxSize, maxScans, nPermutations, probExplorationProbAtZero, probExplorationShape, probExplorationRate, seconds, parallel, seed)
+  names(y) <- c("estimate","loss","expectedLoss","nScans","probExploration","nPermutations")
   names(y$estimate) <- colnames(psm)
   y$loss <- loss
-  y$batchSize <- batchSize
-  estimate <- y$estimate
-  y$subsetSizes <- table(estimate)
-  proportionSingletons <- sum(y$subsetSizes==1)/length(y$subsetSizes)
-  if ( proportionSingletons >= 0.5 ) {
-    warning(sprintf("%2.0f%% of the subsets are singletons.  For the sake of interpretability, consider using the 'maxSize' argument.",100*proportionSingletons))
-  }
-  if ( y$nPermutations < batchSize ) {
-    warning("The search was curtailed since the time threshold was reached.  Consider increasing 'seconds' or lowering 'batchSize'.")
+  if ( y$nPermutations < nPermutations ) {
+    warning(sprintf("Only %s of the requested %s permutations %s performed. Increase 'seconds' or lower 'nPermutations'.",y$nPermutations,nPermutations,ifelse(y$nPermutations==1L,"was","were")))
   }
   y
 }

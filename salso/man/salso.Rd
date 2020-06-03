@@ -8,7 +8,7 @@ salso(
   x,
   loss = "VI.lb",
   maxSize = 0,
-  batchSize = 100,
+  nPermutations = 100,
   seconds = Inf,
   maxScans = 10,
   probExplorationProbAtZero = 0.5,
@@ -34,21 +34,20 @@ details on these loss functions.}
 optimization is constrained to produce solutions whose number of subsets is
 no more than the supplied value. If zero, the size is not constrained.}
 
-\item{batchSize}{The number of permutations to consider per batch (although
-the actual number of permutations per batch is a multiple of the number of
-cores when \code{parallel=TRUE}). Batches are sequentially performed until
-the most recent batch does not lead to a better result. Therefore, at least
-two batches are performed (unless the \code{seconds} threshold is
-exceeded.)}
+\item{nPermutations}{The number of permutations to consider, although the
+actual number by differ for the following reasons: 1. The actual number is
+a multiple of the number of cores when \code{parallel=TRUE}, and 2. The
+search is curtailed when the \code{seconds} threshold is exceeded.}
 
 \item{seconds}{A time threshold in seconds after which the function will be
-curtailed (with a warning) instead of performing another batch of
-permutations. Note that the function could take considerably longer because
-the threshold is only checked after each batch is completed.}
+curtailed (with a warning) instead of performing all the requested number
+of permutations. Note that the function could take longer because the
+threshold is only checked after each permutation is completed.}
 
 \item{maxScans}{The maximum number of reallocation scans after the initial
-allocation. The actual number of scans may be less than \code{maxScans}
-since the method stops if the result does not change between scans.}
+sequential allocation. The actual number of scans may be less than
+\code{maxScans} since the method stops if the result does not change
+between scans.}
 
 \item{probExplorationProbAtZero}{The probability of the point mass at zero
 for the spike-and-slab distribution of the probability of exploration,
@@ -73,10 +72,7 @@ A list of the following elements: \describe{ \item{estimate}{An
   arrive at the supplied estimate.} \item{probExploration}{The probability of
   picking the second best micro-optimization (instead of the best) for the
   permutation yielding the supplied estimate.} \item{nPermutations}{An
-  integer giving the number of permutations actually performed.}
-  \item{batchSize}{An integer giving the number of permutations per batch.}
-  \item{curtailed}{A logical indicating whether the search was cut short
-  because the time exceeded the threshold.}}
+  integer giving the number of permutations actually performed.}}
 }
 \description{
 This function provides a partition to summarize a partition distribution
@@ -95,7 +91,7 @@ December 6, 2017. See
 # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 
 draws <- iris.clusterings
-salso(draws, loss="VI", batchSize=1, parallel=FALSE)
+salso(draws, loss="VI", nPermutations=1, parallel=FALSE)
 
 probs <- psm(draws, parallel=FALSE)
 salso(probs, loss="VI.lb", parallel=FALSE)
