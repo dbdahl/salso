@@ -85,7 +85,7 @@ salso <- function(x, loss="VI.lb", maxSize=0, batchSize=100, seconds=Inf, maxSca
   if ( batchSize <= 0 ) stop("'batchSize' may be strictly positive.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
   y <- .Call(.minimize_by_salso, z$draws, z$psm, lossCode(loss), maxSize, maxScans, batchSize, probExplorationProbAtZero, probExplorationShape, probExplorationRate, seconds, parallel, seed)
-  names(y) <- c("estimate","loss","expectedLoss","nScans","probExploration","nPermutations","batchSize","curtailed","subsetSizes")
+  names(y) <- c("estimate","loss","expectedLoss","nScans","probExploration","nPermutations","batchSize","subsetSizes")
   names(y$estimate) <- colnames(psm)
   y$loss <- loss
   y$batchSize <- batchSize
@@ -95,7 +95,7 @@ salso <- function(x, loss="VI.lb", maxSize=0, batchSize=100, seconds=Inf, maxSca
   if ( proportionSingletons >= 0.5 ) {
     warning(sprintf("%2.0f%% of the subsets are singletons.  For the sake of interpretability, consider using the 'maxSize' argument.",100*proportionSingletons))
   }
-  if ( y$curtailed && ( seconds > 0 ) ) {
+  if ( y$nPermutations < batchSize ) {
     warning("The search was curtailed since the time threshold was reached.  Consider increasing 'seconds' or lowering 'batchSize'.")
   }
   y
