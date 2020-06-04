@@ -23,7 +23,8 @@
 #'   details on these loss functions.
 #' @param maxSize The maximum number of subsets (i.e., clusters).  The
 #'   optimization is constrained to produce solutions whose number of subsets is
-#'   no more than the supplied value. If zero, the size is not constrained.
+#'   no more than the supplied value. If zero, the size is constrained to
+#'   by largest number of subsets observed in \code{x}.
 #' @param nPermutations The number of permutations to consider, although the
 #'   actual number by differ for the following reasons: 1. The actual number is
 #'   a multiple of the number of cores when \code{parallel=TRUE}, and 2. The
