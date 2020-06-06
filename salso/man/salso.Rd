@@ -8,7 +8,7 @@ salso(
   x,
   loss = "VI.lb",
   maxSize = 0,
-  nPermutations = 100,
+  nRuns = 100,
   seconds = Inf,
   maxScans = 10,
   probExplorationProbAtZero = 0.5,
@@ -36,10 +36,10 @@ no more than the supplied value. If zero, the size is constrained to not
 more than two standard deviations above the mean number of subsets in
 \code{x}.}
 
-\item{nPermutations}{The number of permutations to consider, although the
-actual number by differ for the following reasons: 1. The actual number is
-a multiple of the number of cores when \code{parallel=TRUE}, and 2. The
-search is curtailed when the \code{seconds} threshold is exceeded.}
+\item{nRuns}{The number of runs to try, although the actual number by differ
+for the following reasons: 1. The actual number is a multiple of the number
+of cores when \code{parallel=TRUE}, and 2. The search is curtailed when the
+\code{seconds} threshold is exceeded.}
 
 \item{seconds}{A time threshold in seconds after which the function will be
 curtailed (with a warning) instead of performing all the requested number
@@ -73,7 +73,7 @@ A list of the following elements: \describe{ \item{estimate}{An
   loss.} \item{nScans}{An integer vector giving the number of scans used to
   arrive at the supplied estimate.} \item{probExploration}{The probability of
   picking the second best micro-optimization (instead of the best) for the
-  permutation yielding the supplied estimate.} \item{nPermutations}{An
+  permutation yielding the supplied estimate.} \item{nRuns}{An
   integer giving the number of permutations actually performed.}}
 }
 \description{
@@ -93,7 +93,7 @@ December 6, 2017. See
 # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 
 draws <- iris.clusterings
-salso(draws, loss="VI", nPermutations=1, parallel=FALSE)
+salso(draws, loss="VI", nRuns=1, parallel=FALSE)
 
 probs <- psm(draws, parallel=FALSE)
 salso(probs, loss="VI.lb", parallel=FALSE)
