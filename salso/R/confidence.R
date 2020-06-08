@@ -40,6 +40,7 @@ confidence <- function(estimate, psm) {
   if ( length(estimate) != nrow(psm) ) stop("Dimension of 'psm' does not match the length of 'estimate'.")
   confidence <- sapply(1:length(estimate), function(i) mean(psm[i,estimate==estimate[i]]))
   tab <- table(estimate)
+  # o <- if ( is.null(order) ) order(tab, decreasing=TRUE) else order
   o <- order(tab, decreasing=TRUE)
   labels <- as.numeric(names(tab[o]))
   confidenceMatrix <- matrix(0, nrow=length(labels), ncol=length(labels))
@@ -55,11 +56,7 @@ confidence <- function(estimate, psm) {
   }
   exemplar <- sapply(labels, function(l) which(estimate==l & confidence==max(confidence[estimate==l]))[1])
   names(exemplar) <- labels
-  secondary <- confidence
-  if ( length(secondary) %% 2 == 1 ) secondary <- c(secondary,0)
-  secondary <- c(-1,1) * secondary
-  secondary <- secondary[seq_along(estimate)]
-  order <- order(match(estimate,labels), secondary)
+  order <- order(match(estimate,labels), 1-confidence)
   result <- list(estimate=estimate, psm=psm, confidence=confidence, confidenceMatrix=confidenceMatrix,
                  exemplar=exemplar, order=order)
   class(result) <- "salso.confidence"
