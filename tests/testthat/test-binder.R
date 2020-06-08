@@ -23,15 +23,13 @@ test_that("Relationship between Binder loss and Rand index", {
 })
 
 test_that("Computation of expectation of Binder loss", {
-  s <- salso::binder(subset, psm)
+  s1 <- salso::binder(subset, psm)
+  s2 <- salso::partition.loss(subset, psm, loss="binder")
+  s3 <- salso::partition.loss(subset, draws, loss="binder2")
   o <- mcclust::binder(subset, psm) / ( n^2 / 2 )
-  expect_true(isTRUE(all.equal(s,o)))
-})
-
-test_that("Computation of expectation of Binder loss (alternative)", {
-  s <- salso::partition.loss(subset, draws, loss="binder2")
-  o <- mcclust::binder(subset, psm) / ( n^2 / 2 )
-  expect_true(isTRUE(all.equal(s,o)))
+  expect_true(isTRUE(all.equal(s1,o)))
+  expect_true(isTRUE(all.equal(s2,s1)))
+  expect_true(isTRUE(all.equal(s3,s2)))
 })
 
 

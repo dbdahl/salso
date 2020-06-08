@@ -8,7 +8,7 @@ test_that("binder", {
 
 test_that("binder2", {
   s <- salso::salso(draws, loss="binder2", nRuns=10)
-  o <- salso::partition.loss(s$estimate, psm, loss="binder")  # This should be changed to 'binder2'
+  o <- salso::partition.loss(s$estimate, draws, loss="binder2")
   expect_true(isTRUE(all.equal(s$expectedLoss,o)))
 })
 

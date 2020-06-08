@@ -10,8 +10,10 @@ test_that("Computation of variation of information loss", {
 })
 
 test_that("Computation of expectation of variation of information loss", {
-  s <- salso::VI(subset, draws)
+  s1 <- salso::VI(subset, draws)
+  s2 <- salso::partition.loss(subset, draws, loss="VI")
   o <- mcclust.ext::VI(subset, draws)
-  expect_true(isTRUE(all.equal(s,o)))
+  expect_true(isTRUE(all.equal(s1,o)))
+  expect_true(isTRUE(all.equal(s2,s1)))
 })
 
