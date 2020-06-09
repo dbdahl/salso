@@ -19,6 +19,6 @@ x2drawspsm <- function(x, loss, parallel=TRUE) {
     if ( is.null(psm) ) psm <- salso::psm(draws, parallel)
   } else if ( loss %in% c("binder2","omARI","VI") ) {
     if ( is.null(draws) ) stop(sprintf("For the '%s' criterion, 'x' must be samples from a partition distribution.",loss))
-  } else stop("Unrecognized loss.")
+  } else stop(sprintf('loss="%s" is not recognized.  Please use one of the following: %s', loss, paste0('"',names(lossMapping),'"',collapse=", ")))
   list(draws=draws, psm=psm)
 }
