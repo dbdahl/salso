@@ -6,14 +6,12 @@
 \usage{
 salso(
   x,
-  loss = "VI.lb",
+  loss = "VI",
   maxSize = 0,
   nRuns = 100,
   seconds = Inf,
   maxScans = 10,
-  probExplorationProbAtZero = 0.5,
-  probExplorationShape = 0.5,
-  probExplorationRate = 50,
+  probEmptyCluster = 0.5,
   parallel = TRUE
 )
 }
@@ -32,9 +30,10 @@ details on these loss functions.}
 
 \item{maxSize}{The maximum number of subsets (i.e., clusters).  The
 optimization is constrained to produce solutions whose number of subsets is
-no more than the supplied value. If zero, the size is constrained to not
-more than two standard deviations above the mean number of subsets in
-\code{x}.}
+no more than the supplied value. If zero, the following default is used. If
+\code{x} is a pairwise similarity matrix, \code{20} is used for
+\code{maxSize}.  Otherwise, \code{maxSize} is two standard deviations above
+the mean number of subsets in \code{x}, rounding up to the nearest integer.}
 
 \item{nRuns}{The number of runs to try, although the actual number by differ
 for the following reasons: 1. The actual number is a multiple of the number
@@ -51,17 +50,9 @@ sequential allocation. The actual number of scans may be less than
 \code{maxScans} since the method stops if the result does not change
 between scans.}
 
-\item{probExplorationProbAtZero}{The probability of the point mass at zero
-for the spike-and-slab distribution of the probability of exploration,
-i.e., the probability of picking the second best micro-optimization
-(instead of the best).  This probability is randomly sampled for (and
-constant within) each permutation.}
-
-\item{probExplorationShape}{The shape of the gamma distribution for the slab
-in the spike-and-slab distribution of the probability of exploration.}
-
-\item{probExplorationRate}{The rate of the gamma distribution for the slab in
-the spike-and-slab distribution of the probability of exploration.}
+\item{probEmptyCluster}{During initial allocation, the probability of
+unilaterally allocating an item to an empty subset (if the \code{maxSize}
+is not yet reached).}
 
 \item{parallel}{Should the search use all CPU cores?}
 }

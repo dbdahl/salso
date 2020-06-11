@@ -32,8 +32,9 @@ on a clustering estimate and the pairwise similarity matrix.
 }
 \examples{
 # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
-probs <- psm(iris.clusterings, parallel=FALSE)
-est <- salso(probs, parallel=FALSE)$estimate
+draws <- iris.clusterings
+est <- salso(draws, parallel=FALSE)$estimate
+probs <- psm(draws, parallel=FALSE)
 conf <- confidence(est, probs)
 conf
 
