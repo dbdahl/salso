@@ -111,14 +111,19 @@ SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_
   int *results_max_size = INTEGER(results_max_size_sexp);
   int *seed = INTEGER(seed_sexp);
   dahl_salso__minimize_by_salso(n_items, n_draws, draws, psm, loss, max_size, max_scans, n_runs, probability_of_empty_cluster, seconds, parallel, results_labels, results_expected_loss, results_n_scans, results_n_runs, results_max_size, seed);
-  SEXP results = PROTECT(Rf_allocVector(VECSXP, 7));
+
+  SEXP results2 = PROTECT(Rf_allocVector(VECSXP, 6));
+  SET_VECTOR_ELT(results2, 1, results_expected_loss_sexp);
+  SET_VECTOR_ELT(results2, 2, results_n_scans_sexp);
+  SET_VECTOR_ELT(results2, 3, results_n_runs_sexp);
+  SET_VECTOR_ELT(results2, 4, probability_of_empty_cluster_sexp);
+  SET_VECTOR_ELT(results2, 5, results_max_size_sexp);
+
+  SEXP results = PROTECT(Rf_allocVector(VECSXP, 2));
   SET_VECTOR_ELT(results, 0, results_labels_sexp);
-  SET_VECTOR_ELT(results, 2, results_expected_loss_sexp);
-  SET_VECTOR_ELT(results, 3, results_n_scans_sexp);
-  SET_VECTOR_ELT(results, 4, results_n_runs_sexp);
-  SET_VECTOR_ELT(results, 5, probability_of_empty_cluster_sexp);
-  SET_VECTOR_ELT(results, 6, results_max_size_sexp);
-  UNPROTECT(8);
+  SET_VECTOR_ELT(results, 1, results2);
+
+  UNPROTECT(9);
   return results;
 }
 

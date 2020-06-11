@@ -10,7 +10,7 @@ salso(
   maxSize = 0,
   nRuns = 100,
   seconds = Inf,
-  maxScans = 10,
+  maxScans = 50,
   probEmptyCluster = 0.5,
   parallel = TRUE
 )
@@ -57,15 +57,8 @@ is not yet reached).}
 \item{parallel}{Should the search use all CPU cores?}
 }
 \value{
-A list of the following elements: \describe{ \item{estimate}{An
-  integer vector giving a partition encoded using cluster labels.}
-  \item{loss}{A character vector equal to the \code{loss} argument.}
-  \item{expectedLoss}{A numeric vector of length one giving the expected
-  loss.} \item{nScans}{An integer vector giving the number of scans used to
-  arrive at the supplied estimate.} \item{probExploration}{The probability of
-  picking the second best micro-optimization (instead of the best) for the
-  permutation yielding the supplied estimate.} \item{nRuns}{An
-  integer giving the number of permutations actually performed.}}
+An integer vector giving the estimated partition, encoded using
+  cluster labels.
 }
 \description{
 This function provides a partition to summarize a partition distribution

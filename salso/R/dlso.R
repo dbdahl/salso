@@ -25,11 +25,8 @@
 #'   subset (i.e., cluster) of a partition (i.e., clustering).  If \code{NULL},
 #'   this argument is set equal to \code{candidates}.
 #'
-#' @return A list of the following elements: \describe{ \item{estimate}{An
-#'   integer vector giving a partition encoded using cluster labels.}
-#'   \item{loss}{A character vector equal to the \code{loss} argument.}
-#'   \item{expectedLoss}{A numeric vector of length one giving the expected
-#'   loss.} }
+#' @return An integer vector giving the estimated partition, encoded using
+#'   cluster labels.
 #'
 #' @seealso \code{\link{partition.loss}}, \code{\link{psm}},
 #'   \code{\link{confidence}}, \code{\link{salso}}
@@ -45,11 +42,12 @@
 #' dlso(iris.clusterings, loss="VI.lb", x=probs)
 #' dlso(iris.clusterings[1:10,], loss="VI", x=iris.clusterings)  # Candidates can be constrained.
 #'
-dlso <- function(candidates, loss="VI.lb", x=NULL) {
+dlso <- function(candidates, loss="VI", x=NULL) {
   if ( is.null(x) ) x <- candidates
   expectedLoss <- partition.loss(candidates, x, loss)
   index <- which.min(expectedLoss)
   estimate <-  candidates[index,]
-  subsetSizes <- table(estimate)
-  list(estimate=estimate, loss=loss, expectedLoss=expectedLoss[index], subsetSizes=subsetSizes)
+  attr <- as.data.frame(list(lossFunction=loss, expectedLoss=expectedLoss[index]))
+  attr(estimate,"info") <- attr
+  estimate
 }

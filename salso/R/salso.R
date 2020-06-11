@@ -44,15 +44,8 @@
 #'   is not yet reached).
 #' @param parallel Should the search use all CPU cores?
 #'
-#' @return A list of the following elements: \describe{ \item{estimate}{An
-#'   integer vector giving a partition encoded using cluster labels.}
-#'   \item{loss}{A character vector equal to the \code{loss} argument.}
-#'   \item{expectedLoss}{A numeric vector of length one giving the expected
-#'   loss.} \item{nScans}{An integer vector giving the number of scans used to
-#'   arrive at the supplied estimate.} \item{probExploration}{The probability of
-#'   picking the second best micro-optimization (instead of the best) for the
-#'   permutation yielding the supplied estimate.} \item{nRuns}{An
-#'   integer giving the number of permutations actually performed.}}
+#' @return An integer vector giving the estimated partition, encoded using
+#'   cluster labels.
 #'
 #' @seealso \code{\link{partition.loss}}, \code{\link{psm}},
 #'   \code{\link{confidence}}, \code{\link{dlso}}
@@ -85,11 +78,15 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=100, seconds=Inf, maxScans=50, 
     }
   }
   y <- .Call(.minimize_by_salso, z$draws, z$psm, lossCode(loss), maxSize, maxScans, nRuns, probEmptyCluster, seconds, parallel, seed)
-  names(y) <- c("estimate","loss","expectedLoss","nScans","nRuns","probEmptyCluster","maxSize")
-  names(y$estimate) <- colnames(psm)
-  y$loss <- loss
-  if ( y$nRuns < nRuns ) {
+  estimate <- y[[1]]
+  attr(estimate,"info") <- {
+    attr <- y[[2]]
+    attr[[1]] <- loss
+    names(attr) <- c("lossFunction","expectedLoss","nScans","nRuns","probEmptyCluster","maxSize")
+    as.data.frame(attr)
+  }
+  if ( attr(estimate,"info")$nRuns < nRuns ) {
     warning(sprintf("Only %s of the requested %s permutations %s performed. Increase 'seconds' or lower 'nRuns'.",y$nRuns,nRuns,ifelse(y$nRuns==1L,"was","were")))
   }
-  y
+  estimate
 }

@@ -4,7 +4,7 @@
 \alias{dlso}
 \title{Draws-Based Latent Structure Optimization}
 \usage{
-dlso(candidates, loss = "VI.lb", x = NULL)
+dlso(candidates, loss = "VI", x = NULL)
 }
 \arguments{
 \item{candidates}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
@@ -27,11 +27,8 @@ subset (i.e., cluster) of a partition (i.e., clustering).  If \code{NULL},
 this argument is set equal to \code{candidates}.}
 }
 \value{
-A list of the following elements: \describe{ \item{estimate}{An
-  integer vector giving a partition encoded using cluster labels.}
-  \item{loss}{A character vector equal to the \code{loss} argument.}
-  \item{expectedLoss}{A numeric vector of length one giving the expected
-  loss.} }
+An integer vector giving the estimated partition, encoded using
+  cluster labels.
 }
 \description{
 This function provides a partition to summarize a partition distribution

@@ -25,7 +25,7 @@
 #' @examples
 #' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 #' draws <- iris.clusterings
-#' est <- salso(draws, parallel=FALSE)$estimate
+#' est <- salso(draws, parallel=FALSE)
 #' probs <- psm(draws, parallel=FALSE)
 #' conf <- confidence(est, probs)
 #' conf
