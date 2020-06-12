@@ -11,7 +11,8 @@ salso(
   nRuns = 100,
   seconds = Inf,
   maxScans = 50,
-  probEmptyCluster = 0.5,
+  probSequentialAllocation = 2/3,
+  probSingletonsInitialization = 1/3,
   parallel = TRUE
 )
 }
@@ -46,13 +47,17 @@ of permutations. Note that the function could take longer because the
 threshold is only checked after each permutation is completed.}
 
 \item{maxScans}{The maximum number of reallocation scans after the initial
-sequential allocation. The actual number of scans may be less than
+allocation. The actual number of scans may be less than
 \code{maxScans} since the method stops if the result does not change
 between scans.}
 
-\item{probEmptyCluster}{During initial allocation, the probability of
-unilaterally allocating an item to an empty subset (if the \code{maxSize}
-is not yet reached).}
+\item{probSequentialAllocation}{Probability of sequential allocation instead
+of using \code{sample(1:maxSize, ncol(x), replace=TRUE)} for the initial
+allocation.}
+
+\item{probSingletonsInitialization}{When doing a sequential allocation to
+obtain the initial allocation, the probability of placing the first
+\code{maxSize} randomly-selected items in singletons subsets.}
 
 \item{parallel}{Should the search use all CPU cores?}
 }

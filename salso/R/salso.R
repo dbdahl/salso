@@ -36,15 +36,15 @@
 #'   of permutations. Note that the function could take longer because the
 #'   threshold is only checked after each permutation is completed.
 #' @param maxScans The maximum number of reallocation scans after the initial
-#'   sequential allocation. The actual number of scans may be less than
+#'   allocation. The actual number of scans may be less than
 #'   \code{maxScans} since the method stops if the result does not change
 #'   between scans.
-#' @param probSequentialAllocation TODO During initial allocation, the probability of
-#'   unilaterally allocating an item to an empty subset (if the \code{maxSize}
-#'   is not yet reached).
-#' @param probSingletonsInitialization TODO During initial allocation, the probability of
-#'   unilaterally allocating an item to an empty subset (if the \code{maxSize}
-#'   is not yet reached).
+#' @param probSequentialAllocation Probability of sequential allocation instead
+#'   of using \code{sample(1:maxSize, ncol(x), replace=TRUE)} for the initial
+#'   allocation.
+#' @param probSingletonsInitialization When doing a sequential allocation to
+#'   obtain the initial allocation, the probability of placing the first
+#'   \code{maxSize} randomly-selected items in singletons subsets.
 #' @param parallel Should the search use all CPU cores?
 #'
 #' @return An integer vector giving the estimated partition, encoded using
