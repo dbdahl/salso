@@ -39,7 +39,10 @@
 #'   sequential allocation. The actual number of scans may be less than
 #'   \code{maxScans} since the method stops if the result does not change
 #'   between scans.
-#' @param probEmptyCluster During initial allocation, the probability of
+#' @param probSequentialAllocation TODO During initial allocation, the probability of
+#'   unilaterally allocating an item to an empty subset (if the \code{maxSize}
+#'   is not yet reached).
+#' @param probSingletonsInitialization TODO During initial allocation, the probability of
 #'   unilaterally allocating an item to an empty subset (if the \code{maxSize}
 #'   is not yet reached).
 #' @param parallel Should the search use all CPU cores?
@@ -63,11 +66,13 @@
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=100, seconds=Inf, maxScans=50, probEmptyCluster=0.5, parallel=TRUE) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=100, seconds=Inf, maxScans=50, probSequentialAllocation=2/3, probSingletonsInitialization=1/3, parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
   if ( maxSize < 0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
   if ( maxScans < 0 ) stop("'maxScans' may not be negative.")
+  if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
+  if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
   if ( nRuns <= 0 ) stop("'nRuns' may be strictly positive.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) ) {
@@ -77,12 +82,12 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=100, seconds=Inf, maxScans=50, 
       maxSize <- ceiling(mean(nClusters) + 2*sd(nClusters))
     }
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, lossCode(loss), maxSize, maxScans, nRuns, probEmptyCluster, seconds, parallel, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, lossCode(loss), maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, seconds, parallel, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
     attr[[1]] <- loss
-    names(attr) <- c("lossFunction","expectedLoss","nScans","nRuns","probEmptyCluster","maxSize")
+    names(attr) <- c("loss","expectedLoss","nScans","nRuns","maxSize")
     as.data.frame(attr)
   }
   if ( attr(estimate,"info")$nRuns < nRuns ) {
