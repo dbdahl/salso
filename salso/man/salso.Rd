@@ -52,7 +52,7 @@ allocation. The actual number of scans may be less than
 between scans.}
 
 \item{probSequentialAllocation}{Probability of sequential allocation instead
-of using \code{sample(1:maxSize, ncol(x), replace=TRUE)} for the initial
+of using \code{sample(1:maxSize, ncol(x), TRUE)} for the initial
 allocation.}
 
 \item{probSingletonsInitialization}{When doing a sequential allocation to

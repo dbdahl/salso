@@ -40,7 +40,7 @@
 #'   \code{maxScans} since the method stops if the result does not change
 #'   between scans.
 #' @param probSequentialAllocation Probability of sequential allocation instead
-#'   of using \code{sample(1:maxSize, ncol(x), replace=TRUE)} for the initial
+#'   of using \code{sample(1:maxSize, ncol(x), TRUE)} for the initial
 #'   allocation.
 #' @param probSingletonsInitialization When doing a sequential allocation to
 #'   obtain the initial allocation, the probability of placing the first
