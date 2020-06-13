@@ -190,11 +190,13 @@ ARI <- function(partition1, partition2) {
 #' @useDynLib salso .expected_loss
 #'
 expected.loss <- function(partitions, x, loss) {
-  if ( ! is.matrix(partitions) ) dim(partitions) <- c(1,length(partitions))
   if ( ! is.matrix(x) ) dim(x) <- c(1,length(x))
+  if ( ! is.matrix(partitions) ) dim(partitions) <- c(1,length(partitions))
+  if ( nrow(partitions) == 0 ) return(numeric())
   if ( ncol(x) != ncol(partitions) ) {
     stop("The number of items (i.e., number of columns) in 'partitions' and 'x' are not the same.")
   }
+  if ( ncol(x) == 0 ) return(rep(NA, nrow(partitions)))
   y <- x2drawspsm(x, loss)
   .Call(.expected_loss, partitions, y$draws, y$psm, lossCode(loss))
 }

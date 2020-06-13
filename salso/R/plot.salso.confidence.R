@@ -6,9 +6,6 @@
 #' further explanation.
 #'
 #' @param x An object returned by the \code{\link{confidence}} function.
-#' @param estimate A vector of length \eqn{n}, where \eqn{i} and \eqn{j} are in
-#'   the same subset (i.e., cluster) if and only if \code{estimate[i] ==
-#'   estimate[j]}.'  If \code{NULL}, the \code{x$estimate} in used.
 #' @param data The data from which the distances were computed.
 #' @param showLabels Should the names of items be shown in the plot?
 #' @param ... Currently ignored.
@@ -34,9 +31,8 @@
 #'   text
 #' @export
 #'
-plot.salso.confidence <- function(x, estimate=NULL, data=NULL, showLabels=length(x$estimate)<=50, ...) {
+plot.salso.summary <- function(x, data=NULL, showLabels=length(x$estimate)<=50, ...) {
   if ( ! is.null(data) ) {
-    if ( ! is.null(estimate) ) stop("'estimate' must be 'NULL' for pairs plot.")
     m <- match(x$estimate, as.numeric(names(x$exemplar)))
     i <- x$exemplar[m]
     c <- rainbow(length(x$exemplar))[m]
@@ -48,13 +44,10 @@ plot.salso.confidence <- function(x, estimate=NULL, data=NULL, showLabels=length
     pairs(data,panel=panelFnc)
     return(invisible())
   }
-  if ( is.null(estimate) ) {
-    estimate <- x$estimate
-    o <- x$order
-  } else {
-    o <- order(estimate)
-  }
-  pm <- x$psm[o,rev(o)]
+  estimate <- x$estimate
+  o <- x$order
+  pm <- if ( ! is.null(attr(x$estimate,"psm")) ) attr(x$estimate,"psm") else psm(attr(x$estimate,"draws"))
+  pm <- pm[o,rev(o)]
   n <- nrow(pm)
   sizes <- rle(estimate[o])$lengths
   cuts <- cumsum(sizes)
