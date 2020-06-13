@@ -7,14 +7,14 @@ lossCode <- function(loss) {
   unname(lossMapping[loss])
 }
 
+isPSM <- function(x) {
+  ( isSymmetric(x) && all(0 <= x) && all(x <= 1) && all(diag(x)==1) )
+}
+
 x2drawspsm <- function(x, loss, parallel=TRUE) {
   draws <- NULL
   psm <- NULL
-  if ( isSymmetric(x) && all(0 <= x) && all(x <= 1) && all(diag(x)==1) ) {
-    psm <- x
-  } else {
-    draws <- x
-  }
+  if ( isPSM(x) ) { psm <- x } else { draws <- x }
   if ( loss %in% c("binder","omARI.approx","VI.lb") ) {
     if ( is.null(psm) ) psm <- salso::psm(draws, parallel)
   } else if ( loss %in% c("binder2","omARI","VI") ) {

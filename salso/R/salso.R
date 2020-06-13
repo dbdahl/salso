@@ -88,10 +88,22 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=100, seconds=Inf, maxScans=50, 
     attr <- y[[2]]
     attr[[1]] <- loss
     names(attr) <- c("loss","expectedLoss","nScans","nRuns","maxSize")
-    as.data.frame(attr)
+    as.data.frame(attr, row.names="")
   }
+  attr(estimate,"draws") <- z$draws
+  attr(estimate,"psm") <- z$psm
   if ( attr(estimate,"info")$nRuns < nRuns ) {
     warning(sprintf("Only %s of the requested %s permutations %s performed. Increase 'seconds' or lower 'nRuns'.",y$nRuns,nRuns,ifelse(y$nRuns==1L,"was","were")))
   }
+  class(estimate) <- "salso.estimate"
   estimate
+}
+
+#' @export
+#'
+print.salso.estimate <- function(x, ...) {
+  class(x) <- NULL
+  attr(x,"draws") <- NULL
+  attr(x,"psm") <- NULL
+  print(x)
 }
