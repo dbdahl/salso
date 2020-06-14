@@ -29,7 +29,7 @@
 #'   cluster labels.
 #'
 #' @seealso \code{\link{partition.loss}}, \code{\link{psm}},
-#'   \code{\link{confidence}}, \code{\link{salso}}
+#'   \code{\link{summary.salso.estimate}}, \code{\link{salso}}
 #'
 #' @export
 #' @examples
@@ -47,7 +47,12 @@ dlso <- function(candidates, loss="VI", x=NULL) {
   expectedLoss <- partition.loss(candidates, x, loss)
   index <- which.min(expectedLoss)
   estimate <-  candidates[index,]
-  attr <- as.data.frame(list(lossFunction=loss, expectedLoss=expectedLoss[index]))
-  attr(estimate,"info") <- attr
+  attr(estimate,"info") <- {
+    attr <- list(loss=loss, expectedLoss=expectedLoss[index])
+    as.data.frame(attr, row.names="")
+  }
+  attr(estimate,"draws") <- x
+  attr(estimate,"psm") <- NULL
+  class(estimate) <- "salso.estimate"
   estimate
 }

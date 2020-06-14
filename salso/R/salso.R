@@ -51,7 +51,7 @@
 #'   cluster labels.
 #'
 #' @seealso \code{\link{partition.loss}}, \code{\link{psm}},
-#'   \code{\link{confidence}}, \code{\link{dlso}}
+#'   \code{\link{summary.salso.estimate}}, \code{\link{dlso}}
 #'
 #' @export
 #' @useDynLib salso .minimize_by_salso

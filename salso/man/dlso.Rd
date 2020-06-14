@@ -52,5 +52,5 @@ dlso(iris.clusterings[1:10,], loss="VI", x=iris.clusterings)  # Candidates can b
 }
 \seealso{
 \code{\link{partition.loss}}, \code{\link{psm}},
-  \code{\link{confidence}}, \code{\link{salso}}
+  \code{\link{summary.salso.estimate}}, \code{\link{salso}}
 }

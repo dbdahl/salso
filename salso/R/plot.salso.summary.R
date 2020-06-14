@@ -1,13 +1,16 @@
-#' Confidence and Exemplar Plotting
+#' Heatmap, Dendrogram, and Exemplar Plotting for Partition Estimation
 #'
-#' This function produces confidence plots (e.g., heatmaps of pairwise
-#' allocation probabilities) and exemplar plots. The "exemplar" refers to the
-#' best representative of a particular cluster. See \code{\link{confidence}} for
-#' further explanation.
+#' This function produces one of three plots:  1. A heatmap shows the pairwise
+#' allocation probabilities that items are clustered.
+#' 2. A dendrogram based on expected partition loss shows the relationships among
+#' clusters when merging pairs of clusters such that the increase in the
+#' expectation of the posterior loss is minimized.  3. An exemplar plot shows
+#' pairs plots of all the variables with the exemplar (i.e., the most representative observation) of each cluster emphasized.
 #'
-#' @param x An object returned by the \code{\link{confidence}} function.
-#' @param data The data from which the distances were computed.
-#' @param showLabels Should the names of items be shown in the plot?
+#' @param x An object returned by \code{summary(x)}, where \code{x} itself is returned by the \code{\link{salso}} function.
+#' @param type A string equal to \code{"heatmap"}, \code{"dendrogram"}, or \code{"exemplar"}.
+#' @param data The data from which the partition estimation was obtained.  This is required when \code{type='exemplar'} and ignored otherwise.
+#' @param showLabels Should the names of items be shown in the plot when \code{type="heatmap"}?
 #' @param ... Currently ignored.
 #'
 #' @return \code{NULL}, invisibly.
@@ -18,21 +21,25 @@
 #' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
 #' draws <- iris.clusterings
 #' est <- salso(draws, parallel=FALSE)
-#' probs <- psm(draws, parallel=FALSE)
-#' conf <- confidence(est, probs)
-#' plot(conf)
-#' plot(conf, data=iris)
+#' summ <- summary(est)
+#' plot(summ, type="heatmap")
+#' plot(summ, type="dendrogram")
+#' plot(summ, type="exemplar", data=iris)
 #'
-#' @seealso \code{\link{confidence}}, \code{\link{psm}}, \code{\link{dlso}},
-#'   \code{\link{salso}}
+#' @seealso \code{\link{salso}}, \code{\link{summary.salso.estimate}}
 #'
 #' @importFrom grDevices heat.colors rainbow topo.colors
 #' @importFrom graphics abline axis box image pairs par points polygon segments
 #'   text
 #' @export
 #'
-plot.salso.summary <- function(x, data=NULL, showLabels=length(x$estimate)<=50, ...) {
-  if ( ! is.null(data) ) {
+plot.salso.summary <- function(x, type=c("heatmap","dendrogram","exemplar")[1], data=NULL, showLabels=length(x$estimate)<=50, ...) {
+  if ( type == "dendrogram" ) {
+    plot(x$dendrogram)
+    return(invisible())
+  }
+  if ( type == "exemplar" ) {
+    if ( is.null(data) ) stop("'data' must be supplied when type='exemplar'")
     m <- match(x$estimate, as.numeric(names(x$exemplar)))
     i <- x$exemplar[m]
     c <- rainbow(length(x$exemplar))[m]
@@ -44,6 +51,7 @@ plot.salso.summary <- function(x, data=NULL, showLabels=length(x$estimate)<=50, 
     pairs(data,panel=panelFnc)
     return(invisible())
   }
+  if ( type != "heatmap" ) stop(sprintf("Unknown plot type '%s'.",type))
   estimate <- x$estimate
   o <- x$order
   pm <- if ( ! is.null(attr(x$estimate,"psm")) ) attr(x$estimate,"psm") else psm(attr(x$estimate,"draws"))

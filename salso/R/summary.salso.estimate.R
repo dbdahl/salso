@@ -1,9 +1,26 @@
+#' Summary of Partitions Estimated Using Posterior Expected Loss
+#'
+#' @param object An object returned by the \code{\link{salso}} function.
+#' @param ... Currently ignored
+#'
+#' @return A list containing the score for each observation, exemplar
+#'   observation for each cluster, a dendrogram object, and a vector for
+#'   ordering observations in the heatmap plot.
 #' @export
+#'
+#' @examples
+#' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
+#' draws <- iris.clusterings
+#' est <- salso(draws, parallel=FALSE)
+#' summ <- summary(est)
+#' plot(summ, type="heatmap")
+#' plot(summ, type="dendrogram")
+#' plot(summ, type="exemplar", data=iris)
 #'
 summary.salso.estimate <- function(object, ...) {
   loss <- attr(object,"info")$loss
   x <- if ( ! is.null(attr(object,"psm")) ) attr(object,"psm") else attr(object,"draws")
-  isPSM <- salso:::isPSM(x)
+  isPSM <- isPSM(x)
   nItems <- length(object)
   one2n <- seq_len(nItems)
   # score
@@ -38,22 +55,3 @@ summary.salso.estimate <- function(object, ...) {
   class(result) <- "salso.summary"
   result
 }
-
-# exemplar <- function(estimate) {
-#   x <- if ( ! is.null(attr(estimate,"psm")) ) attr(estimate,"psm") else attr(estimate,"draws")
-#   isPSM <- salso:::isPSM(x)
-#   loss <- attr(estimate,"info")$loss
-#   nItems <- length(estimate)
-#   one2n <- seq_len(nItems)
-#   score <- sapply(one2n, function(i) {
-#     subset <- ( estimate==estimate[i] ) & ( one2n!= i )
-#     xi <- if ( isPSM ) x[subset, subset, drop=FALSE] else x[, subset, drop=FALSE]
-#     partition.loss(rep(1,ncol(xi)), xi, loss)
-#   })
-#   score[is.na(score)] <- 0
-#   print(score)
-#   all <- data.frame(id=seq_len(nItems), label=as.vector(estimate), score=score)
-#   sapply(split(all, all$label), function(d) {
-#     if ( nrow(d) > 1 ) d$id[which.max(d$score)] else d$id
-#   })
-# }
