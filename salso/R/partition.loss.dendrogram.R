@@ -1,28 +1,3 @@
-#' Dendrogram Based on Expected Partition Loss
-#'
-#' A dendrogram based on expected partition loss shows the relationships among
-#' clusters when merging pairs of clusters such that the increase in the
-#' expectation of the posterior loss is minimized.
-#'
-#' @param object An object of class \code{salso.estimate} obtained from the
-#'   \code{\link{salso}} function.
-#' @param ... Currently ignored.
-#'
-#' @return An object of class \code{salso.dendrogram}, which can be plotted with
-#'   the \code{\link{plot}} function.
-#' @export
-#' @importFrom stats as.dendrogram
-#'
-#' @examples
-#' draws <- iris.clusterings
-#' estimate <- salso(draws, loss="VI", nRuns=4, parallel=FALSE)
-#' plot(as.dendrogram(estimate))
-#'
-as.dendrogram.salso.estimate <- function(object, ...) {
-  x <- if ( ! is.null(attr(object,"psm")) ) attr(object,"psm") else attr(object,"draws")
-  partition.loss.dendrogram(as.vector(object), x, attr(object,"info")$loss)
-}
-
 partition.loss.dendrogram <- function(estimate, x, loss) {
   isPSM <- isPSM(x)
   height <-  partition.loss(estimate, x, loss)
