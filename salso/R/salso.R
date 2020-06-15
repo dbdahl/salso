@@ -19,10 +19,10 @@
 #'   (estimated) probability that items \eqn{i} and \eqn{j} are in the same
 #'   subset (i.e., cluster) of a partition (i.e., clustering).
 #' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-#'   \code{"VI"}, or \code{"VI.lb"}.  See \code{\link{partition.loss}} for
-#'   details on these loss functions.  Note that, if \code{loss="binder.psm"},
-#'   an algorithm based on the pairwise similarity matrix is used, whereas
+#'   \code{"VI"}, or \code{"VI.lb"}.  Note that, if \code{loss="binder.psm"}, an
+#'   algorithm based on the pairwise similarity matrix is used, whereas
 #'   \code{loss="binder.draws"} results in an algorithm based on the samples.
+#'   See \code{\link{partition.loss}} for details on these loss functions.
 #' @param maxSize The maximum number of subsets (i.e., clusters).  The
 #'   optimization is constrained to produce solutions whose number of subsets is
 #'   no more than the supplied value. If zero, the following default is used. If

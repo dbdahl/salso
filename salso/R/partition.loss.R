@@ -77,6 +77,10 @@
 #'   subset (i.e., cluster) of a partition (i.e., clustering).
 #' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
 #'   \code{"VI"}, or \code{"VI.lb"}.
+#' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
+#'   \code{"VI"}, or \code{"VI.lb"}.  Note that, if \code{loss="binder.psm"},
+#'   an algorithm based on the pairwise similarity matrix is used, whereas
+#'   \code{loss="binder.draws"} results in an algorithm based on the samples.
 #'
 #' @return A numeric vector.
 #'

@@ -41,7 +41,9 @@ clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
 subset (i.e., cluster) of a partition (i.e., clustering).}
 
 \item{loss}{One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-\code{"VI"}, or \code{"VI.lb"}.}
+\code{"VI"}, or \code{"VI.lb"}.  Note that, if \code{loss="binder.psm"},
+an algorithm based on the pairwise similarity matrix is used, whereas
+\code{loss="binder.draws"} results in an algorithm based on the samples.}
 
 \item{partition1}{An integer vector of cluster labels for \eqn{n} items. Two
 items are in the same subset (i.e., cluster) if their labels are equal.}
