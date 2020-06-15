@@ -27,7 +27,9 @@ subset (i.e., cluster) of a partition (i.e., clustering).}
 
 \item{loss}{One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
 \code{"VI"}, or \code{"VI.lb"}.  See \code{\link{partition.loss}} for
-details on these loss functions.}
+details on these loss functions.  Note that, if \code{loss="binder.psm"},
+an algorithm based on the pairwise similarity matrix is used, whereas
+\code{loss="binder.draws"} results in an algorithm based on the samples.}
 
 \item{maxSize}{The maximum number of subsets (i.e., clusters).  The
 optimization is constrained to produce solutions whose number of subsets is

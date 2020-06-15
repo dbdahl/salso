@@ -4,14 +4,14 @@ subset <- c(4, 23, 33, 76, 89, 90, 110, 130, 144)
 draws.small <- draws[,subset]
 psm.small <- psm[subset,subset]
 
-test_that("SALSO minimizes binder", {
+test_that("SALSO minimizes binder.psm", {
   s <- salso::salso(psm.small, loss="binder", nRuns=100)
   o1 <- as.vector(salso:::minimize.by.enumeration(psm.small, loss="binder"))
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
 
-test_that("SALSO minimizes binder2", {
-  s <- salso::salso(draws.small, loss="binder2", nRuns=100)
+test_that("SALSO minimizes binder.draws", {
+  s <- salso::salso(draws.small, loss="binder", nRuns=100)
   o1 <- as.vector(salso:::minimize.by.enumeration(psm.small, loss="binder"))
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
@@ -40,14 +40,14 @@ test_that("SALSO minimizes VI.lb", {
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
 
-test_that("SALSO minimizes binder (nonparallel)", {
+test_that("SALSO minimizes binder.psm (nonparallel)", {
   s <- salso::salso(psm.small, loss="binder", nRuns=100, parallel=FALSE)
   o1 <- as.vector(salso:::minimize.by.enumeration(psm.small, loss="binder"))
   expect_true(isTRUE(all.equal(salso::VI(salso::VI(s, o1),0),0)))
 })
 
-test_that("SALSO minimizes binder2 (nonparallel)", {
-  s <- salso::salso(draws.small, loss="binder2", nRuns=100, parallel=FALSE)
+test_that("SALSO minimizes binder.draws (nonparallel)", {
+  s <- salso::salso(draws.small, loss="binder", nRuns=100, parallel=FALSE)
   o1 <- as.vector(salso:::minimize.by.enumeration(psm.small, loss="binder"))
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })

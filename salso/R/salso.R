@@ -20,7 +20,9 @@
 #'   subset (i.e., cluster) of a partition (i.e., clustering).
 #' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
 #'   \code{"VI"}, or \code{"VI.lb"}.  See \code{\link{partition.loss}} for
-#'   details on these loss functions.
+#'   details on these loss functions.  Note that, if \code{loss="binder.psm"},
+#'   an algorithm based on the pairwise similarity matrix is used, whereas
+#'   \code{loss="binder.draws"} results in an algorithm based on the samples.
 #' @param maxSize The maximum number of subsets (i.e., clusters).  The
 #'   optimization is constrained to produce solutions whose number of subsets is
 #'   no more than the supplied value. If zero, the following default is used. If
@@ -82,7 +84,7 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=50, p
       maxSize <- ceiling(mean(nClusters) + 2*sd(nClusters))
     }
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, lossCode(loss), maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, seconds, parallel, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, seconds, parallel, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]

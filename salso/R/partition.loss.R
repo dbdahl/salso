@@ -198,5 +198,5 @@ expected.loss <- function(partitions, x, loss) {
   }
   if ( ncol(x) == 0 ) return(rep(NA, nrow(partitions)))
   y <- x2drawspsm(x, loss)
-  .Call(.expected_loss, partitions, y$draws, y$psm, lossCode(loss))
+  .Call(.expected_loss, partitions, y$draws, y$psm, y$lossCode)
 }
