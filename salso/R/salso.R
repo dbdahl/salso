@@ -78,7 +78,7 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=50, p
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) ) {
     maxSize <- if ( is.null(z$draws) ) 20
     else {
-      nClusters <- apply(z$draws,1,max)
+      nClusters <- apply(z$draws, 1, function(x) length(unique(x)))
       maxSize <- ceiling(mean(nClusters) + 2*sd(nClusters))
     }
   }
