@@ -8,7 +8,7 @@ salso(
   x,
   loss = "VI",
   maxSize = 0,
-  nRuns = 100,
+  nRuns = 96,
   seconds = Inf,
   maxScans = 50,
   probSequentialAllocation = 2/3,

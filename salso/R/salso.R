@@ -66,14 +66,14 @@
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=100, seconds=Inf, maxScans=50, probSequentialAllocation=2/3, probSingletonsInitialization=1/3, parallel=TRUE) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=50, probSequentialAllocation=2/3, probSingletonsInitialization=1/3, parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
-  if ( maxSize < 0 ) stop("'maxSize' may not be negative.")
+  if ( maxSize < 0.0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
-  if ( maxScans < 0 ) stop("'maxScans' may not be negative.")
+  if ( maxScans < 0.0 ) stop("'maxScans' may not be negative.")
   if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
   if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
-  if ( nRuns <= 0 ) stop("'nRuns' may be strictly positive.")
+  if ( nRuns <= 1.0 ) stop("'nRuns' may be at least one.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) ) {
     maxSize <- if ( is.null(z$draws) ) 20
