@@ -11,8 +11,8 @@ salso(
   nRuns = 96,
   seconds = Inf,
   maxScans = 50,
-  probSequentialAllocation = 2/3,
-  probSingletonsInitialization = 1/3,
+  probSequentialAllocation = 0.5,
+  probSingletonsInitialization = 0,
   parallel = TRUE
 )
 }
@@ -33,10 +33,9 @@ See \code{\link{partition.loss}} for details on these loss functions.}
 
 \item{maxSize}{The maximum number of subsets (i.e., clusters).  The
 optimization is constrained to produce solutions whose number of subsets is
-no more than the supplied value. If zero, the following default is used. If
-\code{x} is a pairwise similarity matrix, \code{20} is used for
-\code{maxSize}.  Otherwise, \code{maxSize} is two standard deviations above
-the mean number of subsets in \code{x}, rounding up to the nearest integer.}
+no more than the supplied value. If zero, the following default is used: If
+\code{x} is a pairwise similarity matrix, \code{12} is used; otherwise, the
+maximum number of subsets in \code{x} is used.}
 
 \item{nRuns}{The number of runs to try, although the actual number by differ
 for the following reasons: 1. The actual number is a multiple of the number

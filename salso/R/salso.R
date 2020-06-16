@@ -25,10 +25,9 @@
 #'   See \code{\link{partition.loss}} for details on these loss functions.
 #' @param maxSize The maximum number of subsets (i.e., clusters).  The
 #'   optimization is constrained to produce solutions whose number of subsets is
-#'   no more than the supplied value. If zero, the following default is used. If
-#'   \code{x} is a pairwise similarity matrix, \code{20} is used for
-#'   \code{maxSize}.  Otherwise, \code{maxSize} is two standard deviations above
-#'   the mean number of subsets in \code{x}, rounding up to the nearest integer.
+#'   no more than the supplied value. If zero, the following default is used: If
+#'   \code{x} is a pairwise similarity matrix, \code{12} is used; otherwise, the
+#'   maximum number of subsets in \code{x} is used.
 #' @param nRuns The number of runs to try, although the actual number by differ
 #'   for the following reasons: 1. The actual number is a multiple of the number
 #'   of cores when \code{parallel=TRUE}, and 2. The search is curtailed when the
@@ -68,28 +67,25 @@
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=50, probSequentialAllocation=2/3, probSingletonsInitialization=1/3, parallel=TRUE) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=50, probSequentialAllocation=0.5, probSingletonsInitialization=0, parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
   if ( maxSize < 0.0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
   if ( maxScans < 0.0 ) stop("'maxScans' may not be negative.")
   if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
   if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
-  if ( nRuns <= 1.0 ) stop("'nRuns' may be at least one.")
+  if ( nRuns < 1.0 ) stop("'nRuns' may be at least one.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) ) {
-    maxSize <- if ( is.null(z$draws) ) 20
-    else {
-      nClusters <- apply(z$draws, 1, function(x) length(unique(x)))
-      maxSize <- ceiling(mean(nClusters) + 2*sd(nClusters))
-    }
+    maxSize <- if ( is.null(z$draws) ) 12 else max(apply(z$draws, 1, function(x) length(unique(x))))
   }
   y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, seconds, parallel, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
     attr[[1]] <- loss
-    names(attr) <- c("loss","expectedLoss","nScans","nRuns","maxSize")
+    attr[[6]] <- names(which(initMethodMapping==attr[[6]]))
+    names(attr) <- c("loss","expectedLoss","nScans","nRuns","maxSize","initializationMethod")
     as.data.frame(attr, row.names="")
   }
   attr(estimate,"draws") <- z$draws
