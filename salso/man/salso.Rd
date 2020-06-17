@@ -13,6 +13,7 @@ salso(
   maxScans = 50,
   probSequentialAllocation = 0.5,
   probSingletonsInitialization = 0,
+  tryMergeSplit = TRUE,
   parallel = TRUE
 )
 }
@@ -59,6 +60,8 @@ allocation.}
 \item{probSingletonsInitialization}{When doing a sequential allocation to
 obtain the initial allocation, the probability of placing the first
 \code{maxSize} randomly-selected items in singletons subsets.}
+
+\item{tryMergeSplit}{Should merge/split optimizations be tried?}
 
 \item{parallel}{Should the search use all CPU cores?}
 }

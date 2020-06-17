@@ -1,4 +1,4 @@
-initMethodMapping <- c("sequentialFromEmpty" = 0L, "sequentialFromSingletons" = 1L, "sampleOne2MaxWithReplacement" = 2L)
+initMethodMapping <- c("empty" = 0L, "singletons" = 1L, "sample" = 2L)
 
 lossMapping <- c("binder.draws" = 0L, "binder.psm" = 1L, "omARI" = 2L, "omARI.approx" = 3L, "VI" = 4L, "VI.lb" = 5L)
 

@@ -46,6 +46,7 @@
 #' @param probSingletonsInitialization When doing a sequential allocation to
 #'   obtain the initial allocation, the probability of placing the first
 #'   \code{maxSize} randomly-selected items in singletons subsets.
+#' @param tryMergeSplit Should merge/split optimizations be tried?
 #' @param parallel Should the search use all CPU cores?
 #'
 #' @return An integer vector giving the estimated partition, encoded using
@@ -67,7 +68,7 @@
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=50, probSequentialAllocation=0.5, probSingletonsInitialization=0, parallel=TRUE) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=50, probSequentialAllocation=0.5, probSingletonsInitialization=0, tryMergeSplit=TRUE, parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
   if ( maxSize < 0.0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
@@ -79,13 +80,13 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=50, p
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) ) {
     maxSize <- if ( is.null(z$draws) ) 12 else max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, seconds, parallel, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, tryMergeSplit, seconds, parallel, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
-    attr[[1]] <- loss
-    attr[[6]] <- names(which(initMethodMapping==attr[[6]]))
-    names(attr) <- c("loss","expectedLoss","nScans","nRuns","maxSize","initializationMethod")
+    names(attr) <- c("loss","expectedLoss","initMethod","nScans","nMerges","nSplits","nRuns","maxSize")
+    attr$loss <- loss
+    attr$initMethod <- names(which(initMethodMapping==attr$initMethod))
     as.data.frame(attr, row.names="")
   }
   attr(estimate,"draws") <- z$draws

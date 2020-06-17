@@ -78,7 +78,7 @@ SEXP minimize_by_enumeration(SEXP psm_sexp, SEXP loss_sexp) {
   return results_labels_sexp;
 }
 
-SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_size_sexp, SEXP max_scans_sexp, SEXP n_runs_sexp, SEXP prob_sequential_allocation_sexp, SEXP prob_singletons_initialization_sexp, SEXP seconds_sexp, SEXP parallel_sexp, SEXP seed_sexp) {
+SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_size_sexp, SEXP max_scans_sexp, SEXP n_runs_sexp, SEXP prob_sequential_allocation_sexp, SEXP prob_singletons_initialization_sexp, SEXP try_merge_split_sexp, SEXP seconds_sexp, SEXP parallel_sexp, SEXP seed_sexp) {
   int n_items;
   int n_draws;
   if ( ! Rf_isNull(draws_sexp) ) {
@@ -98,6 +98,7 @@ SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_
   int n_runs = Rf_asInteger(n_runs_sexp);
   double prob_sequential_allocation = Rf_asReal(prob_sequential_allocation_sexp);
   double prob_singletons_initialization = Rf_asReal(prob_singletons_initialization_sexp);
+  int try_merge_split = Rf_asLogical(try_merge_split_sexp);
   double seconds = Rf_asReal(seconds_sexp);
   int parallel = Rf_asLogical(parallel_sexp);
   SEXP results_labels_sexp = PROTECT(Rf_allocVector(INTSXP, n_items));
@@ -106,6 +107,10 @@ SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_
   double *results_expected_loss = REAL(results_expected_loss_sexp);
   SEXP results_n_scans_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
   int *results_n_scans = INTEGER(results_n_scans_sexp);
+  SEXP results_n_merges_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
+  int *results_n_merges = INTEGER(results_n_merges_sexp);
+  SEXP results_n_splits_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
+  int *results_n_splits = INTEGER(results_n_splits_sexp);
   SEXP results_n_runs_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
   int *results_n_runs = INTEGER(results_n_runs_sexp);
   SEXP results_max_size_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
@@ -113,20 +118,22 @@ SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_
   SEXP results_initialization_method_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
   int *results_initialization_method = INTEGER(results_initialization_method_sexp);
   int *seed = INTEGER(seed_sexp);
-  dahl_salso__minimize_by_salso(n_items, n_draws, draws, psm, loss, max_size, max_scans, n_runs, prob_sequential_allocation, prob_singletons_initialization, seconds, parallel, results_labels, results_expected_loss, results_n_scans, results_n_runs, results_max_size, results_initialization_method, seed);
+  dahl_salso__minimize_by_salso(n_items, n_draws, draws, psm, loss, max_size, max_scans, n_runs, prob_sequential_allocation, prob_singletons_initialization, try_merge_split, seconds, parallel, results_labels, results_expected_loss, results_n_scans, results_n_merges, results_n_splits, results_n_runs, results_max_size, results_initialization_method, seed);
 
-  SEXP results2 = PROTECT(Rf_allocVector(VECSXP, 6));
+  SEXP results2 = PROTECT(Rf_allocVector(VECSXP, 8));
   SET_VECTOR_ELT(results2, 1, results_expected_loss_sexp);
-  SET_VECTOR_ELT(results2, 2, results_n_scans_sexp);
-  SET_VECTOR_ELT(results2, 3, results_n_runs_sexp);
-  SET_VECTOR_ELT(results2, 4, results_max_size_sexp);
-  SET_VECTOR_ELT(results2, 5, results_initialization_method_sexp);
+  SET_VECTOR_ELT(results2, 2, results_initialization_method_sexp);
+  SET_VECTOR_ELT(results2, 3, results_n_scans_sexp);
+  SET_VECTOR_ELT(results2, 4, results_n_merges_sexp);
+  SET_VECTOR_ELT(results2, 5, results_n_splits_sexp);
+  SET_VECTOR_ELT(results2, 6, results_n_runs_sexp);
+  SET_VECTOR_ELT(results2, 7, results_max_size_sexp);
 
   SEXP results = PROTECT(Rf_allocVector(VECSXP, 2));
   SET_VECTOR_ELT(results, 0, results_labels_sexp);
   SET_VECTOR_ELT(results, 1, results2);
 
-  UNPROTECT(10);
+  UNPROTECT(12);
   return results;
 }
 
@@ -138,7 +145,7 @@ static const R_CallMethodDef CallEntries[] = {
   {".lbell", (DL_FUNC) &lbell, 1},
   {".enumerate_partitions", (DL_FUNC) &enumerate_partitions, 1},
   {".minimize_by_enumeration", (DL_FUNC) &minimize_by_enumeration, 2},
-  {".minimize_by_salso", (DL_FUNC) &minimize_by_salso, 11},
+  {".minimize_by_salso", (DL_FUNC) &minimize_by_salso, 12},
   {NULL, NULL, 0}
 };
 
