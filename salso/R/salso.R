@@ -68,11 +68,12 @@
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=50, probSequentialAllocation=0.5, probSingletonsInitialization=0, tryMergeSplit=TRUE, parallel=TRUE) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=Inf, probSequentialAllocation=0.5, probSingletonsInitialization=0, tryMergeSplit=TRUE, parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
   if ( maxSize < 0.0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
   if ( maxScans < 0.0 ) stop("'maxScans' may not be negative.")
+  if ( maxScans > .Machine$integer.max ) maxScans <- .Machine$integer.max
   if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
   if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
   if ( nRuns < 1.0 ) stop("'nRuns' may be at least one.")
