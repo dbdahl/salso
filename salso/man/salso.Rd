@@ -13,7 +13,7 @@ salso(
   maxScans = Inf,
   probSequentialAllocation = 0.5,
   probSingletonsInitialization = 0,
-  mergeSplitStrategy = 10,
+  mergeSplitStrategy = ifelse(loss == "binder", 0, 10),
   parallel = TRUE
 )
 }

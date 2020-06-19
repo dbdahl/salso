@@ -73,7 +73,7 @@
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=32, seconds=Inf, maxScans=Inf, probSequentialAllocation=0.5, probSingletonsInitialization=0, mergeSplitStrategy=10, parallel=TRUE) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=32, seconds=Inf, maxScans=Inf, probSequentialAllocation=0.5, probSingletonsInitialization=0, mergeSplitStrategy=ifelse(loss=="binder",0,10), parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
   if ( maxSize < 0.0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
