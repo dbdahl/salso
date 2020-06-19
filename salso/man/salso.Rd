@@ -8,12 +8,12 @@ salso(
   x,
   loss = "VI",
   maxSize = 0,
-  nRuns = 96,
+  nRuns = 32,
   seconds = Inf,
-  maxScans = 50,
+  maxScans = Inf,
   probSequentialAllocation = 0.5,
   probSingletonsInitialization = 0,
-  tryMergeSplit = TRUE,
+  mergeSplitStrategy = 10,
   parallel = TRUE
 )
 }
@@ -61,7 +61,12 @@ allocation.}
 obtain the initial allocation, the probability of placing the first
 \code{maxSize} randomly-selected items in singletons subsets.}
 
-\item{tryMergeSplit}{Should merge/split optimizations be tried?}
+\item{mergeSplitStrategy}{While merge or split updates can be helpful in
+optimization, it becomes costly as the number of clusters increases.  If
+\code{0}, merging and splitting is never tried.  If \code{1}, merging and
+splitting is always tried.  Otherwise, merging and splitting is tried if
+the number of clusters in the current state is \code{mergeSplitStrategy} or
+fewer.}
 
 \item{parallel}{Should the search use all CPU cores?}
 }

@@ -46,7 +46,12 @@
 #' @param probSingletonsInitialization When doing a sequential allocation to
 #'   obtain the initial allocation, the probability of placing the first
 #'   \code{maxSize} randomly-selected items in singletons subsets.
-#' @param tryMergeSplit Should merge/split optimizations be tried?
+#' @param mergeSplitStrategy While merge or split updates can be helpful in
+#'   optimization, it becomes costly as the number of clusters increases.  If
+#'   \code{0}, merging and splitting is never tried.  If \code{1}, merging and
+#'   splitting is always tried.  Otherwise, merging and splitting is tried if
+#'   the number of clusters in the current state is \code{mergeSplitStrategy} or
+#'   fewer.
 #' @param parallel Should the search use all CPU cores?
 #'
 #' @return An integer vector giving the estimated partition, encoded using
@@ -68,20 +73,22 @@
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=96, seconds=Inf, maxScans=Inf, probSequentialAllocation=0.5, probSingletonsInitialization=0, tryMergeSplit=TRUE, parallel=TRUE) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=32, seconds=Inf, maxScans=Inf, probSequentialAllocation=0.5, probSingletonsInitialization=0, mergeSplitStrategy=10, parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
   if ( maxSize < 0.0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
+  if ( nRuns < 1.0 ) stop("'nRuns' may be at least one.")
   if ( maxScans < 0.0 ) stop("'maxScans' may not be negative.")
   if ( maxScans > .Machine$integer.max ) maxScans <- .Machine$integer.max
   if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
   if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
-  if ( nRuns < 1.0 ) stop("'nRuns' may be at least one.")
+  if ( mergeSplitStrategy == Inf ) mergeSplitStrategy <- 1
+  else if ( mergeSplitStrategy < 0 || ! is.finite(mergeSplitStrategy) ) stop("Invalid 'mergeSplitStrategy'. See help page.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) ) {
     maxSize <- if ( is.null(z$draws) ) 12 else max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, tryMergeSplit, seconds, parallel, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, mergeSplitStrategy, seconds, parallel, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
