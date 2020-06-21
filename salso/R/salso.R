@@ -23,11 +23,14 @@
 #'   algorithm based on the pairwise similarity matrix is used, whereas
 #'   \code{loss="binder.draws"} results in an algorithm based on the samples.
 #'   See \code{\link{partition.loss}} for details on these loss functions.
-#' @param maxSize The maximum number of subsets (i.e., clusters).  The
-#'   optimization is constrained to produce solutions whose number of subsets is
-#'   no more than the supplied value. If zero, the following default is used: If
-#'   \code{x} is a pairwise similarity matrix, \code{12} is used; otherwise, the
-#'   maximum number of subsets in \code{x} is used.
+#' @param maxSize If \code{x} is a matrix of clusterings, the number of clusters
+#'   in the optimization is less than the smaller of two values: 1. the maximum
+#'   number clusters among the clusterings in \code{x} and 2. the supplied value
+#'   (unless the supplied value is zero, in which case, only the first
+#'   constraint holds). If \code{x} is a pairwise similarity matrix, the
+#'   optimization is constrained to produce solutions whose number of clusters
+#'   is no more than the supplied value (unless the supplied value is zero, in
+#'   which case, there is no size constraint).
 #' @param nRuns The number of runs to try, although the actual number by differ
 #'   for the following reasons: 1. The actual number is a multiple of the number
 #'   of cores when \code{parallel=TRUE}, and 2. The search is curtailed when the
@@ -46,12 +49,9 @@
 #' @param probSingletonsInitialization When doing a sequential allocation to
 #'   obtain the initial allocation, the probability of placing the first
 #'   \code{maxSize} randomly-selected items in singletons subsets.
-#' @param mergeSplitStrategy While merge or split updates can be helpful in
-#'   optimization, it becomes costly as the number of clusters increases.  If
-#'   \code{0}, merging and splitting is never tried.  If \code{1}, merging and
-#'   splitting is always tried.  Otherwise, merging and splitting is tried if
-#'   the number of clusters in the current state is \code{mergeSplitStrategy} or
-#'   fewer.
+#' @param mergeSplit Should merge and split updates be considered?  While they
+#'   may be helpful in optimization, they also become costly as the number of
+#'   clusters increases.
 #' @param parallel Should the search use all CPU cores?
 #'
 #' @return An integer vector giving the estimated partition, encoded using
@@ -73,7 +73,7 @@
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=32, seconds=Inf, maxScans=Inf, probSequentialAllocation=0.5, probSingletonsInitialization=0, mergeSplitStrategy=ifelse(loss=="binder",0,10), parallel=TRUE) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=32, seconds=Inf, maxScans=Inf, probSequentialAllocation=0.5, probSingletonsInitialization=0, mergeSplit=TRUE, parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
   if ( maxSize < 0.0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
@@ -82,13 +82,12 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=32, seconds=Inf, maxScans=Inf, 
   if ( maxScans > .Machine$integer.max ) maxScans <- .Machine$integer.max
   if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
   if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
-  if ( mergeSplitStrategy == Inf ) mergeSplitStrategy <- 1
-  else if ( mergeSplitStrategy < 0 || ! is.finite(mergeSplitStrategy) ) stop("Invalid 'mergeSplitStrategy'. See help page.")
+  if ( ! is.logical(mergeSplit) ) stop("'mergeSplitStrategy' must be a logical.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
-  if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) ) {
-    maxSize <- if ( is.null(z$draws) ) 12 else max(apply(z$draws, 1, function(x) length(unique(x))))
+  if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) && ( ! is.null(z$draws) ) ) {
+    maxSize <- max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, mergeSplitStrategy, seconds, parallel, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, mergeSplit, seconds, parallel, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]

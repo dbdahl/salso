@@ -13,7 +13,7 @@ salso(
   maxScans = Inf,
   probSequentialAllocation = 0.5,
   probSingletonsInitialization = 0,
-  mergeSplitStrategy = ifelse(loss == "binder", 0, 10),
+  mergeSplit = TRUE,
   parallel = TRUE
 )
 }
@@ -32,11 +32,14 @@ algorithm based on the pairwise similarity matrix is used, whereas
 \code{loss="binder.draws"} results in an algorithm based on the samples.
 See \code{\link{partition.loss}} for details on these loss functions.}
 
-\item{maxSize}{The maximum number of subsets (i.e., clusters).  The
-optimization is constrained to produce solutions whose number of subsets is
-no more than the supplied value. If zero, the following default is used: If
-\code{x} is a pairwise similarity matrix, \code{12} is used; otherwise, the
-maximum number of subsets in \code{x} is used.}
+\item{maxSize}{If \code{x} is a matrix of clusterings, the number of clusters
+in the optimization is less than the smaller of two values: 1. the maximum
+number clusters among the clusterings in \code{x} and 2. the supplied value
+(unless the supplied value is zero, in which case, only the first
+constraint holds). If \code{x} is a pairwise similarity matrix, the
+optimization is constrained to produce solutions whose number of clusters
+is no more than the supplied value (unless the supplied value is zero, in
+which case, there is no size constraint).}
 
 \item{nRuns}{The number of runs to try, although the actual number by differ
 for the following reasons: 1. The actual number is a multiple of the number
@@ -61,12 +64,9 @@ allocation.}
 obtain the initial allocation, the probability of placing the first
 \code{maxSize} randomly-selected items in singletons subsets.}
 
-\item{mergeSplitStrategy}{While merge or split updates can be helpful in
-optimization, it becomes costly as the number of clusters increases.  If
-\code{0}, merging and splitting is never tried.  If \code{1}, merging and
-splitting is always tried.  Otherwise, merging and splitting is tried if
-the number of clusters in the current state is \code{mergeSplitStrategy} or
-fewer.}
+\item{mergeSplit}{Should merge and split updates be considered?  While they
+may be helpful in optimization, they also become costly as the number of
+clusters increases.}
 
 \item{parallel}{Should the search use all CPU cores?}
 }
