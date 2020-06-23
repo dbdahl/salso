@@ -49,9 +49,9 @@
 #' @param probSingletonsInitialization When doing a sequential allocation to
 #'   obtain the initial allocation, the probability of placing the first
 #'   \code{maxSize} randomly-selected items in singletons subsets.
-#' @param mergeSplit Should merge and split updates be considered?  While they
-#'   may be helpful in optimization, they also become costly as the number of
-#'   clusters increases.
+#' @param zealous Should zealous updates be considered, in which entire clusters
+#'   are destroyed and items are sequentially reallocated?  While zealous
+#'   updates may be helpful in optimization, they also take more CPU time.
 #' @param parallel Should the search use all CPU cores?
 #'
 #' @return An integer vector giving the estimated partition, encoded using
@@ -73,7 +73,7 @@
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=32, seconds=Inf, maxScans=Inf, probSequentialAllocation=0.5, probSingletonsInitialization=0, mergeSplit=TRUE, parallel=TRUE) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=32, seconds=Inf, maxScans=Inf, probSequentialAllocation=0.5, probSingletonsInitialization=0, zealous=TRUE, parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
   if ( maxSize < 0.0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
@@ -82,17 +82,19 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=32, seconds=Inf, maxScans=Inf, 
   if ( maxScans > .Machine$integer.max ) maxScans <- .Machine$integer.max
   if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
   if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
-  if ( ! is.logical(mergeSplit) ) stop("'mergeSplitStrategy' must be a logical.")
+  if ( ! is.logical(zealous) ) stop("'zealous' must be a logical.")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) && ( ! is.null(z$draws) ) ) {
     maxSize <- max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, mergeSplit, seconds, parallel, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, maxScans, nRuns, probSequentialAllocation, probSingletonsInitialization, zealous, seconds, parallel, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
-    names(attr) <- c("loss","expectedLoss","initMethod","nScans","nMerges","nSplits","nRuns","maxSize")
+    names(attr) <- c("loss","expectedLoss","initMethod","nScans","zealRate","nZealousAttempts","nRuns","maxSize")
     attr$loss <- loss
+    attr$zealRate <- sprintf("%d/%d",attr$zealRate, attr$nZealousAttempts)
+    attr$nZealousAttempts <- NULL
     attr$initMethod <- names(which(initMethodMapping==attr$initMethod))
     as.data.frame(attr, row.names="")
   }

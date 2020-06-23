@@ -13,7 +13,7 @@ salso(
   maxScans = Inf,
   probSequentialAllocation = 0.5,
   probSingletonsInitialization = 0,
-  mergeSplit = TRUE,
+  zealous = TRUE,
   parallel = TRUE
 )
 }
@@ -64,9 +64,9 @@ allocation.}
 obtain the initial allocation, the probability of placing the first
 \code{maxSize} randomly-selected items in singletons subsets.}
 
-\item{mergeSplit}{Should merge and split updates be considered?  While they
-may be helpful in optimization, they also become costly as the number of
-clusters increases.}
+\item{zealous}{Should zealous updates be considered, in which entire clusters
+are destroyed and items are sequentially reallocated?  While zealous
+updates may be helpful in optimization, they also take more CPU time.}
 
 \item{parallel}{Should the search use all CPU cores?}
 }
