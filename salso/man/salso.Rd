@@ -8,12 +8,12 @@ salso(
   x,
   loss = "VI",
   maxSize = 0,
-  nRuns = 32,
+  nRuns = 8,
   seconds = Inf,
   maxScans = Inf,
+  maxZealousUpdates = 20,
   probSequentialAllocation = 0.5,
   probSingletonsInitialization = 0,
-  zealous = TRUE,
   parallel = TRUE
 )
 }
@@ -51,10 +51,14 @@ curtailed (with a warning) instead of performing all the requested number
 of permutations. Note that the function could take longer because the
 threshold is only checked after each permutation is completed.}
 
-\item{maxScans}{The maximum number of reallocation scans after the initial
-allocation. The actual number of scans may be less than
-\code{maxScans} since the method stops if the result does not change
-between scans.}
+\item{maxScans}{The maximum number of full reallocation scans. The actual
+number of scans may be less than \code{maxScans} since the method stops if
+the result does not change between scans.}
+
+\item{maxZealousUpdates}{The maximum number of attempts for zealous updates,
+in which entire clusters are destroyed and items are sequentially
+reallocated.  While zealous updates may be helpful in optimization, they
+also take more CPU time which might be better used trying additional runs.}
 
 \item{probSequentialAllocation}{Probability of sequential allocation instead
 of using \code{sample(1:maxSize, ncol(x), TRUE)} for the initial
@@ -63,10 +67,6 @@ allocation.}
 \item{probSingletonsInitialization}{When doing a sequential allocation to
 obtain the initial allocation, the probability of placing the first
 \code{maxSize} randomly-selected items in singletons subsets.}
-
-\item{zealous}{Should zealous updates be considered, in which entire clusters
-are destroyed and items are sequentially reallocated?  While zealous
-updates may be helpful in optimization, they also take more CPU time.}
 
 \item{parallel}{Should the search use all CPU cores?}
 }
