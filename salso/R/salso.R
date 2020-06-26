@@ -75,7 +75,7 @@
 #' salso(probs, loss="VI.lb", nCores=1)
 #' salso(draws, loss="VI.lb", nCores=1)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, maxZealousAttempts=20, probSequentialAllocation=0.5, probSingletonsInitialization=0, nCores=0) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, maxZealousAttempts=10, probSequentialAllocation=0.5, probSingletonsInitialization=0, nCores=0) {
   if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
   if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
   z <- x2drawspsm(x, loss, nCores)
@@ -103,8 +103,12 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   }
   attr(estimate,"draws") <- z$draws
   attr(estimate,"psm") <- z$psm
-  if ( attr(estimate,"info")$nRuns < nRuns ) {
-    warning(sprintf("Only %s of the requested %s permutations %s performed. Increase 'seconds' or lower 'nRuns'.",y$nRuns,nRuns,ifelse(y$nRuns==1L,"was","were")))
+  actualNRuns <- attr(estimate,"info")$nRuns
+  if ( actualNRuns < nRuns ) {
+    warning(sprintf("Only %s of the requested %s permutations %s performed. Consider increasing 'seconds' or lowering 'nRuns'.",actualNRuns,nRuns,ifelse(actualNRuns==1L,"was","were")))
+  }
+  if ( maxZealousAttempts > 0 && attr(estimate,"info")$nZAtt > maxZealousAttempts ) {
+    warning("The number of possible zealous attempts exceeded the maximum. Do you really want that many clusters? Consider lowering 'maxSize' or increasing 'maxZealousAttempts'.")
   }
   class(estimate) <- "salso.estimate"
   estimate
