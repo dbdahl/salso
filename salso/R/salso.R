@@ -85,6 +85,8 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   z <- x2drawspsm(x, loss, nCores)
   if ( ! is.finite(maxSize) ) maxSize <- 0L
   if ( nRuns < 1.0 ) stop("'nRuns' may be at least one.")
+  if ( is.infinite(seconds) && is.infinite(nRuns) ) stop("At least one of 'nRuns' and 'seconds' must be finite.")
+  nRunsX <- if ( nRuns > .Machine$integer.max ) .Machine$integer.max else nRuns
   if ( maxScans < 0.0 ) stop("'maxScans' may not be negative.")
   if ( maxScans > .Machine$integer.max ) maxScans <- .Machine$integer.max
   if ( maxZealousAttempts < 0.0 ) stop("'maxScans' may not be negative.")
@@ -95,7 +97,7 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) && ( ! is.null(z$draws) ) ) {
     maxSize <- max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, nRuns, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, nCores, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, nRunsX, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, nCores, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
@@ -107,7 +109,7 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   attr(estimate,"draws") <- z$draws
   attr(estimate,"psm") <- z$psm
   actualNRuns <- attr(estimate,"info")$nRuns
-  if ( actualNRuns < nRuns ) {
+  if ( is.finite(nRuns) && ( actualNRuns < nRunsX ) ) {
     warning(sprintf("Only %s of the requested %s permutations %s performed. Consider increasing 'seconds' or lowering 'nRuns'.",actualNRuns,nRuns,ifelse(actualNRuns==1L,"was","were")))
   }
   if ( maxZealousAttempts > 0 && attr(estimate,"info")$nZAtt > maxZealousAttempts ) {
