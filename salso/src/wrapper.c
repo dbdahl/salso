@@ -107,10 +107,10 @@ SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_
   double *results_expected_loss = REAL(results_expected_loss_sexp);
   SEXP results_n_scans_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
   int *results_n_scans = INTEGER(results_n_scans_sexp);
-  SEXP results_n_zealous_attempts_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
-  int *results_n_zealous_attempts = INTEGER(results_n_zealous_attempts_sexp);
   SEXP results_n_zealous_accepts_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
   int *results_n_zealous_accepts = INTEGER(results_n_zealous_accepts_sexp);
+  SEXP results_n_zealous_attempts_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
+  int *results_n_zealous_attempts = INTEGER(results_n_zealous_attempts_sexp);
   SEXP results_n_runs_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
   int *results_n_runs = INTEGER(results_n_runs_sexp);
   SEXP results_max_size_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
@@ -124,8 +124,8 @@ SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_
   SET_VECTOR_ELT(results2, 1, results_expected_loss_sexp);
   SET_VECTOR_ELT(results2, 2, results_initialization_method_sexp);
   SET_VECTOR_ELT(results2, 3, results_n_scans_sexp);
-  SET_VECTOR_ELT(results2, 4, results_n_zealous_attempts_sexp);
-  SET_VECTOR_ELT(results2, 5, results_n_zealous_accepts_sexp);
+  SET_VECTOR_ELT(results2, 4, results_n_zealous_accepts_sexp);
+  SET_VECTOR_ELT(results2, 5, results_n_zealous_attempts_sexp);
   SET_VECTOR_ELT(results2, 6, results_n_runs_sexp);
   SET_VECTOR_ELT(results2, 7, results_max_size_sexp);
 

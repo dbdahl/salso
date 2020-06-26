@@ -11,7 +11,7 @@ salso(
   nRuns = 8,
   seconds = Inf,
   maxScans = Inf,
-  maxZealousUpdates = 20,
+  maxZealousAttempts = 20,
   probSequentialAllocation = 0.5,
   probSingletonsInitialization = 0,
   parallel = TRUE
@@ -55,7 +55,7 @@ threshold is only checked after each permutation is completed.}
 number of scans may be less than \code{maxScans} since the method stops if
 the result does not change between scans.}
 
-\item{maxZealousUpdates}{The maximum number of attempts for zealous updates,
+\item{maxZealousAttempts}{The maximum number of attempts for zealous updates,
 in which entire clusters are destroyed and items are sequentially
 reallocated.  While zealous updates may be helpful in optimization, they
 also take more CPU time which might be better used trying additional runs.}

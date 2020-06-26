@@ -42,7 +42,7 @@
 #' @param maxScans The maximum number of full reallocation scans. The actual
 #'   number of scans may be less than \code{maxScans} since the method stops if
 #'   the result does not change between scans.
-#' @param maxZealousUpdates The maximum number of attempts for zealous updates,
+#' @param maxZealousAttempts The maximum number of attempts for zealous updates,
 #'   in which entire clusters are destroyed and items are sequentially
 #'   reallocated.  While zealous updates may be helpful in optimization, they
 #'   also take more CPU time which might be better used trying additional runs.
@@ -73,26 +73,26 @@
 #' salso(probs, loss="VI.lb", parallel=FALSE)
 #' salso(draws, loss="VI.lb", parallel=FALSE)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, maxZealousUpdates=20, probSequentialAllocation=0.5, probSingletonsInitialization=0, parallel=TRUE) {
+salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, maxZealousAttempts=20, probSequentialAllocation=0.5, probSingletonsInitialization=0, parallel=TRUE) {
   z <- x2drawspsm(x, loss, parallel)
   if ( maxSize < 0.0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
   if ( nRuns < 1.0 ) stop("'nRuns' may be at least one.")
   if ( maxScans < 0.0 ) stop("'maxScans' may not be negative.")
   if ( maxScans > .Machine$integer.max ) maxScans <- .Machine$integer.max
-  if ( maxZealousUpdates < 0.0 ) stop("'maxScans' may not be negative.")
-  if ( maxZealousUpdates > .Machine$integer.max ) maxZealousUpdates <- .Machine$integer.max
+  if ( maxZealousAttempts < 0.0 ) stop("'maxScans' may not be negative.")
+  if ( maxZealousAttempts > .Machine$integer.max ) maxZealousAttempts <- .Machine$integer.max
   if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
   if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) && ( ! is.null(z$draws) ) ) {
     maxSize <- max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, nRuns, seconds, maxScans, maxZealousUpdates, probSequentialAllocation, probSingletonsInitialization, parallel, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, nRuns, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, parallel, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
-    names(attr) <- c("loss","expectedLoss","initMethod","nScans","zealAccepts","zealAttempts","nRuns","maxSize")
+    names(attr) <- c("loss","expectedLoss","initMethod","nScans","nZealousAccepts","nZealousAttempts","nRuns","maxSize")
     attr$loss <- loss
     attr$initMethod <- names(which(initMethodMapping==attr$initMethod))
     as.data.frame(attr, row.names="")
@@ -114,10 +114,3 @@ print.salso.estimate <- function(x, ...) {
   attr(x,"psm") <- NULL
   print(x)
 }
-
-#' @export
-#'
-summary.salso.estimate <- function(x, ...) {
-  attr(x,"info")
-}
-
