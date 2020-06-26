@@ -11,7 +11,7 @@ salso(
   nRuns = 8,
   seconds = Inf,
   maxScans = Inf,
-  maxZealousAttempts = 20,
+  maxZealousAttempts = 10,
   probSequentialAllocation = 0.5,
   probSingletonsInitialization = 0,
   nCores = 0
@@ -32,14 +32,18 @@ algorithm based on the pairwise similarity matrix is used, whereas
 \code{loss="binder.draws"} results in an algorithm based on the samples.
 See \code{\link{partition.loss}} for details on these loss functions.}
 
-\item{maxSize}{If \code{x} is a matrix of clusterings, the number of clusters
-in the optimization is less than the smaller of two values: 1. the maximum
-number clusters among the clusterings in \code{x} and 2. the supplied value
-(unless the supplied value is zero, in which case, only the first
-constraint holds). If \code{x} is a pairwise similarity matrix, the
-optimization is constrained to produce solutions whose number of clusters
-is no more than the supplied value (unless the supplied value is zero, in
-which case, there is no size constraint).}
+\item{maxSize}{This argument controls \code{Q}, maximum number of clusters
+that can be considered by the optimization algorithm.  \code{Q} has
+important implications for the interpretability of the resulting clustering
+and directly influences the RAM needed for the optimization algorithm. If
+\code{maxSize} is negative, \code{Q} is the absolute value of
+\code{maxSize}. Otherwise, if \code{x} is a matrix of clusterings, \code{Q}
+is less than the smaller of two values: 1. the maximum number of clusters
+among the clusterings in \code{x} and 2. the supplied value of
+\code{maxSize} (unless the supplied value is zero, in which case, only the
+first constraint holds). If \code{x} is a pairwise similarity matrix,
+\code{Q} is the supplied value of \code{maxSize} (unless the supplied value
+is zero, in which case, there is no constraint).}
 
 \item{nRuns}{The number of runs to try, although the actual number by differ
 for the following reasons: 1. The actual number is a multiple of the number
@@ -60,9 +64,9 @@ in which entire clusters are destroyed and items are sequentially
 reallocated.  While zealous updates may be helpful in optimization, they
 also take more CPU time which might be better used trying additional runs.}
 
-\item{probSequentialAllocation}{Probability of sequential allocation instead
-of using \code{sample(1:maxSize, ncol(x), TRUE)} for the initial
-allocation.}
+\item{probSequentialAllocation}{For the initial allocation, the probability
+of sequential allocation instead of using \code{sample(1:Q, ncol(x),
+TRUE)}, where \code{K} is set according to the \code{maxSize} argument.}
 
 \item{probSingletonsInitialization}{When doing a sequential allocation to
 obtain the initial allocation, the probability of placing the first
