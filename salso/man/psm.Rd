@@ -4,7 +4,7 @@
 \alias{psm}
 \title{Compute an Adjacency or Pairwise Similarity Matrix}
 \usage{
-psm(x, parallel = TRUE)
+psm(x, nCores = 0)
 }
 \arguments{
 \item{x}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
@@ -12,7 +12,8 @@ represents a clustering of \eqn{n} items using cluster labels. For
 clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
 \code{x[b,i] == x[b,j]}.}
 
-\item{parallel}{Should the computation use all CPU cores?}
+\item{nCores}{The number of CPU cores to use. A value of zero indicates to
+use all cores on the system.}
 }
 \value{
 A \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives
@@ -34,8 +35,8 @@ partition <- iris.clusterings[1,]
 psm(partition)
 
 dim(iris.clusterings)
-# For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
-probs <- psm(iris.clusterings, parallel=FALSE)
+# For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+probs <- psm(iris.clusterings, nCores=1)
 dim(probs)
 probs[1:6, 1:6]
 

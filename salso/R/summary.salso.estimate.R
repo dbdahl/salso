@@ -9,9 +9,9 @@
 #' @export
 #'
 #' @examples
-#' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
+#' # For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
 #' draws <- iris.clusterings
-#' est <- salso(draws, parallel=FALSE)
+#' est <- salso(draws, nCores=1)
 #' summ <- summary(est)
 #' plot(summ, type="heatmap")
 #' plot(summ, type="dendrogram")

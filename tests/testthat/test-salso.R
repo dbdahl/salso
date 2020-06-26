@@ -41,37 +41,37 @@ test_that("SALSO minimizes VI.lb", {
 })
 
 test_that("SALSO minimizes binder.psm (nonparallel)", {
-  s <- salso::salso(psm.small, loss="binder", nRuns=100, parallel=FALSE)
+  s <- salso::salso(psm.small, loss="binder", nRuns=100, nCores=1)
   o1 <- as.vector(salso:::minimize.by.enumeration(psm.small, loss="binder"))
   expect_true(isTRUE(all.equal(salso::VI(salso::VI(s, o1),0),0)))
 })
 
 test_that("SALSO minimizes binder.draws (nonparallel)", {
-  s <- salso::salso(draws.small, loss="binder", nRuns=100, parallel=FALSE)
+  s <- salso::salso(draws.small, loss="binder", nRuns=100, nCores=1)
   o1 <- as.vector(salso:::minimize.by.enumeration(psm.small, loss="binder"))
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
 
 test_that("SALSO minimizes omARI (nonparallel)", {
-  s <- salso::salso(draws.small, loss="omARI", nRuns=100, parallel=FALSE)
+  s <- salso::salso(draws.small, loss="omARI", nRuns=100, nCores=1)
   o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss="omARI"))
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
 
 test_that("SALSO minimizes omARI.approx (nonparallel)", {
-  s <- salso::salso(psm.small, loss="omARI.approx", nRuns=100, parallel=FALSE)
+  s <- salso::salso(psm.small, loss="omARI.approx", nRuns=100, nCores=1)
   o1 <- as.vector(salso:::minimize.by.enumeration(psm.small, loss="omARI.approx"))
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
 
 test_that("SALSO minimizes VI (nonparallel)", {
-  s <- salso::salso(draws.small, loss="VI", nRuns=100, parallel=FALSE)
+  s <- salso::salso(draws.small, loss="VI", nRuns=100, nCores=1)
   o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss="VI"))
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
 
 test_that("SALSO minimizes VI.lb (nonparallel)", {
-  s <- salso::salso(psm.small, loss="VI.lb", nRuns=100, parallel=FALSE)
+  s <- salso::salso(psm.small, loss="VI.lb", nRuns=100, nCores=1)
   o1 <- as.vector(salso:::minimize.by.enumeration(psm.small, loss="VI.lb"))
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })

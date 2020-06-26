@@ -10,15 +10,15 @@
 #include "rustlib/dahl-salso.h"
 
 // Actual Wrappers
-SEXP psm(SEXP partitions_sexp, SEXP parallel_sexp) {
+SEXP psm(SEXP partitions_sexp, SEXP n_cores_sexp) {
   int n_partitions = Rf_nrows(partitions_sexp);
   int n_items = Rf_ncols(partitions_sexp);
   partitions_sexp = PROTECT(Rf_coerceVector(partitions_sexp, INTSXP));
   int *partitions = INTEGER(partitions_sexp);
-  int parallel = Rf_asLogical(parallel_sexp);
+  int n_cores = Rf_asInteger(n_cores_sexp);
   SEXP counts = PROTECT(Rf_allocVector(REALSXP, n_items*n_items));
   double *xcounts = REAL(counts);
-  dahl_salso__psm(n_partitions, n_items, parallel, partitions, xcounts);
+  dahl_salso__psm(n_partitions, n_items, n_cores, partitions, xcounts);
   UNPROTECT(2);
   return counts;
 }
@@ -78,7 +78,7 @@ SEXP minimize_by_enumeration(SEXP psm_sexp, SEXP loss_sexp) {
   return results_labels_sexp;
 }
 
-SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_size_sexp, SEXP n_runs_sexp, SEXP seconds_sexp, SEXP max_scans_sexp, SEXP max_zealous_updates_sexp, SEXP prob_sequential_allocation_sexp, SEXP prob_singletons_initialization_sexp, SEXP parallel_sexp, SEXP seed_sexp) {
+SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_size_sexp, SEXP n_runs_sexp, SEXP seconds_sexp, SEXP max_scans_sexp, SEXP max_zealous_updates_sexp, SEXP prob_sequential_allocation_sexp, SEXP prob_singletons_initialization_sexp, SEXP n_cores_sexp, SEXP seed_sexp) {
   int n_items;
   int n_draws;
   if ( ! Rf_isNull(draws_sexp) ) {
@@ -100,7 +100,7 @@ SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_
   int max_zealous_updates = Rf_asInteger(max_zealous_updates_sexp);
   double prob_sequential_allocation = Rf_asReal(prob_sequential_allocation_sexp);
   double prob_singletons_initialization = Rf_asReal(prob_singletons_initialization_sexp);
-  int parallel = Rf_asLogical(parallel_sexp);
+  int n_cores = Rf_asInteger(n_cores_sexp);
   SEXP results_labels_sexp = PROTECT(Rf_allocVector(INTSXP, n_items));
   int *results_labels = INTEGER(results_labels_sexp);
   SEXP results_expected_loss_sexp = PROTECT(Rf_allocVector(REALSXP, 1));
@@ -118,7 +118,7 @@ SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_
   SEXP results_initialization_method_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
   int *results_initialization_method = INTEGER(results_initialization_method_sexp);
   int *seed = INTEGER(seed_sexp);
-  dahl_salso__minimize_by_salso(n_items, n_draws, draws, psm, loss, max_size, n_runs, seconds, max_scans, max_zealous_updates, prob_sequential_allocation, prob_singletons_initialization, parallel, results_labels, results_expected_loss, results_n_scans, results_n_zealous_accepts, results_n_zealous_attempts, results_n_runs, results_max_size, results_initialization_method, seed);
+  dahl_salso__minimize_by_salso(n_items, n_draws, draws, psm, loss, max_size, n_runs, seconds, max_scans, max_zealous_updates, prob_sequential_allocation, prob_singletons_initialization, n_cores, results_labels, results_expected_loss, results_n_scans, results_n_zealous_accepts, results_n_zealous_attempts, results_n_runs, results_max_size, results_initialization_method, seed);
 
   SEXP results2 = PROTECT(Rf_allocVector(VECSXP, 8));
   SET_VECTOR_ELT(results2, 1, results_expected_loss_sexp);

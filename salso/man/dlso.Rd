@@ -40,8 +40,8 @@ currently supports the minimization of several partition estimation criteria.
 For details on these criteria, see \code{\link{partition.loss}}.
 }
 \examples{
-# For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
-probs <- psm(iris.clusterings, parallel=FALSE)
+# For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+probs <- psm(iris.clusterings, nCores=1)
 dlso(iris.clusterings, loss="binder", x=probs)
 dlso(iris.clusterings, loss="omARI")
 dlso(iris.clusterings, loss="omARI.approx")  # The psm will be computed if not provided.

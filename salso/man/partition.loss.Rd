@@ -118,8 +118,8 @@ functions. Note that:
 }
 }
 \examples{
-# For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
-probs <- psm(iris.clusterings, parallel=FALSE)
+# For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+probs <- psm(iris.clusterings, nCores=1)
 partitions <- iris.clusterings[1:5,]
 
 all.equal(partition.loss(partitions, probs, loss="binder"), binder(partitions, probs))

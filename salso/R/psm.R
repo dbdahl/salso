@@ -13,7 +13,8 @@
 #'   represents a clustering of \eqn{n} items using cluster labels. For
 #'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
 #'   \code{x[b,i] == x[b,j]}.
-#' @param parallel Should the computation use all CPU cores?
+#' @param nCores The number of CPU cores to use. A value of zero indicates to
+#'   use all cores on the system.
 #'
 #' @return A \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives
 #'   the relative frequency that that items \eqn{i} and \eqn{j} are in the same
@@ -26,14 +27,16 @@
 #' psm(partition)
 #'
 #' dim(iris.clusterings)
-#' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
-#' probs <- psm(iris.clusterings, parallel=FALSE)
+#' # For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+#' probs <- psm(iris.clusterings, nCores=1)
 #' dim(probs)
 #' probs[1:6, 1:6]
 #'
-psm <- function(x, parallel=TRUE) {
+psm <- function(x, nCores=0) {
+  if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
+  if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
   if ( ! is.matrix(x) ) x <- t(x)
-  y <- .Call(.psm, x, parallel)
+  y <- .Call(.psm, x, nCores)
   dim(y) <- rep(ncol(x), 2)
   dimnames(y) <- list(colnames(x), colnames(x))
   y

@@ -33,8 +33,8 @@
 #'   which case, there is no size constraint).
 #' @param nRuns The number of runs to try, although the actual number by differ
 #'   for the following reasons: 1. The actual number is a multiple of the number
-#'   of cores when \code{parallel=TRUE}, and 2. The search is curtailed when the
-#'   \code{seconds} threshold is exceeded.
+#'   of cores specified by the \code{nCores} argument, and 2. The search is
+#'   curtailed when the \code{seconds} threshold is exceeded.
 #' @param seconds A time threshold in seconds after which the function will be
 #'   curtailed (with a warning) instead of performing all the requested number
 #'   of permutations. Note that the function could take longer because the
@@ -52,7 +52,9 @@
 #' @param probSingletonsInitialization When doing a sequential allocation to
 #'   obtain the initial allocation, the probability of placing the first
 #'   \code{maxSize} randomly-selected items in singletons subsets.
-#' @param parallel Should the search use all CPU cores?
+#' @param nCores The number of CPU cores to use, i.e., the number of
+#'   simultaneous runs at any given time. A value of zero indicates to use all
+#'   cores on the system.
 #'
 #' @return An integer vector giving the estimated partition, encoded using
 #'   cluster labels.
@@ -64,17 +66,19 @@
 #' @useDynLib salso .minimize_by_salso
 #'
 #' @examples
-#' # For examples, use 'parallel=FALSE' per CRAN rules but, in practice, omit this.
+#' # For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
 #'
 #' draws <- iris.clusterings
-#' salso(draws, loss="VI", nRuns=1, parallel=FALSE)
+#' salso(draws, loss="VI", nRuns=1, nCores=1)
 #'
-#' probs <- psm(draws, parallel=FALSE)
-#' salso(probs, loss="VI.lb", parallel=FALSE)
-#' salso(draws, loss="VI.lb", parallel=FALSE)
+#' probs <- psm(draws, nCores=1)
+#' salso(probs, loss="VI.lb", nCores=1)
+#' salso(draws, loss="VI.lb", nCores=1)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, maxZealousAttempts=20, probSequentialAllocation=0.5, probSingletonsInitialization=0, parallel=TRUE) {
-  z <- x2drawspsm(x, loss, parallel)
+salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, maxZealousAttempts=20, probSequentialAllocation=0.5, probSingletonsInitialization=0, nCores=0) {
+  if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
+  if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
+  z <- x2drawspsm(x, loss, nCores)
   if ( maxSize < 0.0 ) stop("'maxSize' may not be negative.")
   if ( maxSize == Inf ) maxSize <- 0L
   if ( nRuns < 1.0 ) stop("'nRuns' may be at least one.")
@@ -88,7 +92,7 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) && ( ! is.null(z$draws) ) ) {
     maxSize <- max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, nRuns, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, parallel, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, nRuns, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, nCores, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
