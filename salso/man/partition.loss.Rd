@@ -3,29 +3,32 @@
 \name{partition.loss}
 \alias{partition.loss}
 \alias{binder}
+\alias{RI}
 \alias{omARI}
 \alias{omARI.approx}
+\alias{ARI}
 \alias{VI}
 \alias{VI.lb}
-\alias{RI}
-\alias{ARI}
+\alias{NVI}
 \title{Compute Partition Loss or the Expectation of Partition Loss}
 \usage{
-partition.loss(partitions, x, loss = "VI.lb")
+partition.loss(partitions, x, loss = "VI")
 
 binder(partitions, x)
+
+RI(partition1, partition2)
 
 omARI(partitions, x)
 
 omARI.approx(partitions, x)
 
+ARI(partition1, partition2)
+
 VI(partitions, x)
 
 VI.lb(partitions, x)
 
-RI(partition1, partition2)
-
-ARI(partition1, partition2)
+NVI(partitions, x)
 }
 \arguments{
 \item{partitions}{An integer matrix of cluster labels with \eqn{n} columns,

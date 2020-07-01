@@ -145,7 +145,7 @@
 #' all.equal(binder(p1, p2), ( 1 - RI(p1, p2) ) * (length(p1)-1) / length(p1))
 #' all.equal(omARI(p1, p2), 1 - ARI(p1, p2))
 #'
-partition.loss <- function(partitions, x, loss="VI.lb") {
+partition.loss <- function(partitions, x, loss="VI") {
   expected.loss(partitions, x, loss)
 }
 
@@ -153,6 +153,12 @@ partition.loss <- function(partitions, x, loss="VI.lb") {
 #' @rdname partition.loss
 binder <- function(partitions, x) {
   expected.loss(partitions, x, "binder")
+}
+
+#' @export
+#' @rdname partition.loss
+RI <- function(partition1, partition2) {
+  1 - binder(partition1, psm(partition2)) * length(partition1) / (length(partition1)-1)
 }
 
 #' @export
@@ -169,6 +175,12 @@ omARI.approx <- function(partitions, x) {
 
 #' @export
 #' @rdname partition.loss
+ARI <- function(partition1, partition2) {
+  1 - omARI(partition1, partition2)
+}
+
+#' @export
+#' @rdname partition.loss
 VI <- function(partitions, x) {
   expected.loss(partitions, x, "VI")
 }
@@ -181,14 +193,8 @@ VI.lb <- function(partitions, x) {
 
 #' @export
 #' @rdname partition.loss
-RI <- function(partition1, partition2) {
-  1 - binder(partition1, psm(partition2)) * length(partition1) / (length(partition1)-1)
-}
-
-#' @export
-#' @rdname partition.loss
-ARI <- function(partition1, partition2) {
-  1 - omARI(partition1, partition2)
+NVI <- function(partitions, x) {
+  expected.loss(partitions, x, "NVI")
 }
 
 #' @useDynLib salso .expected_loss
