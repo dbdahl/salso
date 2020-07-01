@@ -36,6 +36,12 @@ test_that("VI.lb", {
   expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
 })
 
+test_that("NVI", {
+  s <- salso::salso(draws, loss="NVI", nRuns=10)
+  o <- salso::partition.loss(s, draws, loss="NVI")
+  expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
+})
+
 test_that("binder.psm (nonparallel)", {
   s <- salso::salso(psm, loss="binder", nRuns=10, nCores=1)
   o <- salso::partition.loss(s, psm, loss="binder")
@@ -72,6 +78,10 @@ test_that("VI.lb (nonparallel)", {
   expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
 })
 
-
+test_that("NVI (nonparallel)", {
+  s <- salso::salso(draws, loss="NVI", nRuns=10, nCores=1)
+  o <- salso::partition.loss(s, draws, loss="NVI")
+  expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
+})
 
 
