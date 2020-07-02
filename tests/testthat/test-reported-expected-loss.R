@@ -37,7 +37,7 @@ test_that("VI.lb", {
 })
 
 test_that("NVI", {
-  s <- salso::salso(draws, loss="NVI", nRuns=10)
+  s <- salso::salso(draws, loss="NVI", nRuns=10, maxZealousAttempts=30)
   o <- salso::partition.loss(s, draws, loss="NVI")
   expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
 })
@@ -79,7 +79,7 @@ test_that("VI.lb (nonparallel)", {
 })
 
 test_that("NVI (nonparallel)", {
-  s <- salso::salso(draws, loss="NVI", nRuns=10, nCores=1)
+  s <- salso::salso(draws, loss="NVI", nRuns=10, maxZealousAttempts=30, nCores=1)
   o <- salso::partition.loss(s, draws, loss="NVI")
   expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
 })
