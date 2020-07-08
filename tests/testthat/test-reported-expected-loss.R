@@ -42,6 +42,18 @@ test_that("NVI", {
   expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
 })
 
+test_that("ID", {
+  s <- salso::salso(draws, loss="ID", nRuns=10, maxZealousAttempts=30)
+  o <- salso::partition.loss(s, draws, loss="ID")
+  expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
+})
+
+test_that("NID", {
+  s <- salso::salso(draws, loss="NID", nRuns=10, maxZealousAttempts=30)
+  o <- salso::partition.loss(s, draws, loss="NID")
+  expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
+})
+
 test_that("binder.psm (nonparallel)", {
   s <- salso::salso(psm, loss="binder", nRuns=10, nCores=1)
   o <- salso::partition.loss(s, psm, loss="binder")
@@ -84,4 +96,15 @@ test_that("NVI (nonparallel)", {
   expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
 })
 
+test_that("ID (nonparallel)", {
+  s <- salso::salso(draws, loss="ID", nRuns=10, maxZealousAttempts=30, nCores=1)
+  o <- salso::partition.loss(s, draws, loss="ID")
+  expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
+})
+
+test_that("NID (nonparallel)", {
+  s <- salso::salso(draws, loss="NID", nRuns=10, maxZealousAttempts=30, nCores=1)
+  o <- salso::partition.loss(s, draws, loss="NID")
+  expect_true(isTRUE(all.equal(attr(s,"info")$expectedLoss,o)))
+})
 

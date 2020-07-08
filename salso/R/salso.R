@@ -84,7 +84,7 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
   z <- x2drawspsm(x, loss, nCores)
   if ( ! is.finite(maxSize) ) maxSize <- 0L
-  if ( nRuns < 1.0 ) stop("'nRuns' may be at least one.")
+  if ( nRuns < 1.0 ) stop("'nRuns' must be at least one.")
   if ( is.infinite(seconds) && is.infinite(nRuns) ) stop("At least one of 'nRuns' and 'seconds' must be finite.")
   nRunsX <- if ( nRuns > .Machine$integer.max ) .Machine$integer.max else nRuns
   if ( maxScans < 0.0 ) stop("'maxScans' may not be negative.")

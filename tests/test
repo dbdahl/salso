@@ -3,7 +3,7 @@
 cd $(dirname $(readlink -f "$0"))
 
 R -s -e 'testthat::test_dir("testthat")'
-#R -s -e 'testthat::test_file("testthat/test-NVI.R")'; echo ------
+#R -s -e 'testthat::test_file("testthat/test-ID.R")'; echo ------
 #R -s -e 'testthat::test_file("testthat/test-reported-expected-loss.R")'; echo ------
 #R -s -e 'testthat::test_file("testthat/test-salso.R")'; echo ------
 #R -s -e 'testthat::test_file("testthat/test-omARI.R")'

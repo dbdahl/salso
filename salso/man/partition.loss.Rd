@@ -10,6 +10,8 @@
 \alias{VI}
 \alias{VI.lb}
 \alias{NVI}
+\alias{ID}
+\alias{NID}
 \title{Compute Partition Loss or the Expectation of Partition Loss}
 \usage{
 partition.loss(partitions, x, loss = "VI")
@@ -29,6 +31,10 @@ VI(partitions, x)
 VI.lb(partitions, x)
 
 NVI(partitions, x)
+
+ID(partitions, x)
+
+NID(partitions, x)
 }
 \arguments{
 \item{partitions}{An integer matrix of cluster labels with \eqn{n} columns,

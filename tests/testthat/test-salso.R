@@ -46,6 +46,18 @@ test_that("SALSO minimizes NVI", {
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
 
+test_that("SALSO minimizes ID", {
+  s <- salso::salso(draws.small, loss="ID", nRuns=100)
+  o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss="ID"))
+  expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
+})
+
+test_that("SALSO minimizes NID", {
+  s <- salso::salso(draws.small, loss="NID", nRuns=100)
+  o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss="NID"))
+  expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
+})
+
 test_that("SALSO minimizes binder.psm (nonparallel)", {
   s <- salso::salso(psm.small, loss="binder", nRuns=100, nCores=1)
   o1 <- as.vector(salso:::minimize.by.enumeration(psm.small, loss="binder"))
@@ -85,6 +97,18 @@ test_that("SALSO minimizes VI.lb (nonparallel)", {
 test_that("SALSO minimizes NVI (nonparallel)", {
   s <- salso::salso(draws.small, loss="NVI", nRuns=100, nCores=1)
   o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss="NVI"))
-  expect_true(isTRUE(all.equal(salso::NVI(s, o1),0)))
+  expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
+})
+
+test_that("SALSO minimizes ID (nonparallel)", {
+  s <- salso::salso(draws.small, loss="ID", nRuns=100, nCores=1)
+  o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss="ID"))
+  expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
+})
+
+test_that("SALSO minimizes NID (nonparallel)", {
+  s <- salso::salso(draws.small, loss="NID", nRuns=100, nCores=1)
+  o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss="NID"))
+  expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
 

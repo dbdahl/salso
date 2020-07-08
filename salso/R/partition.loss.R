@@ -197,6 +197,18 @@ NVI <- function(partitions, x) {
   expected.loss(partitions, x, "NVI")
 }
 
+#' @export
+#' @rdname partition.loss
+ID <- function(partitions, x) {
+  expected.loss(partitions, x, "ID")
+}
+
+#' @export
+#' @rdname partition.loss
+NID <- function(partitions, x) {
+  expected.loss(partitions, x, "NID")
+}
+
 #' @useDynLib salso .expected_loss
 #'
 expected.loss <- function(partitions, x, loss) {
