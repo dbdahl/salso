@@ -1,6 +1,6 @@
 context("salso")
 
-subset <- c(4, 23, 33, 76, 89, 90, 110, 130, 144)
+subset <- c(21,31,44,45,78,84,94,102,126)
 draws.small <- draws[,subset]
 psm.small <- psm[subset,subset]
 
