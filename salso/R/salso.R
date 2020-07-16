@@ -101,7 +101,7 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
-    names(attr) <- c("loss","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","maxSize")
+    names(attr) <- c("loss","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","seconds","maxSize")
     attr$loss <- loss
     attr$initMethod <- names(which(initMethodMapping==attr$initMethod))
     as.data.frame(attr, row.names="")

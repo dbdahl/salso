@@ -117,23 +117,26 @@ SEXP minimize_by_salso(SEXP draws_sexp, SEXP psm_sexp, SEXP loss_sexp, SEXP max_
   int *results_max_size = INTEGER(results_max_size_sexp);
   SEXP results_initialization_method_sexp = PROTECT(Rf_allocVector(INTSXP, 1));
   int *results_initialization_method = INTEGER(results_initialization_method_sexp);
+  SEXP results_seconds_sexp = PROTECT(Rf_allocVector(REALSXP, 1));
+  double *results_seconds = REAL(results_seconds_sexp);
   int *seed = INTEGER(seed_sexp);
-  dahl_salso__minimize_by_salso(n_items, n_draws, draws, psm, loss, max_size, n_runs, seconds, max_scans, max_zealous_updates, prob_sequential_allocation, prob_singletons_initialization, n_cores, results_labels, results_expected_loss, results_n_scans, results_n_zealous_accepts, results_n_zealous_attempts, results_n_runs, results_max_size, results_initialization_method, seed);
+  dahl_salso__minimize_by_salso(n_items, n_draws, draws, psm, loss, max_size, n_runs, seconds, max_scans, max_zealous_updates, prob_sequential_allocation, prob_singletons_initialization, n_cores, results_labels, results_expected_loss, results_n_scans, results_n_zealous_accepts, results_n_zealous_attempts, results_n_runs, results_max_size, results_initialization_method, results_seconds, seed);
 
-  SEXP results2 = PROTECT(Rf_allocVector(VECSXP, 8));
+  SEXP results2 = PROTECT(Rf_allocVector(VECSXP, 9));
   SET_VECTOR_ELT(results2, 1, results_expected_loss_sexp);
   SET_VECTOR_ELT(results2, 2, results_initialization_method_sexp);
   SET_VECTOR_ELT(results2, 3, results_n_scans_sexp);
   SET_VECTOR_ELT(results2, 4, results_n_zealous_accepts_sexp);
   SET_VECTOR_ELT(results2, 5, results_n_zealous_attempts_sexp);
   SET_VECTOR_ELT(results2, 6, results_n_runs_sexp);
-  SET_VECTOR_ELT(results2, 7, results_max_size_sexp);
+  SET_VECTOR_ELT(results2, 7, results_seconds_sexp);
+  SET_VECTOR_ELT(results2, 8, results_max_size_sexp);
 
   SEXP results = PROTECT(Rf_allocVector(VECSXP, 2));
   SET_VECTOR_ELT(results, 0, results_labels_sexp);
   SET_VECTOR_ELT(results, 1, results2);
 
-  UNPROTECT(12);
+  UNPROTECT(13);
   return results;
 }
 

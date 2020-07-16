@@ -38,6 +38,7 @@ void dahl_salso__minimize_by_salso(int32_t n_items,
                                    int32_t *results_n_runs_ptr,
                                    int32_t *results_max_size_ptr,
                                    int32_t *results_initialization_method_ptr,
+                                   double *results_seconds_ptr,
                                    const int32_t *seed_ptr);
 
 void dahl_salso__psm(int32_t n_partitions,
