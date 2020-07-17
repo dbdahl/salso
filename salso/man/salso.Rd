@@ -50,10 +50,11 @@ for the following reasons: 1. The actual number is a multiple of the number
 of cores specified by the \code{nCores} argument, and 2. The search is
 curtailed when the \code{seconds} threshold is exceeded.}
 
-\item{seconds}{A time threshold in seconds after which the function will be
-curtailed (with a warning) instead of performing all the requested number
-of permutations. Note that the function could take longer because the
-threshold is only checked after each permutation is completed.}
+\item{seconds}{Instead of performing all the requested number of runs,
+curtail the search after the specified expected number of seconds. Note
+that the function will finish earlier if all the requested runs are
+completed. The specified seconds does not account for the overhead involved
+in starting the search and returning results.}
 
 \item{maxScans}{The maximum number of full reallocation scans. The actual
 number of scans may be less than \code{maxScans} since the method stops if
