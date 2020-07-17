@@ -39,10 +39,11 @@
 #'   for the following reasons: 1. The actual number is a multiple of the number
 #'   of cores specified by the \code{nCores} argument, and 2. The search is
 #'   curtailed when the \code{seconds} threshold is exceeded.
-#' @param seconds A time threshold in seconds after which the function will be
-#'   curtailed (with a warning) instead of performing all the requested number
-#'   of permutations. Note that the function could take longer because the
-#'   threshold is only checked after each permutation is completed.
+#' @param seconds Instead of performing all the requested number of runs,
+#'   curtail the search after the specified expected number of seconds. Note
+#'   that the function will finish earlier if all the requested runs are
+#'   completed. The specified seconds does not account for the overhead involved
+#'   in starting the search and returning results.
 #' @param maxScans The maximum number of full reallocation scans. The actual
 #'   number of scans may be less than \code{maxScans} since the method stops if
 #'   the result does not change between scans.
@@ -101,7 +102,7 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
-    names(attr) <- c("loss","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","seconds","maxSize")
+    names(attr) <- c("loss","maxSize","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","seconds")
     attr$loss <- loss
     attr$initMethod <- names(which(initMethodMapping==attr$initMethod))
     as.data.frame(attr, row.names="")
@@ -110,7 +111,7 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   attr(estimate,"psm") <- z$psm
   actualNRuns <- attr(estimate,"info")$nRuns
   if ( is.finite(nRuns) && ( actualNRuns < nRunsX ) ) {
-    warning(sprintf("Only %s of the requested %s permutations %s performed. Consider increasing 'seconds' or lowering 'nRuns'.",actualNRuns,nRuns,ifelse(actualNRuns==1L,"was","were")))
+    warning(sprintf("Only %s of the requested %s run%s performed. Consider increasing 'seconds' or lowering 'nRuns'.",actualNRuns,nRuns,ifelse(actualNRuns==1L," was","s were")))
   }
   if ( maxZealousAttempts > 0 && attr(estimate,"info")$nZAtt > maxZealousAttempts ) {
     warning("The number of possible zealous attempts exceeded the maximum. Do you really want that many clusters? Consider lowering 'maxSize' or increasing 'maxZealousAttempts'.")
