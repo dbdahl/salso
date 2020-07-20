@@ -105,12 +105,13 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) && ( ! is.null(z$draws) ) ) {
     maxSize <- max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, maxSize, nRunsX, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, nCores, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, z$a, maxSize, nRunsX, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, nCores, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
-    names(attr) <- c("loss","maxSize","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","seconds")
-    attr$loss <- loss
+    names(attr) <- c("loss","a","maxSize","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","seconds")
+    attr$loss <- z$loss
+    if ( z$loss != "binder" ) z$a <- NULL
     attr$initMethod <- names(which(initMethodMapping==attr$initMethod))
     as.data.frame(attr, row.names="")
   }

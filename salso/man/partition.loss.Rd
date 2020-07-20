@@ -64,8 +64,9 @@ be based on the \code{x} argument.}
 \item{a}{(Only used for Binder loss) Without loss of generality, the cost
 under Binder loss of placing two items in the same cluster when in truth
 they belong to separate clusters is fixed at one. The argument \code{a} is
-a scalar giving the cost of the complementary mistake, i.e., placing two
-items in separate clusters when in truth they belong to the same cluster.}
+a nonnegative scalar giving the cost of the complementary mistake, i.e.,
+placing two items in separate clusters when in truth they belong to the
+same cluster.}
 
 \item{partition1}{An integer vector of cluster labels for \eqn{n} items. Two
 items are in the same subset (i.e., cluster) if their labels are equal.}

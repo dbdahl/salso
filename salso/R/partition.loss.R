@@ -109,8 +109,9 @@
 #' @param a (Only used for Binder loss) Without loss of generality, the cost
 #'   under Binder loss of placing two items in the same cluster when in truth
 #'   they belong to separate clusters is fixed at one. The argument \code{a} is
-#'   a scalar giving the cost of the complementary mistake, i.e., placing two
-#'   items in separate clusters when in truth they belong to the same cluster.
+#'   a nonnegative scalar giving the cost of the complementary mistake, i.e.,
+#'   placing two items in separate clusters when in truth they belong to the
+#'   same cluster.
 #'
 #' @return A numeric vector.
 #'
@@ -188,6 +189,7 @@ partition.loss <- function(partitions, x, loss="VI") {
 #' @rdname partition.loss
 binder <- function(partitions, x, a=1) {
   if ( missing(partitions) && missing(x) ) {
+    if ( ! is.vector(a) || length(a) != 1 || ! is.numeric(a) || a < 0 ) stop("'a' should be a nonnegative scalar.")
     structure(list(loss="binder", a=a), class="salso.loss")
   } else {
     expected.loss(partitions, x, Recall(a=a))
@@ -287,5 +289,5 @@ expected.loss <- function(partitions, x, loss) {
   }
   if ( ncol(x) == 0 ) return(rep(NA, nrow(partitions)))
   y <- x2drawspsm(x, loss)
-  .Call(.expected_loss, partitions, y$draws, y$psm, y$lossCode)
+  .Call(.expected_loss, partitions, y$draws, y$psm, y$lossCode, y$a)
 }

@@ -7,7 +7,7 @@ minimize.by.enumeration <- function(x, loss="VI.lb") {
   } else FALSE
   z <- x2drawspsm(x, loss)
   if ( ( loss %in% c("binder.psm","omARI.approx","VI.lb") ) && ! FORCE_INEFFICIENT ) {
-    y <- .Call(.minimize_by_enumeration, z$psm, z$lossCode)
+    y <- .Call(.minimize_by_enumeration, z$psm, z$lossCode, z$a)
     names(y) <- colnames(z$psm)
   } else {
     cat("The current implementation is not parallelized nor memory efficient.\n")
