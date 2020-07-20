@@ -116,7 +116,7 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
     attr <- y[[2]]
     names(attr) <- c("loss","a","maxSize","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","seconds")
     attr$loss <- z$loss
-    if ( z$loss != "binder" ) z$a <- NULL
+    if ( z$loss != "binder" ) attr$a <- NULL
     attr$initMethod <- names(which(initMethodMapping==attr$initMethod))
     as.data.frame(attr, row.names="")
   }
