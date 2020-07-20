@@ -107,8 +107,8 @@ salso(draws, loss="binder", nRuns=1, nCores=1)
 salso(draws, loss=binder(a=2), nRuns=1, nCores=1)
 
 probs <- psm(draws, nCores=1)
-salso(probs, loss="VI.lb", nCores=1, maxZealousAttempts=0)
-salso(draws, loss="VI.lb", nCores=1, maxZealousAttempts=0)
+salso(probs, loss=VI.lb(), nCores=1, maxZealousAttempts=0)
+salso(draws, loss=VI.lb(), nCores=1, maxZealousAttempts=0)
 
 }
 \seealso{

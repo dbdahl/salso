@@ -6,7 +6,7 @@ minimize.by.enumeration <- function(x, loss="VI.lb") {
     TRUE
   } else FALSE
   z <- x2drawspsm(x, loss)
-  if ( ( loss %in% c("binder.psm","omARI.approx","VI.lb") ) && ! FORCE_INEFFICIENT ) {
+  if ( ( z$lossStr %in% c("binder.psm","omARI.approx","VI.lb") ) && ! FORCE_INEFFICIENT ) {
     y <- .Call(.minimize_by_enumeration, z$psm, z$lossCode, z$a)
     names(y) <- colnames(z$psm)
   } else {

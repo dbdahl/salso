@@ -83,8 +83,8 @@
 #' salso(draws, loss=binder(a=2), nRuns=1, nCores=1)
 #'
 #' probs <- psm(draws, nCores=1)
-#' salso(probs, loss="VI.lb", nCores=1, maxZealousAttempts=0)
-#' salso(draws, loss="VI.lb", nCores=1, maxZealousAttempts=0)
+#' salso(probs, loss=VI.lb(), nCores=1, maxZealousAttempts=0)
+#' salso(draws, loss=VI.lb(), nCores=1, maxZealousAttempts=0)
 #'
 salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, maxZealousAttempts=10, probSequentialAllocation=0.5, probSingletonsInitialization=0, nCores=0) {
   if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
@@ -98,8 +98,11 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   if ( maxScans > .Machine$integer.max ) maxScans <- .Machine$integer.max
   if ( maxZealousAttempts < 0.0 ) stop("'maxZealousAttempts' may not be negative.")
   if ( maxZealousAttempts > .Machine$integer.max ) maxZealousAttempts <- .Machine$integer.max
-  if ( ( z$loss %in% c("binder.psm", "omARI.approx", "VI.lb") ) && maxZealousAttempts != 0  ) {
+  if ( ( z$lossStr %in% c("binder.psm", "omARI.approx", "VI.lb") ) && maxZealousAttempts != 0  ) {
     stop(sprintf("Zealous attempts are not implemented for '%s' loss.", z$loss))
+  }
+  if ( z$a != 1 && z$lossStr == "binder.psm" ) {
+    stop(sprintf("The current implementation requires that samples be provided when 'a' is not 1.0 for Binder loss."))
   }
   if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
   if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")

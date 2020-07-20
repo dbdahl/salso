@@ -288,6 +288,6 @@ expected.loss <- function(partitions, x, loss) {
     stop("The number of items (i.e., number of columns) in 'partitions' and 'x' are not the same.")
   }
   if ( ncol(x) == 0 ) return(rep(NA, nrow(partitions)))
-  y <- x2drawspsm(x, loss)
-  .Call(.expected_loss, partitions, y$draws, y$psm, y$lossCode, y$a)
+  z <- x2drawspsm(x, loss)
+  .Call(.expected_loss, partitions, z$draws, z$psm, z$lossCode, z$a)
 }

@@ -11,28 +11,27 @@ isPSM <- function(x) {
 x2drawspsm <- function(x, loss, nCores=0) {
   draws <- NULL
   psm <- NULL
+  a <- 1
   if ( inherits(loss, "salso.loss") ) {
-    a <- if ( loss$loss == "binder" ) loss$a else 1
-    lossStr <- loss$loss
-  } else {
-    a <- 1
-    lossStr <- loss
+    if ( loss$loss == "binder" ) a <- loss$a
+    loss <- loss$loss
   }
+  lossStr <- loss
   if ( isPSM(x) ) {
       psm <- x
-      if ( lossStr == "binder" ) lossStr <- "binder.psm"
+      if ( loss == "binder" ) lossStr <- "binder.psm"
   } else {
       draws <- x
-      if ( lossStr == "binder" ) lossStr <- "binder.draws"
+      if ( loss == "binder" ) lossStr <- "binder.draws"
   }
   if ( ( length(lossStr) != 1 ) || ! ( lossStr %in% names(lossMapping) ) ) {
-    stop(sprintf('loss="%s" is not recognized.  Please use one of the following: %s', lossStr, paste0('"',names(lossMapping),'"',collapse=", ")))
+    stop(sprintf('loss="%s" is not recognized.  Please use one of the following: %s', loss, paste0('"',names(lossMapping),'"',collapse=", ")))
   }
   lossCode <- unname(lossMapping[lossStr])
   if ( lossStr %in% c("binder.psm","omARI.approx","VI.lb") ) {
     if ( is.null(psm) ) psm <- salso::psm(draws, nCores)
   } else {
-    if ( is.null(draws) ) stop(sprintf("For the '%s' criterion, 'x' must be samples from a partition distribution.",lossStr))
+    if ( is.null(draws) ) stop(sprintf("For the '%s' criterion, 'x' must be samples from a partition distribution.",loss))
   }
-  list(loss=lossStr, lossCode=lossCode, a=a, draws=draws, psm=psm)
+  list(loss=loss, lossStr=lossStr, lossCode=lossCode, a=a, draws=draws, psm=psm)
 }
