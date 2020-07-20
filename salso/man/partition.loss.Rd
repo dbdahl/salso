@@ -16,7 +16,7 @@
 \usage{
 partition.loss(partitions, x, loss = "VI")
 
-binder(partitions, x)
+binder(partitions, x, a = 1)
 
 RI(partition1, partition2)
 
@@ -39,20 +39,33 @@ NID(partitions, x)
 \arguments{
 \item{partitions}{An integer matrix of cluster labels with \eqn{n} columns,
 where each row is a partition of \eqn{n} items given as cluster labels. Two
-items are in the same subset (i.e., cluster) if their labels are equal.}
+items are in the same subset (i.e., cluster) if their labels are equal. Or,
+a vector of length \eqn{n} which will be converted to a \eqn{1}-by-\eqn{n}
+matrix.}
 
-\item{x}{Either: 1. A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B}
-rows represents a clustering of \eqn{n} items using cluster labels. (For
-clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
-\code{x[b,i] == x[b,j]}.), or 2. A pairwise similarity matrix, i.e.,
-\eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives the
-(estimated) probability that items \eqn{i} and \eqn{j} are in the same
-subset (i.e., cluster) of a partition (i.e., clustering).}
+\item{x}{One of the following: 1. A \eqn{B}-by-\eqn{n} matrix, where each of
+the \eqn{B} rows represents a clustering of \eqn{n} items using cluster
+labels. (For clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same
+cluster if \code{x[b,i] == x[b,j]}.), 2. A vector of length \eqn{n} which
+is converted to an \eqn{a}-by-\eqn{n} matrix as described above, or 3. A
+pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix whose
+\eqn{(i,j)} element gives the (estimated) probability that items \eqn{i}
+and \eqn{j} are in the same subset (i.e., cluster) of a partition (i.e.,
+clustering).}
 
 \item{loss}{One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-\code{"VI"}, or \code{"VI.lb"}.  Note that, if \code{loss="binder.psm"},
-an algorithm based on the pairwise similarity matrix is used, whereas
-\code{loss="binder.draws"} results in an algorithm based on the samples.}
+\code{"VI"}, \code{"VI.lb"}, \code{"NIV"}, \code{"ID"}, \code{"NID"}, or
+the result of a calling a function of these names. Note that, if
+\code{loss="binder.psm"}, an algorithm based on the pairwise similarity
+matrix is used, whereas \code{loss="binder.draws"} results in an algorithm
+based on the samples. When \code{loss="binder"}, the algorithm choice will
+be based on the \code{x} argument.}
+
+\item{a}{(Only used for Binder loss) Without loss of generality, the cost
+under Binder loss of placing two items in the same cluster when in truth
+they belong to separate clusters is fixed at one. The argument \code{a} is
+a scalar giving the cost of the complementary mistake, i.e., placing two
+items in separate clusters when in truth they belong to the same cluster.}
 
 \item{partition1}{An integer vector of cluster labels for \eqn{n} items. Two
 items are in the same subset (i.e., cluster) if their labels are equal.}
@@ -79,17 +92,23 @@ will automatically be computed as needed.
 }
 \details{
 The partition estimation criterion can be specified using the \code{loss}
-argument: \describe{
+argument, which is either a string or a result of calling the associated
+functions. These losses are described below: \describe{
 
-\item{\code{"binder"}}{Binder loss. Whereas high values of the Rand index
-\eqn{R} between \eqn{\pi*} and \eqn{\pi} correspond to high concordance
-between the partitions, the N-invariant Binder loss \eqn{L} for a partition
-\eqn{\pi*} in estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}.  This package
-reports the N-invariant Binder loss and the original Binder loss equals the
-N-invariant Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise
-similarity matrix is required for "binder".  See also Dahl (2006), Lau and
-Green (2007), Dahl and Newton (2007), Fritsch and Ickstadt (2009), and Wade
-and Ghahramani (2018).}
+\item{\code{"binder"}}{Binder. Whereas high values of the Rand index \eqn{R}
+between \eqn{\pi*} and \eqn{\pi} correspond to high concordance between the
+partitions, the N-invariant Binder loss \eqn{L} for a partition \eqn{\pi*} in
+estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}.  This package reports the
+N-invariant Binder loss and the original Binder loss equals the N-invariant
+Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise similarity matrix
+is required for "binder", but samples can be provided.  Two mistakes are
+possible: 1. Placing two items in separate clusters when in truth they belong
+to the same cluster, and 2. Placing two items in the same cluster when in
+truth they belong to separate clusters. Without loss of generality, the cost
+of the second mistake is fixed at one. The default cost of the second mistake
+is also one, but can be specified through with \code{a} argument. See also
+Dahl (2006), Lau and Green (2007), Dahl and Newton (2007), Fritsch and
+Ickstadt (2009), and Wade and Ghahramani (2018).}
 
 \item{\code{"omARI"}}{One Minus Adjusted Rand Index. Computes the expectation
 of the one minus the adjusted Rand index (Hubert and Arabie, 1985).  Whereas
@@ -101,11 +120,12 @@ Samples from a partition distribution are required for "omARI".  See Fritsch
 and Ickstadt (2009).}
 
 \item{\code{"omARI.approx"}}{Approximation of One Minus Adjusted Rand Index.
-Computes the first-order approximation of the expectation of the one
-minus the adjusted Rand index. The adjusted Rand index involves a ratio and
-the first-order approximation of the expectation is based on \eqn{E(X/Y)
-\approx E(X)/E(Y)}. Only the pairwise similarity matrix is required for
-"omARI.approx". See Fritsch and Ickstadt (2009).}
+Computes the first-order approximation of the expectation of the one minus
+the adjusted Rand index. The adjusted Rand index involves a ratio and the
+first-order approximation of the expectation is based on \eqn{E(X/Y) \approx
+E(X)/E(Y)}. Only the pairwise similarity matrix is required for
+"omARI.approx", but samples can be provided. See Fritsch and Ickstadt
+(2009).}
 
 \item{\code{"VI"}}{Variation of Information. Computes the expectations of
 variation of information loss.  Samples from a partition distribution are
@@ -115,7 +135,20 @@ and Friel (2018).}
 \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information.  Computes
 the lower bound of the expectation of the variation of information loss,
 where the lower bound is obtained by Jensen's inequality.  Only the pairwise
-similarity matrix is required for "VI.lb".  See Wade and Ghahramani (2018).}
+similarity matrix is required for "VI.lb", but samples can be provided.  See
+Wade and Ghahramani (2018).}
+
+\item{\code{"NIV"}}{Normalized Variation of Information.  Computes the
+expectation of the normalized variation of information loss. See Vinh, Epps,
+and Bailey (2010) and Rastelli and Friel (2018).}
+
+\item{\code{"ID"}}{Information Distance.  Computes the expectation of the
+information distance (\eqn{D_{max}}) loss. See Vinh, Epps, and Bailey
+(2010).}
+
+\item{\code{"NID"}}{Normalized Information Distance.  Computes the
+expectation of the normalized information distance loss. See Vinh, Epps, and
+Bailey (2010) and Rastelli and Friel (2018).}
 
 }
 
@@ -183,6 +216,11 @@ and credible balls. \emph{Bayesian Analysis}, \bold{13:2}, 559-626.
 R. Rastelli and N. Friel (2018), Optimal Bayesian estimators for latent
 variable cluster models. \emph{Statistics and Computing}, \bold{28},
 1169-1186.
+
+N. X. Vinh, J. Epps, and J. Bailey (2010), Information Theoretic Measures for
+Clusterings Comparison: Variants, Properties, Normalization and Correction
+for Chance, \emph{Journal of Machine Learning Research}, \bold{11},
+2837-2854.
 }
 \seealso{
 \code{\link{psm}}, \code{\link{salso}}, \code{\link{dlso}}

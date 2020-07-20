@@ -14,17 +14,23 @@
 #' will automatically be computed as needed.
 #'
 #' The partition estimation criterion can be specified using the \code{loss}
-#' argument: \describe{
+#' argument, which is either a string or a result of calling the associated
+#' functions. These losses are described below: \describe{
 #'
-#' \item{\code{"binder"}}{Binder loss. Whereas high values of the Rand index
-#' \eqn{R} between \eqn{\pi*} and \eqn{\pi} correspond to high concordance
-#' between the partitions, the N-invariant Binder loss \eqn{L} for a partition
-#' \eqn{\pi*} in estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}.  This package
-#' reports the N-invariant Binder loss and the original Binder loss equals the
-#' N-invariant Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise
-#' similarity matrix is required for "binder".  See also Dahl (2006), Lau and
-#' Green (2007), Dahl and Newton (2007), Fritsch and Ickstadt (2009), and Wade
-#' and Ghahramani (2018).}
+#' \item{\code{"binder"}}{Binder. Whereas high values of the Rand index \eqn{R}
+#' between \eqn{\pi*} and \eqn{\pi} correspond to high concordance between the
+#' partitions, the N-invariant Binder loss \eqn{L} for a partition \eqn{\pi*} in
+#' estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}.  This package reports the
+#' N-invariant Binder loss and the original Binder loss equals the N-invariant
+#' Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise similarity matrix
+#' is required for "binder", but samples can be provided.  Two mistakes are
+#' possible: 1. Placing two items in separate clusters when in truth they belong
+#' to the same cluster, and 2. Placing two items in the same cluster when in
+#' truth they belong to separate clusters. Without loss of generality, the cost
+#' of the second mistake is fixed at one. The default cost of the second mistake
+#' is also one, but can be specified through with \code{a} argument. See also
+#' Dahl (2006), Lau and Green (2007), Dahl and Newton (2007), Fritsch and
+#' Ickstadt (2009), and Wade and Ghahramani (2018).}
 #'
 #' \item{\code{"omARI"}}{One Minus Adjusted Rand Index. Computes the expectation
 #' of the one minus the adjusted Rand index (Hubert and Arabie, 1985).  Whereas
@@ -36,11 +42,12 @@
 #' and Ickstadt (2009).}
 #'
 #' \item{\code{"omARI.approx"}}{Approximation of One Minus Adjusted Rand Index.
-#' Computes the first-order approximation of the expectation of the one
-#' minus the adjusted Rand index. The adjusted Rand index involves a ratio and
-#' the first-order approximation of the expectation is based on \eqn{E(X/Y)
-#' \approx E(X)/E(Y)}. Only the pairwise similarity matrix is required for
-#' "omARI.approx". See Fritsch and Ickstadt (2009).}
+#' Computes the first-order approximation of the expectation of the one minus
+#' the adjusted Rand index. The adjusted Rand index involves a ratio and the
+#' first-order approximation of the expectation is based on \eqn{E(X/Y) \approx
+#' E(X)/E(Y)}. Only the pairwise similarity matrix is required for
+#' "omARI.approx", but samples can be provided. See Fritsch and Ickstadt
+#' (2009).}
 #'
 #' \item{\code{"VI"}}{Variation of Information. Computes the expectations of
 #' variation of information loss.  Samples from a partition distribution are
@@ -50,7 +57,20 @@
 #' \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information.  Computes
 #' the lower bound of the expectation of the variation of information loss,
 #' where the lower bound is obtained by Jensen's inequality.  Only the pairwise
-#' similarity matrix is required for "VI.lb".  See Wade and Ghahramani (2018).}
+#' similarity matrix is required for "VI.lb", but samples can be provided.  See
+#' Wade and Ghahramani (2018).}
+#'
+#' \item{\code{"NIV"}}{Normalized Variation of Information.  Computes the
+#' expectation of the normalized variation of information loss. See Vinh, Epps,
+#' and Bailey (2010) and Rastelli and Friel (2018).}
+#'
+#' \item{\code{"ID"}}{Information Distance.  Computes the expectation of the
+#' information distance (\eqn{D_{max}}) loss. See Vinh, Epps, and Bailey
+#' (2010).}
+#'
+#' \item{\code{"NID"}}{Normalized Information Distance.  Computes the
+#' expectation of the normalized information distance loss. See Vinh, Epps, and
+#' Bailey (2010) and Rastelli and Friel (2018).}
 #'
 #' }
 #'
@@ -67,20 +87,30 @@
 #'   as \code{partition1}.
 #' @param partitions An integer matrix of cluster labels with \eqn{n} columns,
 #'   where each row is a partition of \eqn{n} items given as cluster labels. Two
-#'   items are in the same subset (i.e., cluster) if their labels are equal.
-#' @param x Either: 1. A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B}
-#'   rows represents a clustering of \eqn{n} items using cluster labels. (For
-#'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
-#'   \code{x[b,i] == x[b,j]}.), or 2. A pairwise similarity matrix, i.e.,
-#'   \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives the
-#'   (estimated) probability that items \eqn{i} and \eqn{j} are in the same
-#'   subset (i.e., cluster) of a partition (i.e., clustering).
+#'   items are in the same subset (i.e., cluster) if their labels are equal. Or,
+#'   a vector of length \eqn{n} which will be converted to a \eqn{1}-by-\eqn{n}
+#'   matrix.
+#' @param x One of the following: 1. A \eqn{B}-by-\eqn{n} matrix, where each of
+#'   the \eqn{B} rows represents a clustering of \eqn{n} items using cluster
+#'   labels. (For clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same
+#'   cluster if \code{x[b,i] == x[b,j]}.), 2. A vector of length \eqn{n} which
+#'   is converted to an \eqn{a}-by-\eqn{n} matrix as described above, or 3. A
+#'   pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix whose
+#'   \eqn{(i,j)} element gives the (estimated) probability that items \eqn{i}
+#'   and \eqn{j} are in the same subset (i.e., cluster) of a partition (i.e.,
+#'   clustering).
 #' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-#'   \code{"VI"}, or \code{"VI.lb"}.
-#' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-#'   \code{"VI"}, or \code{"VI.lb"}.  Note that, if \code{loss="binder.psm"},
-#'   an algorithm based on the pairwise similarity matrix is used, whereas
-#'   \code{loss="binder.draws"} results in an algorithm based on the samples.
+#'   \code{"VI"}, \code{"VI.lb"}, \code{"NIV"}, \code{"ID"}, \code{"NID"}, or
+#'   the result of a calling a function of these names. Note that, if
+#'   \code{loss="binder.psm"}, an algorithm based on the pairwise similarity
+#'   matrix is used, whereas \code{loss="binder.draws"} results in an algorithm
+#'   based on the samples. When \code{loss="binder"}, the algorithm choice will
+#'   be based on the \code{x} argument.
+#' @param a (Only used for Binder loss) Without loss of generality, the cost
+#'   under Binder loss of placing two items in the same cluster when in truth
+#'   they belong to separate clusters is fixed at one. The argument \code{a} is
+#'   a scalar giving the cost of the complementary mistake, i.e., placing two
+#'   items in separate clusters when in truth they belong to the same cluster.
 #'
 #' @return A numeric vector.
 #'
@@ -124,6 +154,11 @@
 #' variable cluster models. \emph{Statistics and Computing}, \bold{28},
 #' 1169-1186.
 #'
+#' N. X. Vinh, J. Epps, and J. Bailey (2010), Information Theoretic Measures for
+#' Clusterings Comparison: Variants, Properties, Normalization and Correction
+#' for Chance, \emph{Journal of Machine Learning Research}, \bold{11},
+#' 2837-2854.
+#'
 #' @export
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
@@ -151,8 +186,12 @@ partition.loss <- function(partitions, x, loss="VI") {
 
 #' @export
 #' @rdname partition.loss
-binder <- function(partitions, x) {
-  expected.loss(partitions, x, "binder")
+binder <- function(partitions, x, a=1) {
+  if ( missing(partitions) && missing(x) ) {
+    structure(list(loss="binder", a=a), class="salso.loss")
+  } else {
+    expected.loss(partitions, x, Recall(a=a))
+  }
 }
 
 #' @export
@@ -164,13 +203,21 @@ RI <- function(partition1, partition2) {
 #' @export
 #' @rdname partition.loss
 omARI <- function(partitions, x) {
-  expected.loss(partitions, x, "omARI")
+  if ( missing(partitions) && missing(x) ) {
+    structure(list(loss="omARI"), class="salso.loss")
+  } else {
+    expected.loss(partitions, x, Recall())
+  }
 }
 
 #' @export
 #' @rdname partition.loss
 omARI.approx <- function(partitions, x) {
-  expected.loss(partitions, x, "omARI.approx")
+  if ( missing(partitions) && missing(x) ) {
+    structure(list(loss="omARI.approx"), class="salso.loss")
+  } else {
+    expected.loss(partitions, x, Recall())
+  }
 }
 
 #' @export
@@ -182,31 +229,51 @@ ARI <- function(partition1, partition2) {
 #' @export
 #' @rdname partition.loss
 VI <- function(partitions, x) {
-  expected.loss(partitions, x, "VI")
+  if ( missing(partitions) && missing(x) ) {
+    structure(list(loss="VI"), class="salso.loss")
+  } else {
+    expected.loss(partitions, x, Recall())
+  }
 }
 
 #' @export
 #' @rdname partition.loss
 VI.lb <- function(partitions, x) {
-  expected.loss(partitions, x, "VI.lb")
+  if ( missing(partitions) && missing(x) ) {
+    structure(list(loss="VI.lb"), class="salso.loss")
+  } else {
+    expected.loss(partitions, x, Recall())
+  }
 }
 
 #' @export
 #' @rdname partition.loss
 NVI <- function(partitions, x) {
-  expected.loss(partitions, x, "NVI")
+  if ( missing(partitions) && missing(x) ) {
+    structure(list(loss="NVI"), class="salso.loss")
+  } else {
+    expected.loss(partitions, x, Recall())
+  }
 }
 
 #' @export
 #' @rdname partition.loss
 ID <- function(partitions, x) {
-  expected.loss(partitions, x, "ID")
+  if ( missing(partitions) && missing(x) ) {
+    structure(list(loss="ID"), class="salso.loss")
+  } else {
+    expected.loss(partitions, x, Recall())
+  }
 }
 
 #' @export
 #' @rdname partition.loss
 NID <- function(partitions, x) {
-  expected.loss(partitions, x, "NID")
+  if ( missing(partitions) && missing(x) ) {
+    structure(list(loss="NID"), class="salso.loss")
+  } else {
+    expected.loss(partitions, x, Recall())
+  }
 }
 
 #' @useDynLib salso .expected_loss

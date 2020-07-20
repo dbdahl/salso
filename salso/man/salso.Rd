@@ -18,19 +18,23 @@ salso(
 )
 }
 \arguments{
-\item{x}{Either: 1. A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B}
-rows represents a clustering of \eqn{n} items using cluster labels. (For
-clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
-\code{x[b,i] == x[b,j]}.), or 2. A pairwise similarity matrix, i.e.,
-\eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives the
-(estimated) probability that items \eqn{i} and \eqn{j} are in the same
-subset (i.e., cluster) of a partition (i.e., clustering).}
+\item{x}{One of the following: 1. A \eqn{B}-by-\eqn{n} matrix, where each of
+the \eqn{B} rows represents a clustering of \eqn{n} items using cluster
+labels. (For clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same
+cluster if \code{x[b,i] == x[b,j]}.), 2. A vector of length \eqn{n} which
+is converted to an \eqn{1}-by-\eqn{n} matrix as described above, or 3. A
+pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix whose
+\eqn{(i,j)} element gives the (estimated) probability that items \eqn{i}
+and \eqn{j} are in the same subset (i.e., cluster) of a partition (i.e.,
+clustering).}
 
 \item{loss}{One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-\code{"VI"}, or \code{"VI.lb"}.  Note that, if \code{loss="binder.psm"}, an
-algorithm based on the pairwise similarity matrix is used, whereas
-\code{loss="binder.draws"} results in an algorithm based on the samples.
-See \code{\link{partition.loss}} for details on these loss functions.}
+\code{"VI"}, \code{"VI.lb"}, \code{"NIV"}, \code{"ID"}, \code{"NID"}, or
+the result of a calling a function of these names. Note that, if
+\code{loss="binder.psm"}, an algorithm based on the pairwise similarity
+matrix is used, whereas \code{loss="binder.draws"} results in an algorithm
+based on the samples. When \code{loss="binder"}, the algorithm choice will
+be based on the \code{x} argument.}
 
 \item{maxSize}{This argument controls \code{Q}, maximum number of clusters
 that can be considered by the optimization algorithm.  \code{Q} has
@@ -101,8 +105,8 @@ draws <- iris.clusterings
 salso(draws, loss="VI", nRuns=1, nCores=1)
 
 probs <- psm(draws, nCores=1)
-salso(probs, loss="VI.lb", nCores=1)
-salso(draws, loss="VI.lb", nCores=1)
+salso(probs, loss="VI.lb", nCores=1, maxZealousAttempts=0)
+salso(draws, loss="VI.lb", nCores=1, maxZealousAttempts=0)
 
 }
 \seealso{

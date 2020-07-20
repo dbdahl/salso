@@ -11,18 +11,22 @@
 #' December 6, 2017. See
 #' <https://www.birs.ca/events/2017/5-day-workshops/17w5060/schedule>.
 #'
-#' @param x Either: 1. A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B}
-#'   rows represents a clustering of \eqn{n} items using cluster labels. (For
-#'   clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
-#'   \code{x[b,i] == x[b,j]}.), or 2. A pairwise similarity matrix, i.e.,
-#'   \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives the
-#'   (estimated) probability that items \eqn{i} and \eqn{j} are in the same
-#'   subset (i.e., cluster) of a partition (i.e., clustering).
+#' @param x One of the following: 1. A \eqn{B}-by-\eqn{n} matrix, where each of
+#'   the \eqn{B} rows represents a clustering of \eqn{n} items using cluster
+#'   labels. (For clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same
+#'   cluster if \code{x[b,i] == x[b,j]}.), 2. A vector of length \eqn{n} which
+#'   is converted to an \eqn{1}-by-\eqn{n} matrix as described above, or 3. A
+#'   pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix whose
+#'   \eqn{(i,j)} element gives the (estimated) probability that items \eqn{i}
+#'   and \eqn{j} are in the same subset (i.e., cluster) of a partition (i.e.,
+#'   clustering).
 #' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-#'   \code{"VI"}, or \code{"VI.lb"}.  Note that, if \code{loss="binder.psm"}, an
-#'   algorithm based on the pairwise similarity matrix is used, whereas
-#'   \code{loss="binder.draws"} results in an algorithm based on the samples.
-#'   See \code{\link{partition.loss}} for details on these loss functions.
+#'   \code{"VI"}, \code{"VI.lb"}, \code{"NIV"}, \code{"ID"}, \code{"NID"}, or
+#'   the result of a calling a function of these names. Note that, if
+#'   \code{loss="binder.psm"}, an algorithm based on the pairwise similarity
+#'   matrix is used, whereas \code{loss="binder.draws"} results in an algorithm
+#'   based on the samples. When \code{loss="binder"}, the algorithm choice will
+#'   be based on the \code{x} argument.
 #' @param maxSize This argument controls \code{Q}, maximum number of clusters
 #'   that can be considered by the optimization algorithm.  \code{Q} has
 #'   important implications for the interpretability of the resulting clustering
@@ -77,8 +81,8 @@
 #' salso(draws, loss="VI", nRuns=1, nCores=1)
 #'
 #' probs <- psm(draws, nCores=1)
-#' salso(probs, loss="VI.lb", nCores=1)
-#' salso(draws, loss="VI.lb", nCores=1)
+#' salso(probs, loss="VI.lb", nCores=1, maxZealousAttempts=0)
+#' salso(draws, loss="VI.lb", nCores=1, maxZealousAttempts=0)
 #'
 salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, maxZealousAttempts=10, probSequentialAllocation=0.5, probSingletonsInitialization=0, nCores=0) {
   if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
@@ -90,8 +94,11 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   nRunsX <- if ( nRuns > .Machine$integer.max ) .Machine$integer.max else nRuns
   if ( maxScans < 0.0 ) stop("'maxScans' may not be negative.")
   if ( maxScans > .Machine$integer.max ) maxScans <- .Machine$integer.max
-  if ( maxZealousAttempts < 0.0 ) stop("'maxScans' may not be negative.")
+  if ( maxZealousAttempts < 0.0 ) stop("'maxZealousAttempts' may not be negative.")
   if ( maxZealousAttempts > .Machine$integer.max ) maxZealousAttempts <- .Machine$integer.max
+  if ( ( z$loss %in% c("binder.psm", "omARI.approx", "VI.lb") ) && maxZealousAttempts != 0  ) {
+    stop(sprintf("Zealous attempts are not implemented for '%s' loss.", z$loss))
+  }
   if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
   if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
