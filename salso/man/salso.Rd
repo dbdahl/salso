@@ -36,18 +36,14 @@ matrix is used, whereas \code{loss="binder.draws"} results in an algorithm
 based on the samples. When \code{loss="binder"}, the algorithm choice will
 be based on the \code{x} argument.}
 
-\item{maxSize}{This argument controls \code{Q}, maximum number of clusters
-that can be considered by the optimization algorithm.  \code{Q} has
-important implications for the interpretability of the resulting clustering
-and directly influences the RAM needed for the optimization algorithm. If
-\code{maxSize} is negative, \code{Q} is the absolute value of
-\code{maxSize}. Otherwise, if \code{x} is a matrix of clusterings, \code{Q}
-is less than the smaller of two values: 1. the maximum number of clusters
-among the clusterings in \code{x} and 2. the supplied value of
-\code{maxSize} (unless the supplied value is zero, in which case, only the
-first constraint holds). If \code{x} is a pairwise similarity matrix,
-\code{Q} is the supplied value of \code{maxSize} (unless the supplied value
-is zero, in which case, there is no constraint).}
+\item{maxSize}{The maximum number of clusters that can be considered by the
+optimization algorithm, which has important
+implications for the interpretability of the resulting clustering and can
+greatly influence the RAM needed for the optimization algorithm. If the
+supplied value is zero and \code{x} is a matrix of clusterings, the
+optimization is constrained by the maximum number of clusters among the
+clusterings in \code{x}.  If the supplied value is zero and \code{x} is a
+is a pairwise similarity matrix, there is no constraint.}
 
 \item{nRuns}{The number of runs to try, although the actual number by differ
 for the following reasons: 1. The actual number is a multiple of the number
