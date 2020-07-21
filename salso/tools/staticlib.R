@@ -51,7 +51,7 @@ if ( osType == "windows" ) {
   destDir <- sprintf("rustlib/target/%s/release", target)
   headDir <- if ( substr(target,1,3) == "x86" ) "x64" else "i386"
   dir.create(destDir, recursive=TRUE, showWarnings=FALSE)
-  invisible(file.rename(sprintf("../src-%s/%s/rustlib.lib", headDir, destDir),
-                        sprintf(          "%s/rustlib.lib",          destDir)))
+  invisible(file.rename(sprintf("../src-%s/%s/librustlib.a", headDir, destDir),
+                        sprintf(          "%s/librustlib.a",          destDir)))
 }
 
