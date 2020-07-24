@@ -19,10 +19,10 @@ x2drawspsm <- function(x, loss, nCores=0) {
   lossStr <- loss
   if ( isPSM(x) ) {
       psm <- x
-      if ( loss == "binder" ) lossStr <- "binder.psm"
+      if ( lossStr == "binder" ) lossStr <- "binder.psm"
   } else {
       draws <- x
-      if ( loss == "binder" ) lossStr <- "binder.draws"
+      if ( lossStr == "binder" ) lossStr <- "binder.draws"
   }
   if ( ( length(lossStr) != 1 ) || ! ( lossStr %in% names(lossMapping) ) ) {
     stop(sprintf('loss="%s" is not recognized.  Please use one of the following: %s', loss, paste0('"',names(lossMapping),'"',collapse=", ")))

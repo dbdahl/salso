@@ -28,13 +28,13 @@
 #'   based on the samples. When \code{loss="binder"}, the algorithm choice will
 #'   be based on the \code{x} argument.
 #' @param maxSize The maximum number of clusters that can be considered by the
-#'   optimization algorithm, which has important
-#'   implications for the interpretability of the resulting clustering and can
-#'   greatly influence the RAM needed for the optimization algorithm. If the
-#'   supplied value is zero and \code{x} is a matrix of clusterings, the
-#'   optimization is constrained by the maximum number of clusters among the
-#'   clusterings in \code{x}.  If the supplied value is zero and \code{x} is a
-#'   is a pairwise similarity matrix, there is no constraint.
+#'   optimization algorithm, which has important implications for the
+#'   interpretability of the resulting clustering and can greatly influence the
+#'   RAM needed for the optimization algorithm. If the supplied value is zero
+#'   and \code{x} is a matrix of clusterings, the optimization is constrained by
+#'   the maximum number of clusters among the clusterings in \code{x}.  If the
+#'   supplied value is zero and \code{x} is a is a pairwise similarity matrix,
+#'   there is no constraint.
 #' @param nRuns The number of runs to try, although the actual number by differ
 #'   for the following reasons: 1. The actual number is a multiple of the number
 #'   of cores specified by the \code{nCores} argument, and 2. The search is
@@ -94,8 +94,11 @@ salso <- function(x, loss="VI", maxSize=0, nRuns=8, seconds=Inf, maxScans=Inf, m
   if ( maxScans > .Machine$integer.max ) maxScans <- .Machine$integer.max
   if ( maxZealousAttempts < 0.0 ) stop("'maxZealousAttempts' may not be negative.")
   if ( maxZealousAttempts > .Machine$integer.max ) maxZealousAttempts <- .Machine$integer.max
-  if ( ( z$lossStr %in% c("binder.psm", "omARI.approx", "VI.lb") ) && maxZealousAttempts != 0  ) {
-    stop(sprintf("Zealous attempts are not implemented for '%s' loss.", z$loss))
+  if ( ( z$lossStr %in% c("binder.psm", "omARI.approx", "VI.lb") ) && maxZealousAttempts != 0 ) {
+    stop(sprintf("Not implemented for '%s' loss.  Set 'maxZealousAttempts' to 0.", z$loss))
+  }
+  if ( ( z$lossStr %in% c("binder.psm", "omARI.approx", "VI.lb") ) && probSequentialAllocation != 1 ) {
+    stop(sprintf("Not implemented for '%s' loss.  Set 'probSequentialAllocation' to 1.", z$loss))
   }
   if ( z$a != 1 && z$lossStr == "binder.psm" ) {
     stop(sprintf("The current implementation requires that samples be provided when 'a' is not 1.0 for Binder loss."))
