@@ -124,7 +124,7 @@ dependencies = [
 [[package]]
 name = "dahl-salso"
 version = "0.4.0"
-source = "git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git#fd58a045d34d3c01b98d61542ed2925a03151e6f"
+source = "git+https://dahl-git.byu.edu/dahl/rust-dahl-salso.git#7813449e87a080a1e57f9558715d18d2db8385b3"
 dependencies = [
  "approx",
  "crossbeam",
@@ -164,9 +164,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.73"
+version = "0.2.74"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bd7d4bd64732af4bf3a67f367c27df8520ad7e230c5817b8ff485864d80242b9"
+checksum = "a2f02823cf78b754822df5f7f268fb59822e7296276d3e069d8e8cb26a14bd10"
 
 [[package]]
 name = "matrixmultiply"
