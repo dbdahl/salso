@@ -40,8 +40,8 @@ interpretability of the resulting clustering and can greatly influence the
 RAM needed for the optimization algorithm. If the supplied value is zero
 and \code{x} is a matrix of clusterings, the optimization is constrained by
 the maximum number of clusters among the clusterings in \code{x}.  If the
-supplied value is zero and \code{x} is a is a pairwise similarity matrix,
-there is no constraint.}
+supplied value is zero and \code{x} is a pairwise similarity matrix, there
+is no constraint.}
 
 \item{nRuns}{The number of runs to try, although the actual number may differ
 for the following reasons: 1. The actual number is a multiple of the number
