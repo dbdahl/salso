@@ -27,7 +27,7 @@
 #' psm(partition)
 #'
 #' dim(iris.clusterings)
-#' # For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+#' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' probs <- psm(iris.clusterings, nCores=1)
 #' dim(probs)
 #' probs[1:6, 1:6]

@@ -21,8 +21,8 @@
 #'   and \eqn{j} are in the same subset (i.e., cluster) of a partition (i.e.,
 #'   clustering).
 #' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-#'   \code{"VI"}, \code{"VI.lb"}, \code{"NIV"}, \code{"ID"}, \code{"NID"}, or
-#'   the result of a calling a function of these names. Note that, if
+#'   \code{"VI"}, \code{"VI.lb"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
+#'   the result of a calling a function of these names. Note that if
 #'   \code{loss="binder.psm"}, an algorithm based on the pairwise similarity
 #'   matrix is used, whereas \code{loss="binder.draws"} results in an algorithm
 #'   based on the samples. When \code{loss="binder"}, the algorithm choice will
@@ -35,7 +35,7 @@
 #'   the maximum number of clusters among the clusterings in \code{x}.  If the
 #'   supplied value is zero and \code{x} is a is a pairwise similarity matrix,
 #'   there is no constraint.
-#' @param nRuns The number of runs to try, although the actual number by differ
+#' @param nRuns The number of runs to try, although the actual number may differ
 #'   for the following reasons: 1. The actual number is a multiple of the number
 #'   of cores specified by the \code{nCores} argument, and 2. The search is
 #'   curtailed when the \code{seconds} threshold is exceeded.
@@ -52,7 +52,7 @@
 #'   reallocated.  While zealous updates may be helpful in optimization, they
 #'   also take more CPU time which might be better used trying additional runs.
 #' @param probSequentialAllocation For the initial allocation, the probability
-#'   of sequential allocation instead of using \code{sample(1:Q, ncol(x),
+#'   of sequential allocation instead of using \code{sample(1:K, ncol(x),
 #'   TRUE)}, where \code{K} is set according to the \code{maxSize} argument.
 #' @param probSingletonsInitialization When doing a sequential allocation to
 #'   obtain the initial allocation, the probability of placing the first

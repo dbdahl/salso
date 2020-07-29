@@ -1,10 +1,10 @@
 #' Heatmap, Dendrogram, and Exemplar Plotting for Partition Estimation
 #'
-#' This function produces one of three plots:  1. A heatmap shows the pairwise
+#' This function produces one of three plots:  1. A heatmap showing the pairwise
 #' allocation probabilities that items are clustered.
-#' 2. A dendrogram based on expected partition loss shows the relationships among
+#' 2. A dendrogram based on expected partition loss showing the relationships among
 #' clusters when merging pairs of clusters such that the increase in the
-#' expectation of the posterior loss is minimized.  3. An exemplar plot shows
+#' expectation of the posterior loss is minimized.  3. An exemplar plot showing
 #' pairs plots of all the variables with the exemplar (i.e., the most representative observation) of each cluster emphasized.
 #'
 #' @param x An object returned by \code{summary(x)}, where \code{x} itself is returned by the \code{\link{salso}} function.
@@ -18,7 +18,7 @@
 #' @author David B. Dahl \email{dahl@stat.byu.edu}
 #'
 #' @examples
-#' # For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+#' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' draws <- iris.clusterings
 #' est <- salso(draws, nCores=1)
 #' summ <- summary(est)

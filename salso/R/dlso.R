@@ -33,7 +33,7 @@
 #'
 #' @export
 #' @examples
-#' # For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+#' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' probs <- psm(iris.clusterings, nCores=1)
 #' dlso(iris.clusterings, loss="binder", x=probs)
 #' dlso(iris.clusterings, loss="omARI")
