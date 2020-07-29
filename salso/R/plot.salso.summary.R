@@ -1,16 +1,21 @@
 #' Heatmap, Dendrogram, and Exemplar Plotting for Partition Estimation
 #'
 #' This function produces one of three plots:  1. A heatmap showing the pairwise
-#' allocation probabilities that items are clustered.
-#' 2. A dendrogram based on expected partition loss showing the relationships among
-#' clusters when merging pairs of clusters such that the increase in the
-#' expectation of the posterior loss is minimized.  3. An exemplar plot showing
-#' pairs plots of all the variables with the exemplar (i.e., the most representative observation) of each cluster emphasized.
+#' allocation probabilities that items are clustered. 2. A dendrogram based on
+#' expected partition loss showing the relationships among clusters when merging
+#' pairs of clusters such that the increase in the expectation of the posterior
+#' loss is minimized.  3. An exemplar plot showing pairs plots of all the
+#' variables with the exemplar (i.e., the most representative observation) of
+#' each cluster emphasized.
 #'
-#' @param x An object returned by \code{summary(x)}, where \code{x} itself is returned by the \code{\link{salso}} function.
-#' @param type A string equal to \code{"heatmap"}, \code{"dendrogram"}, or \code{"exemplar"}.
-#' @param data The data from which the partition estimation was obtained.  This is required when \code{type='exemplar'} and ignored otherwise.
-#' @param showLabels Should the names of items be shown in the plot when \code{type="heatmap"}?
+#' @param x An object returned by \code{summary(x)}, where \code{x} itself is
+#'   returned by the \code{\link{salso}} function.
+#' @param type A string equal to \code{"heatmap"}, \code{"dendrogram"}, or
+#'   \code{"exemplar"}.
+#' @param data The data from which the partition estimation was obtained.  This
+#'   is required when \code{type='exemplar'} and ignored otherwise.
+#' @param showLabels Should the names of items be shown in the plot when
+#'   \code{type="heatmap"}?
 #' @param ... Currently ignored.
 #'
 #' @return \code{NULL}, invisibly.

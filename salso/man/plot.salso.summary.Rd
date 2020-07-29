@@ -13,13 +13,17 @@
 )
 }
 \arguments{
-\item{x}{An object returned by \code{summary(x)}, where \code{x} itself is returned by the \code{\link{salso}} function.}
+\item{x}{An object returned by \code{summary(x)}, where \code{x} itself is
+returned by the \code{\link{salso}} function.}
 
-\item{type}{A string equal to \code{"heatmap"}, \code{"dendrogram"}, or \code{"exemplar"}.}
+\item{type}{A string equal to \code{"heatmap"}, \code{"dendrogram"}, or
+\code{"exemplar"}.}
 
-\item{data}{The data from which the partition estimation was obtained.  This is required when \code{type='exemplar'} and ignored otherwise.}
+\item{data}{The data from which the partition estimation was obtained.  This
+is required when \code{type='exemplar'} and ignored otherwise.}
 
-\item{showLabels}{Should the names of items be shown in the plot when \code{type="heatmap"}?}
+\item{showLabels}{Should the names of items be shown in the plot when
+\code{type="heatmap"}?}
 
 \item{...}{Currently ignored.}
 }
@@ -27,15 +31,16 @@
 \code{NULL}, invisibly.
 }
 \description{
-This function produces one of three plots:  1. A heatmap shows the pairwise
-allocation probabilities that items are clustered.
-2. A dendrogram based on expected partition loss shows the relationships among
-clusters when merging pairs of clusters such that the increase in the
-expectation of the posterior loss is minimized.  3. An exemplar plot shows
-pairs plots of all the variables with the exemplar (i.e., the most representative observation) of each cluster emphasized.
+This function produces one of three plots:  1. A heatmap showing the pairwise
+allocation probabilities that items are clustered. 2. A dendrogram based on
+expected partition loss showing the relationships among clusters when merging
+pairs of clusters such that the increase in the expectation of the posterior
+loss is minimized.  3. An exemplar plot showing pairs plots of all the
+variables with the exemplar (i.e., the most representative observation) of
+each cluster emphasized.
 }
 \examples{
-# For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+# For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 draws <- iris.clusterings
 est <- salso(draws, nCores=1)
 summ <- summary(est)

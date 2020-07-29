@@ -8,33 +8,31 @@ salso(
   x,
   loss = "VI",
   maxSize = 0,
-  nRuns = 8,
-  seconds = Inf,
-  maxScans = Inf,
+  nRuns = 16,
   maxZealousAttempts = 10,
   probSequentialAllocation = 0.5,
-  probSingletonsInitialization = 0,
-  nCores = 0
+  nCores = 0,
+  ...
 )
 }
 \arguments{
-\item{x}{One of the following: 1. A \eqn{B}-by-\eqn{n} matrix, where each of
-the \eqn{B} rows represents a clustering of \eqn{n} items using cluster
-labels. (For clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same
-cluster if \code{x[b,i] == x[b,j]}.), 2. A vector of length \eqn{n} which
-is converted to an \eqn{1}-by-\eqn{n} matrix as described above, or 3. A
-pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix whose
-\eqn{(i,j)} element gives the (estimated) probability that items \eqn{i}
-and \eqn{j} are in the same subset (i.e., cluster) of a partition (i.e.,
-clustering).}
+\item{x}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
+represents a clustering of \eqn{n} items using cluster labels. For the
+\eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
+\code{x[b,i] == x[b,j]}.}
 
-\item{loss}{One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-\code{"VI"}, \code{"VI.lb"}, \code{"NIV"}, \code{"ID"}, \code{"NID"}, or
-the result of a calling a function of these names. Note that, if
-\code{loss="binder.psm"}, an algorithm based on the pairwise similarity
-matrix is used, whereas \code{loss="binder.draws"} results in an algorithm
-based on the samples. When \code{loss="binder"}, the algorithm choice will
-be based on the \code{x} argument.}
+\item{loss}{The loss function to use, as indicated by \code{"binder"},
+\code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
+the result of calling a function of these names.  Also supported are
+\code{"binder.psm"}, \code{"VI.lb"}, \code{"omARI.approx"}, or the result
+of calling a function of these names, in which case \code{x} can optionally
+be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix
+whose \eqn{(i,j)} element gives the (estimated) probability that items
+\eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a partition
+(i.e., clustering).  The loss functions \code{"binder.psm"},
+\code{"VI.lb"}, and \code{"omARI.approx"} are generally not recommended and
+the current implementation requires that \code{maxZealousAttempts = 0} and
+\code{probSequentialAllocation = 1.0}.}
 
 \item{maxSize}{The maximum number of clusters that can be considered by the
 optimization algorithm, which has important implications for the
@@ -45,20 +43,10 @@ the maximum number of clusters among the clusterings in \code{x}.  If the
 supplied value is zero and \code{x} is a is a pairwise similarity matrix,
 there is no constraint.}
 
-\item{nRuns}{The number of runs to try, although the actual number by differ
+\item{nRuns}{The number of runs to try, although the actual number may differ
 for the following reasons: 1. The actual number is a multiple of the number
 of cores specified by the \code{nCores} argument, and 2. The search is
 curtailed when the \code{seconds} threshold is exceeded.}
-
-\item{seconds}{Instead of performing all the requested number of runs,
-curtail the search after the specified expected number of seconds. Note
-that the function will finish earlier if all the requested runs are
-completed. The specified seconds does not account for the overhead involved
-in starting the search and returning results.}
-
-\item{maxScans}{The maximum number of full reallocation scans. The actual
-number of scans may be less than \code{maxScans} since the method stops if
-the result does not change between scans.}
 
 \item{maxZealousAttempts}{The maximum number of attempts for zealous updates,
 in which entire clusters are destroyed and items are sequentially
@@ -66,16 +54,25 @@ reallocated.  While zealous updates may be helpful in optimization, they
 also take more CPU time which might be better used trying additional runs.}
 
 \item{probSequentialAllocation}{For the initial allocation, the probability
-of sequential allocation instead of using \code{sample(1:Q, ncol(x),
+of sequential allocation instead of using \code{sample(1:K, ncol(x),
 TRUE)}, where \code{K} is set according to the \code{maxSize} argument.}
-
-\item{probSingletonsInitialization}{When doing a sequential allocation to
-obtain the initial allocation, the probability of placing the first
-\code{maxSize} randomly-selected items in singletons subsets.}
 
 \item{nCores}{The number of CPU cores to use, i.e., the number of
 simultaneous runs at any given time. A value of zero indicates to use all
 cores on the system.}
+
+\item{...}{Extra arguments not intended for the end user, including: 1.
+\code{seconds}: Instead of performing all the requested number of runs,
+curtail the search after the specified expected number of seconds. Note
+that the function will finish earlier if all the requested runs are
+completed. The specified seconds does not account for the overhead involved
+in starting the search and returning results. 2. \code{maxScans} The
+maximum number of full reallocation scans. The actual number of scans may
+be less than \code{maxScans} since the method stops if the result does not
+change between scans, and 3. \code{probSingletonsInitialization}: When
+doing a sequential allocation to obtain the initial allocation, the
+probability of placing the first \code{maxSize} randomly-selected items in
+singletons subsets.}
 }
 \value{
 An integer vector giving the estimated partition, encoded using
@@ -89,22 +86,18 @@ partition estimation criteria. For details on these criteria, see
 \code{\link{partition.loss}}.
 }
 \details{
-The SALSO method was first presented at the workshop "Bayesian Nonparametric
-Inference: Dependence Structures and their Applications" in Oaxaca, Mexico on
-December 6, 2017. See
+The initial version of the SALSO method was presented at the workshop
+"Bayesian Nonparametric Inference: Dependence Structures and their
+Applications" in Oaxaca, Mexico on December 6, 2017. See
 <https://www.birs.ca/events/2017/5-day-workshops/17w5060/schedule>.
 }
 \examples{
 # For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
 
 draws <- iris.clusterings
-salso(draws, loss="VI", nRuns=1, nCores=1)
+salso(draws, loss=VI(), nRuns=1, nCores=1)
 salso(draws, loss=binder(), nRuns=1, nCores=1)
 salso(draws, loss=binder(a=1.5), nRuns=1, nCores=1)
-
-probs <- psm(draws, nCores=1)
-salso(probs, loss="VI.lb", nCores=1, maxZealousAttempts=0)
-salso(draws, loss="VI.lb", nCores=1, maxZealousAttempts=0)
 
 }
 \seealso{

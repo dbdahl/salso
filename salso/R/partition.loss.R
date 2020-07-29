@@ -20,26 +20,28 @@
 #' \item{\code{"binder"}}{Binder. Whereas high values of the Rand index \eqn{R}
 #' between \eqn{\pi*} and \eqn{\pi} correspond to high concordance between the
 #' partitions, the N-invariant Binder loss \eqn{L} for a partition \eqn{\pi*} in
-#' estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}, meaning that low values correspond to high concordance between the partitions.  This package reports the
-#' N-invariant Binder loss and the original Binder loss, which equals the N-invariant
-#' Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise similarity matrix
-#' is required for "binder", but samples can be provided.  Two mistakes are
-#' possible: 1. Placing two items in separate clusters when in truth they belong
-#' to the same cluster, and 2. Placing two items in the same cluster when in
-#' truth they belong to separate clusters. Without loss of generality, the cost
-#' of the second mistake is fixed at one. The default cost of the second mistake
-#' is also one, but can be specified through with \code{a} argument. See also
-#' Dahl (2006), Lau and Green (2007), Dahl and Newton (2007), Fritsch and
-#' Ickstadt (2009), and Wade and Ghahramani (2018).}
+#' estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}, meaning that low values
+#' correspond to high concordance between the partitions.  This package reports
+#' the N-invariant Binder loss and the original Binder loss, which equals the
+#' N-invariant Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise
+#' similarity matrix is required for "binder", but samples can be provided.  Two
+#' mistakes are possible: 1. Placing two items in separate clusters when in
+#' truth they belong to the same cluster, and 2. Placing two items in the same
+#' cluster when in truth they belong to separate clusters. Without loss of
+#' generality, the cost of the second mistake is fixed at one. The default cost
+#' of the second mistake is also one, but can be specified through with \code{a}
+#' argument. See also Dahl (2006), Lau and Green (2007), Dahl and Newton (2007),
+#' Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
 #'
 #' \item{\code{"omARI"}}{One Minus Adjusted Rand Index. Computes the expectation
-#' of one minus the adjusted Rand index (Hubert and Arabie, 1985).  Whereas
-#' high values of the adjusted Rand index between \eqn{\pi*} and \eqn{\pi}
-#' correspond to high concordance between the partitions, the loss associated
-#' with the adjusted Rand index for a partition \eqn{\pi*} in estimating
-#' \eqn{\pi} is one minus the adjusted Rand index between the partitions, meaning that low values correspond to high concordance between the partitions..
-#' Samples from a partition distribution are required for "omARI".  See Fritsch
-#' and Ickstadt (2009).}
+#' of one minus the adjusted Rand index (Hubert and Arabie, 1985).  Whereas high
+#' values of the adjusted Rand index between \eqn{\pi*} and \eqn{\pi} correspond
+#' to high concordance between the partitions, the loss associated with the
+#' adjusted Rand index for a partition \eqn{\pi*} in estimating \eqn{\pi} is one
+#' minus the adjusted Rand index between the partitions, meaning that low values
+#' correspond to high concordance between the partitions.. Samples from a
+#' partition distribution are required for "omARI".  See Fritsch and Ickstadt
+#' (2009).}
 #'
 #' \item{\code{"omARI.approx"}}{Approximation of One Minus Adjusted Rand Index.
 #' Computes the first-order approximation of the expectation of one minus
@@ -90,22 +92,19 @@
 #'   items are in the same subset (i.e., cluster) if their labels are equal. Or,
 #'   a vector of length \eqn{n} which will be converted to a \eqn{1}-by-\eqn{n}
 #'   matrix.
-#' @param x One of the following: 1. A \eqn{B}-by-\eqn{n} matrix, where each of
-#'   the \eqn{B} rows represents a clustering of \eqn{n} items using cluster
-#'   labels. (For clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same
-#'   cluster if \code{x[b,i] == x[b,j]}.), 2. A vector of length \eqn{n} which
-#'   is converted to an \eqn{a}-by-\eqn{n} matrix as described above, or 3. A
-#'   pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix whose
-#'   \eqn{(i,j)} element gives the (estimated) probability that items \eqn{i}
-#'   and \eqn{j} are in the same subset (i.e., cluster) of a partition (i.e.,
-#'   clustering).
-#' @param loss One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-#'   \code{"VI"}, \code{"VI.lb"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
-#'   the result of a calling a function of these names. Note that, if
-#'   \code{loss="binder.psm"}, an algorithm based on the pairwise similarity
-#'   matrix is used, whereas \code{loss="binder.draws"} results in an algorithm
-#'   based on the samples. When \code{loss="binder"}, the algorithm choice will
-#'   be based on the \code{x} argument.
+#' @param x A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
+#'   represents a clustering of \eqn{n} items using cluster labels. For the
+#'   \eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
+#'   \code{x[b,i] == x[b,j]}.
+#' @param loss The loss function to use, as indicated by \code{"binder"},
+#'   \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
+#'   the result of calling a function of these names.  Also supported are
+#'   \code{"binder.psm"}, \code{"VI.lb"}, \code{"omARI.approx"}, or the result
+#'   of calling a function of these names, in which case \code{x} can optionally
+#'   be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix
+#'   whose \eqn{(i,j)} element gives the (estimated) probability that items
+#'   \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a partition
+#'   (i.e., clustering).
 #' @param a (Only used for Binder loss) Without loss of generality, the cost
 #'   under Binder loss of placing two items in the same cluster when in truth
 #'   they belong to separate clusters is fixed at one. The argument \code{a} is
@@ -166,13 +165,9 @@
 #' probs <- psm(iris.clusterings, nCores=1)
 #' partitions <- iris.clusterings[1:5,]
 #'
-#' all.equal(partition.loss(partitions, probs, loss="binder"), binder(partitions, probs))
-#'
-#' all.equal(partition.loss(partitions, partitions, loss="omARI"),   omARI(partitions, partitions))
-#' all.equal(partition.loss(partitions, probs, loss="omARI.approx"), omARI.approx(partitions, probs))
-#'
-#' all.equal(partition.loss(partitions, partitions, loss="VI"), VI(partitions, partitions))
-#' all.equal(partition.loss(partitions, probs, loss="VI.lb"),   VI.lb(partitions, probs))
+#' all.equal(partition.loss(partitions, probs, loss=binder()), binder(partitions, probs))
+#' all.equal(partition.loss(partitions, partitions, loss=omARI()), omARI(partitions, partitions))
+#' all.equal(partition.loss(partitions, partitions, loss=VI()), VI(partitions, partitions))
 #'
 #' p1 <- iris.clusterings[1,]
 #' p2 <- iris.clusterings[2,]

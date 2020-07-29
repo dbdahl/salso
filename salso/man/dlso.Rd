@@ -4,27 +4,20 @@
 \alias{dlso}
 \title{Draws-Based Latent Structure Optimization}
 \usage{
-dlso(candidates, loss = "VI", x = NULL)
+dlso(candidates, loss = VI(), x = NULL)
 }
 \arguments{
 \item{candidates}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
-represents a clustering of \eqn{n} items using cluster labels. For
-clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
-\code{x[b,i] == x[b,j]}.  One of the rows will be used as the paritition
+represents a clustering of \eqn{n} items using cluster labels. For the
+\eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
+\code{x[b,i] == x[b,j]}.  One of the rows will be used as the partition
 estimate.}
 
-\item{loss}{One of \code{"binder"}, \code{"omARI"}, \code{"omARI.approx"},
-\code{"VI"}, or \code{"VI.lb"}.  See \code{\link{partition.loss}} for
-details on these loss functions.}
+\item{loss}{See the documentation for this argument in
+\code{\link{partition.loss}}.}
 
-\item{x}{Either: 1. A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B}
-rows represents a clustering of \eqn{n} items using cluster labels. (For
-clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
-\code{x[b,i] == x[b,j]}.), or 2. A pairwise similarity matrix, i.e.,
-\eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives the
-(estimated) probability that items \eqn{i} and \eqn{j} are in the same
-subset (i.e., cluster) of a partition (i.e., clustering).  If \code{NULL},
-this argument is set equal to \code{candidates}.}
+\item{x}{See the documentation for this argument in
+\code{\link{partition.loss}}.}
 }
 \value{
 An integer vector giving the estimated partition, encoded using
@@ -40,14 +33,13 @@ currently supports the minimization of several partition estimation criteria.
 For details on these criteria, see \code{\link{partition.loss}}.
 }
 \examples{
-# For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+# For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
+dlso(iris.clusterings, loss=VI())
 probs <- psm(iris.clusterings, nCores=1)
-dlso(iris.clusterings, loss="binder", x=probs)
-dlso(iris.clusterings, loss="omARI")
-dlso(iris.clusterings, loss="omARI.approx")  # The psm will be computed if not provided.
-dlso(iris.clusterings, loss="VI")
-dlso(iris.clusterings, loss="VI.lb", x=probs)
-dlso(iris.clusterings[1:10,], loss="VI", x=iris.clusterings)  # Candidates can be constrained.
+dlso(iris.clusterings, loss=binder(), x=probs)
+
+# Compute loss with all draws, but pick the best among the first 10.
+dlso(iris.clusterings[1:10,], loss=VI(), x=iris.clusterings)
 
 }
 \seealso{
