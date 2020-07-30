@@ -17,16 +17,16 @@
 #'   \code{x[b,i] == x[b,j]}.
 #' @param loss The loss function to use, as indicated by \code{"binder"},
 #'   \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
-#'   the result of calling a function of these names.  Also supported are
+#'   the result of calling a function with these names.  Also supported are
 #'   \code{"binder.psm"}, \code{"VI.lb"}, \code{"omARI.approx"}, or the result
-#'   of calling a function of these names, in which case \code{x} can optionally
-#'   be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix
-#'   whose \eqn{(i,j)} element gives the (estimated) probability that items
-#'   \eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a partition
-#'   (i.e., clustering).  The loss functions \code{"binder.psm"},
-#'   \code{"VI.lb"}, and \code{"omARI.approx"} are generally not recommended and
-#'   the current implementation requires that \code{maxZealousAttempts = 0} and
-#'   \code{probSequentialAllocation = 1.0}.
+#'   of calling a function with these names, in which case \code{x} can
+#'   optionally be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n}
+#'   symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
+#'   probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
+#'   cluster) of a partition (i.e., clustering).  The loss functions
+#'   \code{"binder.psm"}, \code{"VI.lb"}, and \code{"omARI.approx"} are
+#'   generally not recommended and the current implementation requires that
+#'   \code{maxZealousAttempts = 0} and \code{probSequentialAllocation = 1.0}.
 #' @param maxSize The maximum number of clusters that can be considered by the
 #'   optimization algorithm, which has important implications for the
 #'   interpretability of the resulting clustering and can greatly influence the
@@ -79,7 +79,7 @@
 #' salso(draws, loss=binder(), nRuns=1, nCores=1)
 #' salso(draws, loss=binder(a=1.5), nRuns=1, nCores=1)
 #'
-salso <- function(x, loss="VI", maxSize=0, nRuns=16, maxZealousAttempts=10, probSequentialAllocation=0.5, nCores=0, ...) {
+salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, probSequentialAllocation=0.5, nCores=0, ...) {
   if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
   if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
   z <- x2drawspsm(x, loss, nCores)

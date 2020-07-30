@@ -14,7 +14,7 @@
 \alias{NID}
 \title{Compute Partition Loss or the Expectation of Partition Loss}
 \usage{
-partition.loss(partitions, x, loss = "VI")
+partition.loss(partitions, x, loss = VI())
 
 binder(partitions, x, a = 1)
 
@@ -50,13 +50,13 @@ represents a clustering of \eqn{n} items using cluster labels. For the
 
 \item{loss}{The loss function to use, as indicated by \code{"binder"},
 \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
-the result of calling a function of these names.  Also supported are
+the result of calling a function with these names.  Also supported are
 \code{"binder.psm"}, \code{"VI.lb"}, \code{"omARI.approx"}, or the result
-of calling a function of these names, in which case \code{x} can optionally
-be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix
-whose \eqn{(i,j)} element gives the (estimated) probability that items
-\eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a partition
-(i.e., clustering).}
+of calling a function with these names, in which case \code{x} can
+optionally be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n}
+symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
+probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
+cluster) of a partition (i.e., clustering).}
 
 \item{a}{(Only used for Binder loss) Without loss of generality, the cost
 under Binder loss of placing two items in the same cluster when in truth
@@ -100,8 +100,8 @@ estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}, meaning that low values
 correspond to high concordance between the partitions.  This package reports
 the N-invariant Binder loss and the original Binder loss, which equals the
 N-invariant Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise
-similarity matrix is required for "binder", but samples can be provided.  Two
-mistakes are possible: 1. Placing two items in separate clusters when in
+similarity matrix is required for this loss, but samples can be provided.
+Two mistakes are possible: 1. Placing two items in separate clusters when in
 truth they belong to the same cluster, and 2. Placing two items in the same
 cluster when in truth they belong to separate clusters. Without loss of
 generality, the cost of the second mistake is fixed at one. The default cost
@@ -115,40 +115,41 @@ values of the adjusted Rand index between \eqn{\pi*} and \eqn{\pi} correspond
 to high concordance between the partitions, the loss associated with the
 adjusted Rand index for a partition \eqn{\pi*} in estimating \eqn{\pi} is one
 minus the adjusted Rand index between the partitions, meaning that low values
-correspond to high concordance between the partitions.. Samples from a
-partition distribution are required for "omARI".  See Fritsch and Ickstadt
+correspond to high concordance between the partitions. Samples from a
+partition distribution are required for this loss.  See Fritsch and Ickstadt
 (2009).}
 
 \item{\code{"omARI.approx"}}{Approximation of One Minus Adjusted Rand Index.
-Computes the first-order approximation of the expectation of one minus
-the adjusted Rand index. The adjusted Rand index involves a ratio and the
+Computes the first-order approximation of the expectation of one minus the
+adjusted Rand index. The adjusted Rand index involves a ratio and the
 first-order approximation of the expectation is based on \eqn{E(X/Y) \approx
-E(X)/E(Y)}. Only the pairwise similarity matrix is required for
-"omARI.approx", but samples can be provided. See Fritsch and Ickstadt
-(2009).}
+E(X)/E(Y)}. Only the pairwise similarity matrix is required for this
+criterion, but samples can be provided. See Fritsch and Ickstadt (2009).}
 
 \item{\code{"VI"}}{Variation of Information. Computes the expectations of
 variation of information loss.  Samples from a partition distribution are
-required for "VI". See Meilă (2007), Wade and Ghahramani (2018), and Rastelli
-and Friel (2018).}
+required for this loss. See Meilă (2007), Wade and Ghahramani (2018), and
+Rastelli and Friel (2018).}
 
 \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information.  Computes
 the lower bound of the expectation of the variation of information loss,
 where the lower bound is obtained by Jensen's inequality.  Only the pairwise
-similarity matrix is required for "VI.lb", but samples can be provided.  See
-Wade and Ghahramani (2018).}
+similarity matrix is required for this criterion, but samples can be
+provided.  See Wade and Ghahramani (2018).}
 
 \item{\code{"NVI"}}{Normalized Variation of Information.  Computes the
-expectation of the normalized variation of information loss. See Vinh, Epps,
-and Bailey (2010) and Rastelli and Friel (2018).}
+expectation of the normalized variation of information loss. Samples from a
+partition distribution are required for this loss. See Vinh, Epps, and Bailey
+(2010) and Rastelli and Friel (2018).}
 
 \item{\code{"ID"}}{Information Distance.  Computes the expectation of the
-information distance (\eqn{D_{max}}) loss. See Vinh, Epps, and Bailey
-(2010).}
+information distance (\eqn{D_{max}}) loss. Samples from a partition
+distribution are required for this loss. See Vinh, Epps, and Bailey (2010).}
 
 \item{\code{"NID"}}{Normalized Information Distance.  Computes the
-expectation of the normalized information distance loss. See Vinh, Epps, and
-Bailey (2010) and Rastelli and Friel (2018).}
+expectation of the normalized information distance loss. Samples from a
+partition distribution are required for this loss. See Vinh, Epps, and Bailey
+(2010) and Rastelli and Friel (2018).}
 
 }
 
@@ -164,7 +165,7 @@ functions. Note that:
 probs <- psm(iris.clusterings, nCores=1)
 partitions <- iris.clusterings[1:5,]
 
-all.equal(partition.loss(partitions, probs, loss=binder()), binder(partitions, probs))
+all.equal(partition.loss(partitions, probs, loss=binder(a=2)), binder(partitions, probs, a=2))
 all.equal(partition.loss(partitions, partitions, loss=omARI()), omARI(partitions, partitions))
 all.equal(partition.loss(partitions, partitions, loss=VI()), VI(partitions, partitions))
 

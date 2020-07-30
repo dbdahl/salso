@@ -6,7 +6,7 @@
 \usage{
 salso(
   x,
-  loss = "VI",
+  loss = VI(),
   maxSize = 0,
   nRuns = 16,
   maxZealousAttempts = 10,
@@ -23,16 +23,16 @@ represents a clustering of \eqn{n} items using cluster labels. For the
 
 \item{loss}{The loss function to use, as indicated by \code{"binder"},
 \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
-the result of calling a function of these names.  Also supported are
+the result of calling a function with these names.  Also supported are
 \code{"binder.psm"}, \code{"VI.lb"}, \code{"omARI.approx"}, or the result
-of calling a function of these names, in which case \code{x} can optionally
-be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n} symmetric matrix
-whose \eqn{(i,j)} element gives the (estimated) probability that items
-\eqn{i} and \eqn{j} are in the same subset (i.e., cluster) of a partition
-(i.e., clustering).  The loss functions \code{"binder.psm"},
-\code{"VI.lb"}, and \code{"omARI.approx"} are generally not recommended and
-the current implementation requires that \code{maxZealousAttempts = 0} and
-\code{probSequentialAllocation = 1.0}.}
+of calling a function with these names, in which case \code{x} can
+optionally be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n}
+symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
+probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
+cluster) of a partition (i.e., clustering).  The loss functions
+\code{"binder.psm"}, \code{"VI.lb"}, and \code{"omARI.approx"} are
+generally not recommended and the current implementation requires that
+\code{maxZealousAttempts = 0} and \code{probSequentialAllocation = 1.0}.}
 
 \item{maxSize}{The maximum number of clusters that can be considered by the
 optimization algorithm, which has important implications for the
