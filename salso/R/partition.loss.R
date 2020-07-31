@@ -29,9 +29,9 @@
 #' truth they belong to the same cluster, and 2. Placing two items in the same
 #' cluster when in truth they belong to separate clusters. Without loss of
 #' generality, the cost of the second mistake is fixed at one. The default cost
-#' of the second mistake is also one, but can be specified through with \code{a}
-#' argument. See also Dahl (2006), Lau and Green (2007), Dahl and Newton (2007),
-#' Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
+#' of the second mistake is also one, but can be specified with the argument
+#' \code{a}.  See also Dahl (2006), Lau and Green (2007), Dahl and Newton
+#' (2007), Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
 #'
 #' \item{\code{"omARI"}}{One Minus Adjusted Rand Index. Computes the expectation
 #' of one minus the adjusted Rand index (Hubert and Arabie, 1985).  Whereas high
@@ -162,7 +162,7 @@
 #'
 #' @export
 #' @examples
-#' # For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+#' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' probs <- psm(iris.clusterings, nCores=1)
 #' partitions <- iris.clusterings[1:5,]
 #'

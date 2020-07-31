@@ -72,7 +72,7 @@
 #' @useDynLib salso .minimize_by_salso
 #'
 #' @examples
-#' # For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+#' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #'
 #' draws <- iris.clusterings
 #' salso(draws, loss=VI(), nRuns=1, nCores=1)
