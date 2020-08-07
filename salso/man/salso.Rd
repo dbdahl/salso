@@ -92,7 +92,7 @@ Applications" in Oaxaca, Mexico on December 6, 2017. See
 <https://www.birs.ca/events/2017/5-day-workshops/17w5060/schedule>.
 }
 \examples{
-# For examples, use 'nCores=1' per CRAN rules but, in practice, omit this.
+# For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 
 draws <- iris.clusterings
 salso(draws, loss=VI(), nRuns=1, nCores=1)

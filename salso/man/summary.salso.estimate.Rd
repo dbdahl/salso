@@ -12,12 +12,18 @@
 \item{...}{Currently ignored}
 }
 \value{
-A list containing the score for each observation, exemplar
-  observation for each cluster, a dendrogram object, and a vector for
-  ordering observations in the heatmap plot.
+A list containing the pairwise similarity matrix, the mean pairwise
+  similarity matrix, the score and mean pairwise similarity for each
+  observation, exemplar observation for each cluster, a dendrogram object, a
+  vector for ordering observations in the heatmap plot, the size of each
+  cluster, and the number of clusters.
 }
 \description{
-Summary of Partitions Estimated Using Posterior Expected Loss
+Assessing the quality of clusters in a partition estimate is added by this
+function. The result can then be plotted with
+\code{\link{plot.salso.summary}}.  The current implementation of the
+calculation of these summaries is not terribly efficient and may be improved
+in the future.
 }
 \examples{
 # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
@@ -25,7 +31,8 @@ draws <- iris.clusterings
 est <- salso(draws, nCores=1)
 summ <- summary(est)
 plot(summ, type="heatmap")
+plot(summ, type="mds")
+plot(summ, type="pairs", data=iris)
 plot(summ, type="dendrogram")
-plot(summ, type="exemplar", data=iris)
 
 }

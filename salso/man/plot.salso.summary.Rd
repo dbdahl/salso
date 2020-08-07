@@ -6,7 +6,7 @@
 \usage{
 \method{plot}{salso.summary}(
   x,
-  type = c("heatmap", "dendrogram", "exemplar")[1],
+  type = c("heatmap", "mds", "pairs", "dendrogram")[1],
   data = NULL,
   showLabels = length(x$estimate) <= 50,
   ...
@@ -16,28 +16,32 @@
 \item{x}{An object returned by \code{summary(x)}, where \code{x} itself is
 returned by the \code{\link{salso}} function.}
 
-\item{type}{A string equal to \code{"heatmap"}, \code{"dendrogram"}, or
-\code{"exemplar"}.}
+\item{type}{A string equal to \code{"heatmap"}, \code{"mds"}, \code{"pairs"},
+or \code{"dendrogram"}.}
 
 \item{data}{The data from which the partition estimation was obtained.  This
-is required when \code{type='exemplar'} and ignored otherwise.}
+is required when \code{type='pairs'} and ignored otherwise.}
 
 \item{showLabels}{Should the names of items be shown in the plot when
 \code{type="heatmap"}?}
 
-\item{...}{Currently ignored.}
+\item{...}{Arguments to be passed to methods, such as graphical parameters
+(see \code{\link{par}}).}
 }
 \value{
 \code{NULL}, invisibly.
 }
 \description{
-This function produces one of three plots:  1. A heatmap showing the pairwise
-allocation probabilities that items are clustered. 2. A dendrogram based on
-expected partition loss showing the relationships among clusters when merging
-pairs of clusters such that the increase in the expectation of the posterior
-loss is minimized.  3. An exemplar plot showing pairs plots of all the
-variables with the exemplar (i.e., the most representative observation) of
-each cluster emphasized.
+This function produces one of four plots:  1. \code{"heatmap"}: A heatmap
+showing the pairwise allocation probabilities that items are clustered. 2.
+\code{"mds"}: A scatter plot using classical multidimensional scaling (also
+known as principal coordinates analysis) with the exemplar (i.e., the most
+representative observation) of each cluster emphasized.  3. \code{"pairs"}:
+Pairs plots of all the variables with the exemplar (i.e., the most
+representative observation) of each cluster emphasized. 4.
+\code{"dendrogram"}: A dendrogram based on expected partition loss showing
+the relationships among clusters when merging pairs of clusters such that the
+increase in the expectation of the posterior loss is minimized.
 }
 \examples{
 # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
@@ -45,12 +49,14 @@ draws <- iris.clusterings
 est <- salso(draws, nCores=1)
 summ <- summary(est)
 plot(summ, type="heatmap")
+plot(summ, type="mds")
+plot(summ, type="pairs", data=iris)
 plot(summ, type="dendrogram")
-plot(summ, type="exemplar", data=iris)
 
 }
 \seealso{
-\code{\link{salso}}, \code{\link{summary.salso.estimate}}
+\code{\link{salso}}, \code{\link{summary.salso.estimate}},
+  \code{\link[stats]{cmdscale}}.
 }
 \author{
 David B. Dahl \email{dahl@stat.byu.edu}
