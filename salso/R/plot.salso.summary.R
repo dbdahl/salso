@@ -97,10 +97,11 @@ plot.salso.summary <- function(x, type=c("heatmap","mds","pairs","dendrogram")[1
     colorsExpanded <- colors[x$estimate]
     i <- x$exemplar[x$estimate]
     if ( type == "pairs" ) {
-      if ( is.null(data) ) stop("'data' must be supplied when type='exemplar'")
+      if ( is.null(data) ) stop("'data' must be supplied when type='pairs'")
+      permutation <- sample(seq_along(x$estimate))
       panelFnc <- function(x0,y0,...) {
-        points(x0,y0,col=colorsExpanded,pch=19,...)
-        segments(x0,y0,x0[i],y0[i],col=colorsExpanded,...)
+        points(x0[permutation],y0[permutation],col=colorsExpanded[permutation],pch=19,...)
+        segments(x0[permutation],y0[permutation],x0[i[permutation]],y0[i[permutation]],col=colorsExpanded[permutation],...)
         points(x0[x$exemplar],y0[x$exemplar],pch=22,bg="white",cex=2,...)
       }
       opar <- par(no.readonly=TRUE)
@@ -113,9 +114,10 @@ plot.salso.summary <- function(x, type=c("heatmap","mds","pairs","dendrogram")[1
       opar <- par(pty="s", mar=c(0,0,0,0))
       plot(points[,1], points[,2], pch=20, col=colorsExpanded, type=ifelse(showLabels, "n", "p"), xlab="", ylab="", axes=FALSE, ...)
       box()
-      segments(points[,1],points[,2],points[i,1],points[i,2],col=colorsExpanded,...)
+      permutation <- sample(seq_along(x$estimate))
+      segments(points[permutation,1],points[permutation,2],points[i[permutation],1],points[i[permutation],2],col=colorsExpanded[permutation],...)
       if ( showLabels ) {
-        text(points[,1], points[,2], as.character(seq_along(x$estimate)), col=colorsExpanded, ...)
+        text(points[permutation,1], points[permutation,2], as.character(seq_along(x$estimate))[permutation], col=colorsExpanded[permutation],...)
       }
       points(points[x$exemplar,1],points[x$exemplar,2],pch=22,bg="white",cex=2,...)
       legend("topleft", legend=as.character(seq_len(x$nClusters)), pch=20, col=colors, ...)

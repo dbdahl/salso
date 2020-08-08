@@ -4,12 +4,19 @@
 \alias{summary.salso.estimate}
 \title{Summary of Partitions Estimated Using Posterior Expected Loss}
 \usage{
-\method{summary}{salso.estimate}(object, ...)
+\method{summary}{salso.estimate}(object, alternative, ...)
 }
 \arguments{
 \item{object}{An object returned by the \code{\link{salso}} function.}
 
-\item{...}{Currently ignored}
+\item{alternative}{An optional argument specifying an alternative clustering
+to use instead of that provided by \code{object}.  Use this feature to
+obtain numerical and graphical summaries of a clustering estimate from
+other procedures.  This clustering must be provided in canonical form:
+cluster labels as integers starting at 1 for the first observation and
+incrementing by one for each new label.}
+
+\item{...}{Currently ignored.}
 }
 \value{
 A list containing the pairwise similarity matrix, the mean pairwise

@@ -7,7 +7,13 @@
 #' in the future.
 #'
 #' @param object An object returned by the \code{\link{salso}} function.
-#' @param ... Currently ignored
+#' @param alternative An optional argument specifying an alternative clustering
+#'   to use instead of that provided by \code{object}.  Use this feature to
+#'   obtain numerical and graphical summaries of a clustering estimate from
+#'   other procedures.  This clustering must be provided in canonical form:
+#'   cluster labels as integers starting at 1 for the first observation and
+#'   incrementing by one for each new label.
+#' @param ... Currently ignored.
 #'
 #' @return A list containing the pairwise similarity matrix, the mean pairwise
 #'   similarity matrix, the score and mean pairwise similarity for each
@@ -27,32 +33,39 @@
 #' plot(summ, type="pairs", data=iris)
 #' plot(summ, type="dendrogram")
 #'
-summary.salso.estimate <- function(object, ...) {
+summary.salso.estimate <- function(object, alternative, ...) {
+  estimate <- as.vector(if ( ! missing(alternative) ) alternative else object)
+  if ( missing(alternative) ) estimate <- object
+  else {
+    estimate <- as.integer(alternative)
+    uniq <- unique(estimate)
+    if ( ! isTRUE(identical(uniq,seq_len(length(uniq)))) ) stop("The alternative clustering is not in canonical form.")
+  }
   loss <- attr(object,"info")$loss
   x <- if ( ! is.null(attr(object,"psm")) ) attr(object,"psm") else attr(object,"draws")
   isPSM <- isPSM(x)
-  nItems <- length(object)
+  nItems <- length(estimate)
   one2n <- seq_len(nItems)
   # pairwise similarity matrix
   psm <- if ( isPSM ) x else psm(x)
   # score
   score <- sapply(one2n, function(i) {
-    subset <- ( object == object[i] ) & ( one2n != i )
+    subset <- ( estimate == estimate[i] ) & ( one2n != i )
     xi <- if ( isPSM ) x[subset, subset, drop=FALSE] else x[, subset, drop=FALSE]
     partition.loss(rep(1,ncol(xi)), xi, loss)
   })
   score[is.na(score)] <- 0
   # meanPS
-  meanPS <- sapply(seq_along(object), function(i) {
-    mean(psm[object==object[i], i])
+  meanPS <- sapply(seq_along(estimate), function(i) {
+    mean(psm[estimate==estimate[i], i])
   })
   # exemplar
-  all <- data.frame(id=seq_len(nItems), label=as.vector(object), score=score)
+  all <- data.frame(id=seq_len(nItems), label=as.vector(estimate), score=score)
   exemplar <- sapply(split(all, all$label), function(d) {
     if ( nrow(d) > 1 ) d$id[which.max(d$score)] else d$id
   })
   # dendrogram
-  dendrogram <- partition.loss.dendrogram(as.vector(object), x, loss)
+  dendrogram <- partition.loss.dendrogram(as.vector(estimate), x, loss)
   # order
   walk <- function(dendrogram, order=numeric()) {
     if ( is.null(attr(dendrogram,"leaf")) ) {
@@ -63,25 +76,25 @@ summary.salso.estimate <- function(object, ...) {
     }
     order
   }
-  order <- order(order(walk(dendrogram))[object], -1*score)
+  order <- order(order(walk(dendrogram))[estimate], -1*score)
   # nClusters
   nClusters <- length(exemplar)
   # pairwise similarity matrix averaged by clustering estimate
   m <- matrix(0.0, nrow=nClusters, ncol=nClusters)
   for ( i in seq_len(nClusters) ) {
     for ( j in seq_len(i) ) {
-      m[i,j] <- mean(psm[object==i, object==j])
+      m[i,j] <- mean(psm[estimate==i, estimate==j])
     }
   }
   ut <- upper.tri(m)
   m[ut] <- t(m)[ut]
   # sizes
-  sizes <- table(object)
+  sizes <- table(estimate)
   names <- names(sizes)
   sizes <- as.vector(sizes)
   names(sizes) <- names
   # Finalize
-  result <- list(estimate=object, nClusters=nClusters, score=score, order=order, dendrogram=dendrogram, psm=psm, meanPS=meanPS, meanPSM=m, exemplar=exemplar, sizes=sizes)
+  result <- list(estimate=estimate, nClusters=nClusters, score=score, order=order, dendrogram=dendrogram, psm=psm, meanPS=meanPS, meanPSM=m, exemplar=exemplar, sizes=sizes)
   class(result) <- "salso.summary"
   result
 }
