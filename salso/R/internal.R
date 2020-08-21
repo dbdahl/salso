@@ -13,7 +13,7 @@ x2drawspsm <- function(x, loss, nCores=0) {
   psm <- NULL
   a <- 1
   if ( inherits(loss, "salso.loss") ) {
-    if ( loss$loss == "binder" ) a <- loss$a
+    if ( loss$loss %in% c("binder","VI") ) a <- loss$a
     loss <- loss$loss
   }
   lossStr <- loss

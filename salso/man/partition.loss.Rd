@@ -26,7 +26,7 @@ omARI.approx(partitions, x)
 
 ARI(partition1, partition2)
 
-VI(partitions, x)
+VI(partitions, x, a = 1)
 
 VI.lb(partitions, x)
 
@@ -58,12 +58,12 @@ symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
 probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
 cluster) of a partition (i.e., clustering).}
 
-\item{a}{(Only used for Binder loss) Without loss of generality, the cost
-under Binder loss of placing two items in the same cluster when in truth
-they belong to separate clusters is fixed at one. The argument \code{a} is
-a nonnegative scalar giving the cost of the complementary mistake, i.e.,
-placing two items in separate clusters when in truth they belong to the
-same cluster.}
+\item{a}{(Only used for Binder and VI loss) Without loss of generality, the
+cost under Binder loss of placing two items in the same cluster when in
+truth they belong to separate clusters is fixed at one. The argument
+\code{a} is a nonnegative scalar giving the cost of the complementary
+mistake, i.e., placing two items in separate clusters when in truth they
+belong to the same cluster.}
 
 \item{partition1}{An integer vector of cluster labels for \eqn{n} items. Two
 items are in the same subset (i.e., cluster) if their labels are equal.}
@@ -100,14 +100,17 @@ estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}, meaning that low values
 correspond to high concordance between the partitions.  This package reports
 the N-invariant Binder loss and the original Binder loss, which equals the
 N-invariant Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise
-similarity matrix is required for this loss, but samples can be provided.
-Two mistakes are possible: 1. Placing two items in separate clusters when in
-truth they belong to the same cluster, and 2. Placing two items in the same
-cluster when in truth they belong to separate clusters. Without loss of
-generality, the cost of the second mistake is fixed at one. The default cost
-of the second mistake is also one, but can be specified with the argument
-\code{a}.  See also Dahl (2006), Lau and Green (2007), Dahl and Newton
-(2007), Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
+similarity matrix is required for this loss, but samples can be provided. As
+originally discussed by Binder (1978), two mistakes are possible: 1. Placing
+two items in separate clusters when in truth they belong to the same cluster,
+and 2. Placing two items in the same cluster when in truth they belong to
+separate clusters. Without loss of generality, the cost of the second mistake
+is fixed at one. The default cost of the first mistake is also one, but can
+be specified with the argument \code{a}.  For a discussion of
+general weights, see Dahl and Johnson (2020). For a discussion of
+the equal weights case, see also Dahl (2006), Lau and Green (2007),
+Dahl and Newton (2007), Fritsch and Ickstadt (2009), and Wade and Ghahramani
+(2018).}
 
 \item{\code{"omARI"}}{One Minus Adjusted Rand Index. Computes the expectation
 of one minus the adjusted Rand index (Hubert and Arabie, 1985).  Whereas high
@@ -129,7 +132,13 @@ criterion, but samples can be provided. See Fritsch and Ickstadt (2009).}
 \item{\code{"VI"}}{Variation of Information. Computes the expectations of
 variation of information loss.  Samples from a partition distribution are
 required for this loss. See Meilă (2007), Wade and Ghahramani (2018), and
-Rastelli and Friel (2018).}
+Rastelli and Friel (2018).  This loss has been extended to Dahl and Johnson
+(2020) to allow for trading off two possible mistakes: 1. Placing two items
+in separate clusters when in truth they belong to the same cluster, and 2.
+Placing two items in the same cluster when in truth they belong to separate
+clusters. Without loss of generality, the weight for the second mistake is
+fixed at one. The default weight of the first mistake is also one, but can be
+specified with the argument \code{a}. See Dahl and Johnson (2020).}
 
 \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information.  Computes
 the lower bound of the expectation of the variation of information loss,
@@ -167,12 +176,12 @@ partitions <- iris.clusterings[1:5,]
 
 all.equal(partition.loss(partitions, probs, loss=binder(a=2)), binder(partitions, probs, a=2))
 all.equal(partition.loss(partitions, partitions, loss=omARI()), omARI(partitions, partitions))
-all.equal(partition.loss(partitions, partitions, loss=VI()), VI(partitions, partitions))
+all.equal(partition.loss(partitions, partitions, loss=VI(a=0.8)), VI(partitions, partitions, a=0.8))
 
 p1 <- iris.clusterings[1,]
 p2 <- iris.clusterings[2,]
 
-VI(p1, p2)
+VI(p1, p2, a=1.0)
 all.equal(binder(p1, p2), ( 1 - RI(p1, p2) ) * (length(p1)-1) / length(p1))
 all.equal(omARI(p1, p2), 1 - ARI(p1, p2))
 

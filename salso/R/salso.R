@@ -132,7 +132,7 @@ salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, prob
     attr <- y[[2]]
     names(attr) <- c("loss","a","maxSize","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","seconds")
     attr$loss <- z$loss
-    if ( z$loss != "binder" ) attr$a <- NULL
+    if ( ! z$loss %in% c("binder","VI") ) attr$a <- NULL
     attr$initMethod <- names(which(initMethodMapping==attr$initMethod))
     as.data.frame(attr, row.names="")
   }

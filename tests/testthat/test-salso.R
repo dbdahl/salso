@@ -16,6 +16,12 @@ test_that("SALSO minimizes binder.draws", {
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
 
+test_that("SALSO minimizes binder.draws with unequal costs", {
+  s <- salso::salso(draws.small, loss=salso::binder(a=1.5), nRuns=100)
+  o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss=salso::binder(a=1.5)))
+  expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
+})
+
 test_that("SALSO minimizes omARI", {
   s <- salso::salso(draws.small, loss="omARI", nRuns=100)
   o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss="omARI"))
@@ -31,6 +37,12 @@ test_that("SALSO minimizes omARI.approx", {
 test_that("SALSO minimizes VI", {
   s <- salso::salso(draws.small, loss="VI", nRuns=100)
   o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss="VI"))
+  expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
+})
+
+test_that("SALSO minimizes VI with unequal costs", {
+  s <- salso::salso(draws.small, loss=salso::VI(a=0.75), nRuns=100)
+  o1 <- as.vector(salso:::minimize.by.enumeration(draws.small, loss=salso::VI(a=0.75)))
   expect_true(isTRUE(all.equal(salso::VI(s, o1),0)))
 })
 
