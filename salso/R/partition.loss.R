@@ -121,7 +121,7 @@
 #'   \code{a} is either: i. a nonnegative scalar giving the cost of the
 #'   complementary mistake, i.e., placing two items in separate clusters when in
 #'   truth they belong to the same cluster, or ii. a list containing the desired
-#'   number of clusters (\code{"nClusters") and an upper bound (\code{"upper"})
+#'   number of clusters (\code{"nClusters"}) and an upper bound (\code{"upper"})
 #'   when searching for \code{"a"} that yields the desired number of clusters.
 #'   In the second case, the desired number of clusters may not be achievable
 #'   without modifying \code{maxSize} in the \code{\link{salso}} function.  To
@@ -312,6 +312,6 @@ expected.loss <- function(partitions, x, loss) {
   }
   if ( ncol(x) == 0 ) return(rep(NA, nrow(partitions)))
   z <- x2drawspsm(x, loss)
-  if ( ! is.numeric(z$a) ) stop("'a' must be explicitly provided when computing the expected loss.")
+  if ( is.list(z$a) ) stop("'a' must be explicitly provided when computing the expected loss.")
   .Call(.expected_loss, partitions, z$draws, z$psm, z$lossCode, z$a)
 }

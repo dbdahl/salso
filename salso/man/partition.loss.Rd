@@ -58,6 +58,20 @@ symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
 probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
 cluster) of a partition (i.e., clustering).}
 
+\item{a}{(Only used for Binder and VI loss) Without loss of generality, the
+cost under Binder loss of placing two items in the same cluster when in
+truth they belong to separate clusters is fixed at one. The argument
+\code{a} is either: i. a nonnegative scalar giving the cost of the
+complementary mistake, i.e., placing two items in separate clusters when in
+truth they belong to the same cluster, or ii. a list containing the desired
+number of clusters (\code{"nClusters"}) and an upper bound (\code{"upper"})
+when searching for \code{"a"} that yields the desired number of clusters.
+In the second case, the desired number of clusters may not be achievable
+without modifying \code{maxSize} in the \code{\link{salso}} function.  To
+increase the probability of hitting exactly the desired number of clusters,
+the \code{nRuns} in the \code{\link{salso}} function may need to be
+increased.}
+
 \item{partition1}{An integer vector of cluster labels for \eqn{n} items. Two
 items are in the same subset (i.e., cluster) if their labels are equal.}
 
