@@ -80,9 +80,27 @@
 #' salso(draws, loss=binder(a=1.5), nRuns=1, nCores=1)
 #'
 salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, probSequentialAllocation=0.5, nCores=0, ...) {
+  z <- x2drawspsm(x, loss, nCores)
+  if ( ( z$lossStr %in% c("binder.draws","VI") ) && ( z$a < 0 ) ) {
+    argg <- c(as.list(environment()), list(...))
+    argg$z <- NULL
+    salsoFnc <- if ( z$lossStr == "binder.draws" ) {
+      function(a) {
+        argg$loss <- binder(a=a)
+        suppressWarnings(do.call(salso, argg))
+      }
+    } else if ( z$lossStr == "VI" ) {
+      function(a) {
+        argg$loss <- VI(a=a)
+        suppressWarnings(do.call(salso, argg))
+      }
+    } else stop("Unexpected loss function.")
+    f <- function(a) length(unique(salsoFnc(a))) + round(z$a)
+    search <- uniroot(f, c(0.25,4), extendInt="yes")
+    return(salsoFnc(search$root))
+  }
   if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
   if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
-  z <- x2drawspsm(x, loss, nCores)
   if ( ! is.finite(maxSize) ) maxSize <- 0L
   if ( nRuns < 1.0 ) stop("'nRuns' must be at least one.")
   nRunsX <- if ( nRuns > .Machine$integer.max ) .Machine$integer.max else nRuns

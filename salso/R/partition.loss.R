@@ -194,7 +194,7 @@ partition.loss <- function(partitions, x, loss=VI()) {
 #' @rdname partition.loss
 binder <- function(partitions, x, a=1) {
   if ( missing(partitions) && missing(x) ) {
-    if ( ! is.vector(a) || length(a) != 1 || ! is.numeric(a) || a < 0 ) stop("'a' should be a nonnegative scalar.")
+    if ( ! is.vector(a) || length(a) != 1 || ! is.numeric(a) ) stop("'a' should be a scalar.")
     structure(list(loss="binder", a=a), class="salso.loss")
   } else {
     expected.loss(partitions, x, Recall(a=a))
@@ -237,7 +237,7 @@ ARI <- function(partition1, partition2) {
 #' @rdname partition.loss
 VI <- function(partitions, x, a=1) {
   if ( missing(partitions) && missing(x) ) {
-    if ( ! is.vector(a) || length(a) != 1 || ! is.numeric(a) || a < 0 ) stop("'a' should be a nonnegative scalar.")
+    if ( ! is.vector(a) || length(a) != 1 || ! is.numeric(a) ) stop("'a' should be a scalar.")
     structure(list(loss="VI", a=a), class="salso.loss")
   } else {
     expected.loss(partitions, x, Recall(a=a))
