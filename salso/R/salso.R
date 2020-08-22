@@ -81,7 +81,7 @@
 #'
 salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, probSequentialAllocation=0.5, nCores=0, ...) {
   z <- x2drawspsm(x, loss, nCores)
-  if ( ( z$lossStr %in% c("binder.draws","VI") ) && ( z$a < 0 ) ) {
+  if ( ( z$lossStr %in% c("binder.draws","VI") ) && is.list(z$a) ) {
     argg <- c(as.list(environment()), list(...))
     argg$z <- NULL
     salsoFnc <- if ( z$lossStr == "binder.draws" ) {
@@ -95,8 +95,8 @@ salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, prob
         suppressWarnings(do.call(salso, argg))
       }
     } else stop("Unexpected loss function.")
-    f <- function(a) length(unique(salsoFnc(a))) + round(z$a)
-    search <- uniroot(f, c(0.25,4), extendInt="yes")
+    f <- function(a) length(unique(salsoFnc(a))) - round(z$a$nClusters)
+    search <- uniroot(f, c(0.0,z$a$upper), extendInt="no")
     return(salsoFnc(search$root))
   }
   if ( nCores < 0.0 ) stop("'nCores' may not be negative.")

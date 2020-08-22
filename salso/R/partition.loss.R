@@ -118,9 +118,16 @@
 #' @param a (Only used for Binder and VI loss) Without loss of generality, the
 #'   cost under Binder loss of placing two items in the same cluster when in
 #'   truth they belong to separate clusters is fixed at one. The argument
-#'   \code{a} is a nonnegative scalar giving the cost of the complementary
-#'   mistake, i.e., placing two items in separate clusters when in truth they
-#'   belong to the same cluster.
+#'   \code{a} is either: i. a nonnegative scalar giving the cost of the
+#'   complementary mistake, i.e., placing two items in separate clusters when in
+#'   truth they belong to the same cluster, or ii. a list containing the desired
+#'   number of clusters (\code{"nClusters") and an upper bound (\code{"upper"})
+#'   when searching for \code{"a"} that yields the desired number of clusters.
+#'   In the second case, the desired number of clusters may not be achievable
+#'   without modifying \code{maxSize} in the \code{\link{salso}} function.  To
+#'   increase the probability of hitting exactly the desired number of clusters,
+#'   the \code{nRuns} in the \code{\link{salso}} function may need to be
+#'   increased.
 #'
 #' @return A numeric vector.
 #'
@@ -190,11 +197,21 @@ partition.loss <- function(partitions, x, loss=VI()) {
   expected.loss(partitions, x, loss)
 }
 
+checkAokay <- function(a) {
+  if ( is.vector(a) && length(a) == 1 && is.numeric(a) && a >= 0 && is.finite(a) ) {
+  } else if ( is.list(a) && all(c("nClusters","upper") %in% names(a)) &&
+              is.vector(a$nClusters) && length(a$nClusters) == 1 && is.numeric(a$nClusters) && a$nClusters >= 1 &&
+              is.vector(a$upper) && length(a$upper) == 1 && is.numeric(a$upper) && a$upper > 0 && is.finite(a$upper) ) {
+  } else {
+     stop("'a' should be a nonnegative, finite scalar or a list with 'nClusters' >= 1 and 'upper' > 0.")
+  }
+}
+
 #' @export
 #' @rdname partition.loss
 binder <- function(partitions, x, a=1) {
   if ( missing(partitions) && missing(x) ) {
-    if ( ! is.vector(a) || length(a) != 1 || ! is.numeric(a) ) stop("'a' should be a scalar.")
+    checkAokay(a)
     structure(list(loss="binder", a=a), class="salso.loss")
   } else {
     expected.loss(partitions, x, Recall(a=a))
@@ -237,7 +254,7 @@ ARI <- function(partition1, partition2) {
 #' @rdname partition.loss
 VI <- function(partitions, x, a=1) {
   if ( missing(partitions) && missing(x) ) {
-    if ( ! is.vector(a) || length(a) != 1 || ! is.numeric(a) ) stop("'a' should be a scalar.")
+    checkAokay(a)
     structure(list(loss="VI", a=a), class="salso.loss")
   } else {
     expected.loss(partitions, x, Recall(a=a))
@@ -295,5 +312,6 @@ expected.loss <- function(partitions, x, loss) {
   }
   if ( ncol(x) == 0 ) return(rep(NA, nrow(partitions)))
   z <- x2drawspsm(x, loss)
+  if ( ! is.numeric(z$a) ) stop("'a' must be explicitly provided when computing the expected loss.")
   .Call(.expected_loss, partitions, z$draws, z$psm, z$lossCode, z$a)
 }

@@ -58,13 +58,6 @@ symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
 probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
 cluster) of a partition (i.e., clustering).}
 
-\item{a}{(Only used for Binder and VI loss) Without loss of generality, the
-cost under Binder loss of placing two items in the same cluster when in
-truth they belong to separate clusters is fixed at one. The argument
-\code{a} is a nonnegative scalar giving the cost of the complementary
-mistake, i.e., placing two items in separate clusters when in truth they
-belong to the same cluster.}
-
 \item{partition1}{An integer vector of cluster labels for \eqn{n} items. Two
 items are in the same subset (i.e., cluster) if their labels are equal.}
 
