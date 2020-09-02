@@ -19,7 +19,7 @@
 #'   \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
 #'   the result of calling a function with these names.  Also supported are
 #'   \code{"binder.psm"}, \code{"VI.lb"}, \code{"omARI.approx"}, or the result
-#'   of calling a function with these names, in which case \code{x} can
+#'   of calling a function with these names, in which case \code{x} above can
 #'   optionally be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n}
 #'   symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
 #'   probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,

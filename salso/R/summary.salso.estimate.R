@@ -15,7 +15,7 @@
 #'   incrementing by one for each new label.
 #' @param ... Currently ignored.
 #'
-#' @return A list containing the pairwise similarity matrix, the mean pairwise
+#' @return A list containing the estimate, the pairwise similarity matrix, the mean pairwise
 #'   similarity matrix, the score and mean pairwise similarity for each
 #'   observation, exemplar observation for each cluster, a dendrogram object, a
 #'   vector for ordering observations in the heatmap plot, the size of each

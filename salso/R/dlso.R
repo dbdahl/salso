@@ -1,7 +1,7 @@
-#' Draws-Based Latent Structure Optimization
+#' Latent Structure Optimization Based on Draws
 #'
 #' This function provides a partition to summarize a partition distribution
-#' using the draws latent structure optimization (DLSO) method, which is also
+#' using the draws-based latent structure optimization (DLSO) method, which is also
 #' known as the least-squares clustering method (Dahl 2006). The method seeks to
 #' minimize an estimation criterion by picking the minimizer among the
 #' partitions supplied by the \code{draws} argument. The implementation

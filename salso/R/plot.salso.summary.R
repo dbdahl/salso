@@ -11,7 +11,7 @@
 #' the relationships among clusters when merging pairs of clusters such that the
 #' increase in the expectation of the posterior loss is minimized.
 #'
-#' @param x An object returned by \code{summary(x)}, where \code{x} itself is
+#' @param x An object returned by \code{summary(y)}, where \code{y} itself is
 #'   returned by the \code{\link{salso}} function.
 #' @param type A string equal to \code{"heatmap"}, \code{"mds"}, \code{"pairs"},
 #'   or \code{"dendrogram"}.
