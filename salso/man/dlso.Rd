@@ -4,7 +4,7 @@
 \alias{dlso}
 \title{Latent Structure Optimization Based on Draws}
 \usage{
-dlso(candidates, loss = VI(), x = NULL, nCores = 0)
+dlso(candidates, loss = VI(), x = NULL, parallel = FALSE)
 }
 \arguments{
 \item{candidates}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
@@ -19,10 +19,8 @@ estimate.}
 \item{x}{See the documentation for this argument in
 \code{\link{partition.loss}}.}
 
-\item{nCores}{The number of CPU cores to use, i.e., the number of
-simultaneous runs at any given time. A value of zero indicates to use all
-cores on the system.  This argument is currently ignored and will be
-removed in the future.}
+\item{parallel}{This argument is currently ignored and will be removed in the
+future.}
 }
 \value{
 An integer vector giving the estimated partition, encoded using
