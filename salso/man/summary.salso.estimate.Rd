@@ -10,25 +10,25 @@
 \item{object}{An object returned by the \code{\link{salso}} function.}
 
 \item{alternative}{An optional argument specifying an alternative clustering
-to use instead of that provided by \code{object}.  Use this feature to
+to use instead of that provided by \code{object}. Use this feature to
 obtain numerical and graphical summaries of a clustering estimate from
-other procedures.  This clustering must be provided in canonical form:
+other procedures. This clustering must be provided in canonical form:
 cluster labels as integers starting at 1 for the first observation and
 incrementing by one for each new label.}
 
 \item{...}{Currently ignored.}
 }
 \value{
-A list containing the pairwise similarity matrix, the mean pairwise
-  similarity matrix, the score and mean pairwise similarity for each
-  observation, exemplar observation for each cluster, a dendrogram object, a
-  vector for ordering observations in the heatmap plot, the size of each
-  cluster, and the number of clusters.
+A list containing the estimate, the pairwise similarity matrix, the
+  mean pairwise similarity matrix, the score and mean pairwise similarity for
+  each observation, exemplar observation for each cluster, a dendrogram
+  object, a vector for ordering observations in the heatmap plot, the size of
+  each cluster, and the number of clusters.
 }
 \description{
 Assessing the quality of clusters in a partition estimate is added by this
 function. The result can then be plotted with
-\code{\link{plot.salso.summary}}.  The current implementation of the
+\code{\link{plot.salso.summary}}. The current implementation of the
 calculation of these summaries is not terribly efficient and may be improved
 in the future.
 }

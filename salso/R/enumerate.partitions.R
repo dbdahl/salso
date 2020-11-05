@@ -1,9 +1,9 @@
 #' Enumerate Partitions of a Set
 #'
 #' This function produces a matrix whose rows provide all possible partitions of
-#' the set of integers \eqn{{1, 2, ..., n}}. These partitions are provided as
-#' cluster labels, where two items are in the same subset (i.e., cluster) if
-#' their labels are equal.
+#' the set \eqn{{1, 2, ..., n}}. These partitions are provided as cluster
+#' labels, where two items are in the same subset (i.e., cluster) if their
+#' labels are equal.
 #'
 #' @param nItems The size of the set \eqn{{1, 2, ..., n}}, i.e., \eqn{n}.
 #'

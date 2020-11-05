@@ -2,7 +2,8 @@
 % Please edit documentation in R/plot.salso.summary.R
 \name{plot.salso.summary}
 \alias{plot.salso.summary}
-\title{Heatmap, Dendrogram, and Exemplar Plotting for Partition Estimation}
+\title{Heatmap, Multidimensional Scaling, Pairs, and Dendrogram Plotting for
+Partition Estimation}
 \usage{
 \method{plot}{salso.summary}(
   x,
@@ -13,13 +14,13 @@
 )
 }
 \arguments{
-\item{x}{An object returned by \code{summary(x)}, where \code{x} itself is
+\item{x}{An object returned by \code{summary(y)}, where \code{y} itself is
 returned by the \code{\link{salso}} function.}
 
 \item{type}{A string equal to \code{"heatmap"}, \code{"mds"}, \code{"pairs"},
 or \code{"dendrogram"}.}
 
-\item{data}{The data from which the partition estimation was obtained.  This
+\item{data}{The data from which the partition estimation was obtained. This
 is required when \code{type='pairs'} and ignored otherwise.}
 
 \item{showLabels}{Should the names of items be shown in the plot when
@@ -36,7 +37,7 @@ This function produces one of four plots:  1. \code{"heatmap"}: A heatmap
 showing the pairwise allocation probabilities that items are clustered. 2.
 \code{"mds"}: A scatter plot using classical multidimensional scaling (also
 known as principal coordinates analysis) with the exemplar (i.e., the most
-representative observation) of each cluster emphasized.  3. \code{"pairs"}:
+representative observation) of each cluster emphasized. 3. \code{"pairs"}:
 Pairs plots of all the variables with the exemplar (i.e., the most
 representative observation) of each cluster emphasized. 4.
 \code{"dendrogram"}: A dendrogram based on expected partition loss showing

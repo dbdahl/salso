@@ -2,7 +2,7 @@
 % Please edit documentation in R/salso.R
 \name{salso}
 \alias{salso}
-\title{Sequentially-Allocated Latent Structure Optimization}
+\title{SALSO Greedy Search}
 \usage{
 salso(
   x,
@@ -23,13 +23,13 @@ represents a clustering of \eqn{n} items using cluster labels. For the
 
 \item{loss}{The loss function to use, as indicated by \code{"binder"},
 \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
-the result of calling a function with these names.  Also supported are
+the result of calling a function with these names. Also supported are
 \code{"binder.psm"}, \code{"VI.lb"}, \code{"omARI.approx"}, or the result
-of calling a function with these names, in which case \code{x} can
+of calling a function with these names, in which case \code{x} above can
 optionally be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n}
 symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
 probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
-cluster) of a partition (i.e., clustering).  The loss functions
+cluster) of a partition (i.e., clustering). The loss functions
 \code{"binder.psm"}, \code{"VI.lb"}, and \code{"omARI.approx"} are
 generally not recommended and the current implementation requires that
 \code{maxZealousAttempts = 0} and \code{probSequentialAllocation = 1.0}.}
@@ -39,7 +39,7 @@ optimization algorithm, which has important implications for the
 interpretability of the resulting clustering and can greatly influence the
 RAM needed for the optimization algorithm. If the supplied value is zero
 and \code{x} is a matrix of clusterings, the optimization is constrained by
-the maximum number of clusters among the clusterings in \code{x}.  If the
+the maximum number of clusters among the clusterings in \code{x}. If the
 supplied value is zero and \code{x} is a pairwise similarity matrix, there
 is no constraint.}
 
@@ -50,7 +50,7 @@ curtailed when the \code{seconds} threshold is exceeded.}
 
 \item{maxZealousAttempts}{The maximum number of attempts for zealous updates,
 in which entire clusters are destroyed and items are sequentially
-reallocated.  While zealous updates may be helpful in optimization, they
+reallocated. While zealous updates may be helpful in optimization, they
 also take more CPU time which might be better used trying additional runs.}
 
 \item{probSequentialAllocation}{For the initial allocation, the probability
@@ -80,10 +80,9 @@ An integer vector giving the estimated partition, encoded using
 }
 \description{
 This function provides a partition to summarize a partition distribution
-using the sequentially-allocated latent structure optimization (SALSO)
-method. The implementation currently supports the minimization of several
-partition estimation criteria. For details on these criteria, see
-\code{\link{partition.loss}}.
+using the SALSO greedy search method. The implementation currently supports
+the minimization of several partition estimation criteria. For details on
+these criteria, see \code{\link{partition.loss}}.
 }
 \details{
 The initial version of the SALSO method was presented at the workshop

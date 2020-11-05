@@ -1,10 +1,9 @@
-#' Sequentially-Allocated Latent Structure Optimization
+#' SALSO Greedy Search
 #'
 #' This function provides a partition to summarize a partition distribution
-#' using the sequentially-allocated latent structure optimization (SALSO)
-#' method. The implementation currently supports the minimization of several
-#' partition estimation criteria. For details on these criteria, see
-#' \code{\link{partition.loss}}.
+#' using the SALSO greedy search method. The implementation currently supports
+#' the minimization of several partition estimation criteria. For details on
+#' these criteria, see \code{\link{partition.loss}}.
 #'
 #' The initial version of the SALSO method was presented at the workshop
 #' "Bayesian Nonparametric Inference: Dependence Structures and their
@@ -17,13 +16,13 @@
 #'   \code{x[b,i] == x[b,j]}.
 #' @param loss The loss function to use, as indicated by \code{"binder"},
 #'   \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
-#'   the result of calling a function with these names.  Also supported are
+#'   the result of calling a function with these names. Also supported are
 #'   \code{"binder.psm"}, \code{"VI.lb"}, \code{"omARI.approx"}, or the result
 #'   of calling a function with these names, in which case \code{x} above can
 #'   optionally be a pairwise similarity matrix, i.e., \eqn{n}-by-\eqn{n}
 #'   symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
 #'   probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
-#'   cluster) of a partition (i.e., clustering).  The loss functions
+#'   cluster) of a partition (i.e., clustering). The loss functions
 #'   \code{"binder.psm"}, \code{"VI.lb"}, and \code{"omARI.approx"} are
 #'   generally not recommended and the current implementation requires that
 #'   \code{maxZealousAttempts = 0} and \code{probSequentialAllocation = 1.0}.
@@ -32,7 +31,7 @@
 #'   interpretability of the resulting clustering and can greatly influence the
 #'   RAM needed for the optimization algorithm. If the supplied value is zero
 #'   and \code{x} is a matrix of clusterings, the optimization is constrained by
-#'   the maximum number of clusters among the clusterings in \code{x}.  If the
+#'   the maximum number of clusters among the clusterings in \code{x}. If the
 #'   supplied value is zero and \code{x} is a pairwise similarity matrix, there
 #'   is no constraint.
 #' @param nRuns The number of runs to try, although the actual number may differ
@@ -41,7 +40,7 @@
 #'   curtailed when the \code{seconds} threshold is exceeded.
 #' @param maxZealousAttempts The maximum number of attempts for zealous updates,
 #'   in which entire clusters are destroyed and items are sequentially
-#'   reallocated.  While zealous updates may be helpful in optimization, they
+#'   reallocated. While zealous updates may be helpful in optimization, they
 #'   also take more CPU time which might be better used trying additional runs.
 #' @param probSequentialAllocation For the initial allocation, the probability
 #'   of sequential allocation instead of using \code{sample(1:K, ncol(x),
@@ -108,10 +107,12 @@ salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, prob
   if ( maxZealousAttempts < 0.0 ) stop("'maxZealousAttempts' may not be negative.")
   if ( maxZealousAttempts > .Machine$integer.max ) maxZealousAttempts <- .Machine$integer.max
   if ( ( z$lossStr %in% c("binder.psm", "omARI.approx", "VI.lb") ) && maxZealousAttempts != 0 ) {
-    stop(sprintf("Not implemented for '%s' loss.  Set 'maxZealousAttempts' to 0.", z$loss))
+    warning(sprintf("'maxZealousAttempts' set to 0 since other values are not implemented for '%s' loss.", z$loss))
+    maxZealousAttempts <- 0
   }
   if ( ( z$lossStr %in% c("binder.psm", "omARI.approx", "VI.lb") ) && probSequentialAllocation != 1 ) {
-    stop(sprintf("Not implemented for '%s' loss.  Set 'probSequentialAllocation' to 1.", z$loss))
+    warning(sprintf("'probSequentialAllocation' set to 1 since other values are not implemented for '%s' loss.", z$loss))
+    probSequentialAllocation <- 1
   }
   if ( z$a != 1 && z$lossStr == "binder.psm" ) {
     stop(sprintf("The current implementation requires that samples be provided when 'a' is not 1.0 for Binder loss."))
@@ -168,6 +169,9 @@ salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, prob
     warning("The number of possible zealous attempts exceeded the maximum. Do you really want that many clusters? Consider lowering 'maxSize' or increasing 'maxZealousAttempts'.")
   }
   class(estimate) <- "salso.estimate"
+  if ( ( "sdols" %in% loadedNamespaces() ) && ( all(grepl("^([^:]*:::?|)salso\\(", deparse(sys.calls()[[sys.nframe()-1]]))) ) ) {  # Hack for 'sdols' version 2.0.0 capability.  Delete this when the package is updated.
+    return(list(estimate=estimate))
+  }
   estimate
 }
 

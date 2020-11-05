@@ -1,9 +1,9 @@
 #' Latent Structure Optimization Based on Draws
 #'
 #' This function provides a partition to summarize a partition distribution
-#' using the draws-based latent structure optimization (DLSO) method, which is also
-#' known as the least-squares clustering method (Dahl 2006). The method seeks to
-#' minimize an estimation criterion by picking the minimizer among the
+#' using the draws-based latent structure optimization (DLSO) method, which is
+#' also known as the least-squares clustering method (Dahl 2006). The method
+#' seeks to minimize an estimation criterion by picking the minimizer among the
 #' partitions supplied by the \code{draws} argument. The implementation
 #' currently supports the minimization of several partition estimation criteria.
 #' For details on these criteria, see \code{\link{partition.loss}}.
@@ -11,12 +11,14 @@
 #' @param candidates A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
 #'   represents a clustering of \eqn{n} items using cluster labels. For the
 #'   \eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
-#'   \code{x[b,i] == x[b,j]}.  One of the rows will be used as the partition
+#'   \code{x[b,i] == x[b,j]}. One of the rows will be used as the partition
 #'   estimate.
 #' @param loss See the documentation for this argument in
 #'   \code{\link{partition.loss}}.
 #' @param x See the documentation for this argument in
 #'   \code{\link{partition.loss}}.
+#' @param parallel This argument is currently ignored and will be removed in the
+#'   future.
 #'
 #' @return An integer vector giving the estimated partition, encoded using
 #'   cluster labels.
@@ -34,7 +36,7 @@
 #' # Compute loss with all draws, but pick the best among the first 10.
 #' dlso(iris.clusterings[1:10,], loss=VI(), x=iris.clusterings)
 #'
-dlso <- function(candidates, loss=VI(), x=NULL) {
+dlso <- function(candidates, loss=VI(), x=NULL, parallel=FALSE) {
   if ( is.null(x) ) x <- candidates
   expectedLoss <- partition.loss(candidates, x, loss)
   index <- which.min(expectedLoss)
@@ -50,5 +52,8 @@ dlso <- function(candidates, loss=VI(), x=NULL) {
   attr(estimate,"draws") <- x
   attr(estimate,"psm") <- NULL
   class(estimate) <- "salso.estimate"
+  if ( ( "sdols" %in% loadedNamespaces() ) && (all(grepl("^([^:]*:::?|)dlso\\(", deparse(sys.calls()[[sys.nframe()-1]])))) ) {  # Hack for 'sdols' version 2.0.0 capability.  Delete this when the package is updated.  Also remove the "parallel" argument.
+    return(list(estimate=estimate))
+  }
   estimate
 }

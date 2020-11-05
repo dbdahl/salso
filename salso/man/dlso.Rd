@@ -2,15 +2,15 @@
 % Please edit documentation in R/dlso.R
 \name{dlso}
 \alias{dlso}
-\title{Draws-Based Latent Structure Optimization}
+\title{Latent Structure Optimization Based on Draws}
 \usage{
-dlso(candidates, loss = VI(), x = NULL)
+dlso(candidates, loss = VI(), x = NULL, nCores = 0)
 }
 \arguments{
 \item{candidates}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
 represents a clustering of \eqn{n} items using cluster labels. For the
 \eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
-\code{x[b,i] == x[b,j]}.  One of the rows will be used as the partition
+\code{x[b,i] == x[b,j]}. One of the rows will be used as the partition
 estimate.}
 
 \item{loss}{See the documentation for this argument in
@@ -18,6 +18,11 @@ estimate.}
 
 \item{x}{See the documentation for this argument in
 \code{\link{partition.loss}}.}
+
+\item{nCores}{The number of CPU cores to use, i.e., the number of
+simultaneous runs at any given time. A value of zero indicates to use all
+cores on the system.  This argument is currently ignored and will be
+removed in the future.}
 }
 \value{
 An integer vector giving the estimated partition, encoded using
@@ -25,9 +30,9 @@ An integer vector giving the estimated partition, encoded using
 }
 \description{
 This function provides a partition to summarize a partition distribution
-using the draws latent structure optimization (DLSO) method, which is also
-known as the least-squares clustering method (Dahl 2006). The method seeks to
-minimize an estimation criterion by picking the minimizer among the
+using the draws-based latent structure optimization (DLSO) method, which is
+also known as the least-squares clustering method (Dahl 2006). The method
+seeks to minimize an estimation criterion by picking the minimizer among the
 partitions supplied by the \code{draws} argument. The implementation
 currently supports the minimization of several partition estimation criteria.
 For details on these criteria, see \code{\link{partition.loss}}.

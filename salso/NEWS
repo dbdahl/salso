@@ -1,8 +1,22 @@
-0.1.17 (2020-xx-xx)
-  * In addition to "binder" and "VI.lb" expected losses, added support for
-    the a third expected loss: "pear".
-  * New functions added: partition.expected.loss, partition.loss, pear, randi,
-    arandi, vi.dist, adjacency.matrix.
+0.2.0 (2020-11-04)
+  * Bump to version 0.2.x series to reflect major improvements.
+  * Refined "salso" function and function arguments to reflect the latest
+    version of the SALSO algorithm and simplify its usage.
+  * Support for the following loss functions:
+        Binder (binder) with potentially unequal weights,
+        One Minus Adjusted Rand Index (omARI),
+        Variation of Information (VI) with potentially unequal weights,
+        Normalized Variation of Information (NVI),
+        Information Distance (ID),
+        Normalized Information Distance (NID)
+  * Partially support the following criteria:
+        Approximation of One Minus Adjusted Rand Index (omARI.approx),
+        Lower Bound of the Variation of Information (VI.lb),
+  * Added "partition.loss" function and well as convenience methods for
+    specific loss functions.
+  * Added S3 "summary" method for output from the "salso" function and
+    S3 "plot" method for output from the "summary" method to produce heatmap,
+    dendrogram, and exemplar plots.
 
 0.1.16 (2020-02-07)
   * Added a new stopping rule for the number of permutations.  See the
@@ -14,7 +28,7 @@
     'curtailed', 'batchSize', and 'subsetSizes'.
   * 'maxScans' argument of the 'salso' function defaults to 10 instead of 5.
   * Removed 'parallel' argument to 'dlso' function since it was ignored.
-  * Clarifications in DESCRIPTION and INSTALL files, per CRAN requests. 
+  * Clarifications in DESCRIPTION and INSTALL files, per CRAN requests.
 
 0.1.11 (2020-01-06)
   * Fixed bug related to 'maxSize' argument of the 'salso' function.

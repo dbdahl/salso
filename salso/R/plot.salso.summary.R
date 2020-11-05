@@ -1,10 +1,11 @@
-#' Heatmap, Dendrogram, and Exemplar Plotting for Partition Estimation
+#' Heatmap, Multidimensional Scaling, Pairs, and Dendrogram Plotting for
+#' Partition Estimation
 #'
 #' This function produces one of four plots:  1. \code{"heatmap"}: A heatmap
 #' showing the pairwise allocation probabilities that items are clustered. 2.
 #' \code{"mds"}: A scatter plot using classical multidimensional scaling (also
 #' known as principal coordinates analysis) with the exemplar (i.e., the most
-#' representative observation) of each cluster emphasized.  3. \code{"pairs"}:
+#' representative observation) of each cluster emphasized. 3. \code{"pairs"}:
 #' Pairs plots of all the variables with the exemplar (i.e., the most
 #' representative observation) of each cluster emphasized. 4.
 #' \code{"dendrogram"}: A dendrogram based on expected partition loss showing
@@ -15,7 +16,7 @@
 #'   returned by the \code{\link{salso}} function.
 #' @param type A string equal to \code{"heatmap"}, \code{"mds"}, \code{"pairs"},
 #'   or \code{"dendrogram"}.
-#' @param data The data from which the partition estimation was obtained.  This
+#' @param data The data from which the partition estimation was obtained. This
 #'   is required when \code{type='pairs'} and ignored otherwise.
 #' @param showLabels Should the names of items be shown in the plot when
 #'   \code{type="heatmap"}?

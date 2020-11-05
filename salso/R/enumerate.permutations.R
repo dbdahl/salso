@@ -1,9 +1,9 @@
 #' Enumerate Permutations of Items
 #'
 #' This function produces a matrix whose rows provide all possible permutations
-#' of the set of integers \code{\{1, 2, ..., n\}}.
+#' of the set \eqn{{1, 2, ..., n}}.
 #'
-#' @param nItems The size of the set \code{\{1, 2, ..., n\}}, i.e., \code{n}.
+#' @param nItems The size of the set \eqn{{1, 2, ..., n}}, i.e., \eqn{n}.
 #'
 #' @return A matrix of integers, where each row is a permutation.
 #'

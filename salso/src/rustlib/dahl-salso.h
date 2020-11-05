@@ -13,12 +13,6 @@ void dahl_salso__expected_loss(int32_t n_partitions,
                                double a,
                                double *results_ptr);
 
-void dahl_salso__minimize_by_enumeration(int32_t n_items,
-                                         double *psm_ptr,
-                                         int32_t loss,
-                                         double a,
-                                         int32_t *results_label_ptr);
-
 void dahl_salso__minimize_by_salso(int32_t n_items,
                                    int32_t n_draws,
                                    int32_t *draws_ptr,
@@ -43,6 +37,12 @@ void dahl_salso__minimize_by_salso(int32_t n_items,
                                    int32_t *results_initialization_method_ptr,
                                    double *results_seconds_ptr,
                                    const int32_t *seed_ptr);
+
+void dahl_salso__minimize_by_enumeration(int32_t n_items,
+                                         double *psm_ptr,
+                                         int32_t loss,
+                                         double a,
+                                         int32_t *results_label_ptr);
 
 void dahl_salso__psm(int32_t n_partitions,
                      int32_t n_items,
