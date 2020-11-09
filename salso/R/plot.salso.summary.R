@@ -38,9 +38,10 @@
 #' @seealso \code{\link{salso}}, \code{\link{summary.salso.estimate}},
 #'   \code{\link[stats]{cmdscale}}.
 #'
+#' @importFrom stats cmdscale
 #' @importFrom grDevices heat.colors rainbow topo.colors
 #' @importFrom graphics abline axis box image pairs par points polygon segments
-#'   text
+#'   text legend
 #' @export
 #'
 plot.salso.summary <- function(x, type=c("heatmap","mds","pairs","dendrogram")[1], data=NULL, showLabels=length(x$estimate)<=50, ...) {

@@ -21,6 +21,7 @@
 #'   object, a vector for ordering observations in the heatmap plot, the size of
 #'   each cluster, and the number of clusters.
 #'
+#' @importFrom utils combn
 #' @export
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
