@@ -25,8 +25,6 @@
 #'
 #' @return \code{NULL}, invisibly.
 #'
-#' @author David B. Dahl \email{dahl@stat.byu.edu}
-#'
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' draws <- iris.clusterings

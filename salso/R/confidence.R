@@ -14,18 +14,14 @@
 #'   gives the relative frequency that that items \eqn{i} and \eqn{j} are in the
 #'   same subset (i.e., cluster).
 #'
-#' @author David B. Dahl \email{dahl@stat.byu.edu}
-#'
 #' @examples
 #' suppressWarnings({  # For testing purposes, suppress deprecation warning.
 #'
 #' clustering <- salso(iris.clusterings)
 #' psm <- psm(iris.clusterings)
-#' confidence(clustering, psm)
+#' salso:::confidence(clustering, psm)
 #'
 #' })
-#'
-#' @export
 #'
 confidence <- function(estimate, psm) {
   .Deprecated("confidence", msg="This function is deprecated. Use the 'summary' function on the result of the 'salso' function.")

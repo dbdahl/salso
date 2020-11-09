@@ -29,11 +29,8 @@ suppressWarnings({  # For testing purposes, suppress deprecation warning.
 
 clustering <- salso(iris.clusterings)
 psm <- psm(iris.clusterings)
-confidence(clustering, psm)
+salso:::confidence(clustering, psm)
 
 })
 
-}
-\author{
-David B. Dahl \email{dahl@stat.byu.edu}
 }

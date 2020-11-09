@@ -22,7 +22,6 @@
 #'   each cluster, and the number of clusters.
 #'
 #' @export
-#'
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' draws <- iris.clusterings
@@ -93,7 +92,7 @@ summary.salso.estimate <- function(object, alternative, ...) {
   names <- names(sizes)
   sizes <- as.vector(sizes)
   names(sizes) <- names
-  # Finalize
+  # finalize
   result <- list(estimate=estimate, nClusters=nClusters, score=score, order=order, dendrogram=dendrogram, psm=psm, meanPS=meanPS, meanPSM=m, exemplar=exemplar, sizes=sizes)
   class(result) <- "salso.summary"
   result

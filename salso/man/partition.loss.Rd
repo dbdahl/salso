@@ -105,18 +105,18 @@ between \eqn{\pi*} and \eqn{\pi} correspond to high concordance between the
 partitions, the N-invariant Binder loss \eqn{L} for a partition \eqn{\pi*} in
 estimating \eqn{\pi} is \eqn{L = (1-R)*(n-1)/n}, meaning that low values
 correspond to high concordance between the partitions. This package reports
-the N-invariant Binder loss and the original Binder loss, which equals the
-N-invariant Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise
-similarity matrix is required for this loss, but samples can be provided. As
-originally discussed by Binder (1978), two mistakes are possible: 1. Placing
-two items in separate clusters when in truth they belong to the same cluster,
-and 2. Placing two items in the same cluster when in truth they belong to
-separate clusters. Without loss of generality, the cost of the second mistake
-is fixed at one. The default cost of the first mistake is also one, but can
-be specified with the argument \code{a}. For a discussion of general weights,
-see Dahl and Johnson (2020). For a discussion of the equal weights case, see
-also Dahl (2006), Lau and Green (2007), Dahl and Newton (2007), Fritsch and
-Ickstadt (2009), and Wade and Ghahramani (2018).}
+the N-invariant Binder loss. The original Binder loss equals the N-invariant
+Binder loss multiplied by \eqn{n^2 / 2}. Only the pairwise similarity matrix
+is required for this loss, but samples can be provided. As originally
+discussed by Binder (1978), two mistakes are possible: 1. Placing two items
+in separate clusters when in truth they belong to the same cluster, and 2.
+Placing two items in the same cluster when in truth they belong to separate
+clusters. Without loss of generality, the cost of the second mistake is fixed
+at one. The default cost of the first mistake is also one, but can be
+specified with the argument \code{a}. For a discussion of general weights,
+see Dahl, Johnson, and Müller (2020). For a discussion of the equal weights
+case, see also Dahl (2006), Lau and Green (2007), Dahl and Newton (2007),
+Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
 
 \item{\code{"omARI"}}{One Minus Adjusted Rand Index. Computes the expectation
 of one minus the adjusted Rand index (Hubert and Arabie, 1985). Whereas high
@@ -135,16 +135,18 @@ first-order approximation of the expectation is based on \eqn{E(X/Y) \approx
 E(X)/E(Y)}. Only the pairwise similarity matrix is required for this
 criterion, but samples can be provided. See Fritsch and Ickstadt (2009).}
 
-\item{\code{"VI"}}{Variation of Information. Computes the expectations of
-variation of information loss. Samples from a partition distribution are
-required for this loss. See Meilă (2007), Wade and Ghahramani (2018), and
-Rastelli and Friel (2018). This loss has been extended to Dahl and Johnson
-(2020) to allow for trading off two possible mistakes: 1. Placing two items
-in separate clusters when in truth they belong to the same cluster, and 2.
-Placing two items in the same cluster when in truth they belong to separate
-clusters. Without loss of generality, the weight for the second mistake is
-fixed at one. The default weight of the first mistake is also one, but can be
-specified with the argument \code{a}. See Dahl and Johnson (2020).}
+\item{\code{"VI"}}{Variation of Information. Computes the expectations of the
+(generalized) variation of information loss. Samples from a partition
+distribution are required for this loss. See Meilă (2007), Wade and
+Ghahramani (2018), and Rastelli and Friel (2018). The original variation of
+information of Meilă (2007) has been extended to the generalized variation of
+information of Dahl, Johnson, and  Müller (2020) to allow for unequal
+weighting of two possible mistakes: 1. Placing two items in separate clusters
+when in truth they belong to the same cluster, and 2. Placing two items in
+the same cluster when in truth they belong to separate clusters. Without loss
+of generality, the weight for the second mistake is fixed at one. The default
+weight of the first mistake is also one, but can be specified with the
+argument \code{a}. See Dahl, Johnson, Müller (2020).}
 
 \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information. Computes
 the lower bound of the expectation of the variation of information loss,
@@ -222,6 +224,11 @@ A. Fritsch and K. Ickstadt (2009), An improved criterion for clustering based
 on the posterior similarity matrix, \emph{Bayesian Analysis}, \bold{4},
 367-391.
 
+N. X. Vinh, J. Epps, and J. Bailey (2010), Information Theoretic Measures for
+Clusterings Comparison: Variants, Properties, Normalization and Correction
+for Chance, \emph{Journal of Machine Learning Research}, \bold{11},
+2837-2854.
+
 S. Wade and Z. Ghahramani (2018), Bayesian cluster analysis: Point estimation
 and credible balls. \emph{Bayesian Analysis}, \bold{13:2}, 559-626.
 
@@ -229,10 +236,8 @@ R. Rastelli and N. Friel (2018), Optimal Bayesian estimators for latent
 variable cluster models. \emph{Statistics and Computing}, \bold{28},
 1169-1186.
 
-N. X. Vinh, J. Epps, and J. Bailey (2010), Information Theoretic Measures for
-Clusterings Comparison: Variants, Properties, Normalization and Correction
-for Chance, \emph{Journal of Machine Learning Research}, \bold{11},
-2837-2854.
+D. B. Dahl, D. J. Johnson, and P. Müller (2020), Search Algorithms and Loss
+Functions for Bayesian Clustering, in preparation.
 }
 \seealso{
 \code{\link{psm}}, \code{\link{salso}}, \code{\link{dlso}}

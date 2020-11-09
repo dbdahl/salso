@@ -59,6 +59,3 @@ plot(summ, type="dendrogram")
 \code{\link{salso}}, \code{\link{summary.salso.estimate}},
   \code{\link[stats]{cmdscale}}.
 }
-\author{
-David B. Dahl \email{dahl@stat.byu.edu}
-}

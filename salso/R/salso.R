@@ -115,13 +115,13 @@ salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, prob
     probSequentialAllocation <- 1
   }
   if ( z$a != 1 && z$lossStr == "binder.psm" ) {
-    stop(sprintf("The current implementation requires that samples be provided when 'a' is not 1.0 for Binder loss."))
+    stop("The current implementation requires that samples be provided when 'a' is not 1.0 for Binder loss.")
   }
   if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
   dots <- list(...)
   unrecognizedArguments <- setdiff(names(dots), c("seconds","maxScans","probSingletonsInitialization"))
   if ( length(unrecognizedArguments) > 0 ) {
-    stop(sprintf("unused argument (%s)", unrecognizedArguments[1]))
+    stop(paste0("unused argument: ", paste0(unrecognizedArguments,collapse=", ")))
   }
   if ( ! "seconds" %in% names(dots) ) {
     seconds <- Inf
@@ -169,9 +169,6 @@ salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, prob
     warning("The number of possible zealous attempts exceeded the maximum. Do you really want that many clusters? Consider lowering 'maxSize' or increasing 'maxZealousAttempts'.")
   }
   class(estimate) <- "salso.estimate"
-  if ( ( "sdols" %in% loadedNamespaces() ) && ( all(grepl("^([^:]*:::?|)salso\\(", deparse(sys.calls()[[sys.nframe()-1]]))) ) ) {  # Hack for 'sdols' version 2.0.0 capability.  Delete this when the package is updated.
-    return(list(estimate=estimate))
-  }
   estimate
 }
 
