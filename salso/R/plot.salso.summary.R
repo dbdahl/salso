@@ -40,7 +40,7 @@
 #'
 #' @importFrom stats cmdscale
 #' @importFrom grDevices heat.colors rainbow topo.colors
-#' @importFrom graphics abline axis box image pairs par points polygon segments
+#' @importFrom graphics abline axis box image pairs par plot points polygon segments
 #'   text legend
 #' @export
 #'
