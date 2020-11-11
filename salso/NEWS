@@ -1,3 +1,6 @@
+0.2.4 (2020-11-13)
+  * Solve issue when compiling from source using an old version of Rust.
+
 0.2.3 (2020-11-09)
   * Bump to version 0.2.x series to reflect major improvements.
   * Refined "salso" function and function arguments to reflect the latest

@@ -1,6 +1,6 @@
 Installing the source package (i.e., "compiling the package") uses Cargo
 (the package manager of the Rust programming language) if it is available.
-Version 1.31.0 or newer is required.  Cargo is available on the "Tier 1"
+Version 1.40.0 or newer is required.  Cargo is available on the "Tier 1"
 platforms listed here:
 
 https://forge.rust-lang.org/release/platform-support.html

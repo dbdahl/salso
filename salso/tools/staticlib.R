@@ -44,7 +44,7 @@ pkgName    <- as.character(desc[,"Package"])
 pkgVersion <- as.character(desc[,"Version"])
 
 download.file(sprintf("https://dbdahl.github.io/rpackages/lib/%s/%s/%s.tar.gz",osType,pkgName,pkgVersion), "staticlib.tar.gz", quiet=TRUE)
-untar(sprintf("staticlib.tar.gz",pkgVersion), exdir="..")
+untar("staticlib.tar.gz", exdir="..")
 unlink("staticlib.tar.gz")
 
 if ( osType == "windows" ) {
