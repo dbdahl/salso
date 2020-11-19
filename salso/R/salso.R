@@ -26,8 +26,8 @@
 #'   \code{"binder.psm"}, \code{"VI.lb"}, and \code{"omARI.approx"} are
 #'   generally not recommended and the current implementation requires that
 #'   \code{maxZealousAttempts = 0} and \code{probSequentialAllocation = 1.0}.
-#' @param maxSize The maximum number of clusters that can be considered by the
-#'   optimization algorithm, which has important implications for the
+#' @param maxNClusters The maximum number of clusters that can be considered by
+#'   the optimization algorithm, which has important implications for the
 #'   interpretability of the resulting clustering and can greatly influence the
 #'   RAM needed for the optimization algorithm. If the supplied value is zero
 #'   and \code{x} is a matrix of clusterings, the optimization is constrained by
@@ -44,7 +44,8 @@
 #'   also take more CPU time which might be better used trying additional runs.
 #' @param probSequentialAllocation For the initial allocation, the probability
 #'   of sequential allocation instead of using \code{sample(1:K, ncol(x),
-#'   TRUE)}, where \code{K} is set according to the \code{maxSize} argument.
+#'   TRUE)}, where \code{K} is set according to the \code{maxNClusters}
+#'   argument.
 #' @param nCores The number of CPU cores to use, i.e., the number of
 #'   simultaneous runs at any given time. A value of zero indicates to use all
 #'   cores on the system.
@@ -58,8 +59,8 @@
 #'   be less than \code{maxScans} since the method stops if the result does not
 #'   change between scans, and 3. \code{probSingletonsInitialization}: When
 #'   doing a sequential allocation to obtain the initial allocation, the
-#'   probability of placing the first \code{maxSize} randomly-selected items in
-#'   singletons subsets.
+#'   probability of placing the first \code{maxNClusters} randomly-selected
+#'   items in singletons subsets.
 #'
 #' @return An integer vector giving the estimated partition, encoded using
 #'   cluster labels.
@@ -80,7 +81,7 @@
 #' salso(draws, loss=binder(), nRuns=1, nCores=1)
 #' salso(iris.clusterings, binder(a=list(nClusters=3, upper=5)), nRuns=4, nCores=1)
 #'
-salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, probSequentialAllocation=0.5, nCores=0, ...) {
+salso <- function(x, loss=VI(), maxNClusters=0, nRuns=16, maxZealousAttempts=10, probSequentialAllocation=0.5, nCores=0, ...) {
   z <- x2drawspsm(x, loss, nCores)
   if ( ( z$lossStr %in% c("binder.draws","VI") ) && is.list(z$a) ) {
     argg <- c(as.list(environment()), list(...))
@@ -102,7 +103,7 @@ salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, prob
   }
   if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
   if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
-  if ( ! is.finite(maxSize) ) maxSize <- 0L
+  if ( ! is.finite(maxNClusters) ) maxNClusters <- 0L
   if ( nRuns < 1.0 ) stop("'nRuns' must be at least one.")
   nRunsX <- if ( nRuns > .Machine$integer.max ) .Machine$integer.max else nRuns
   if ( maxZealousAttempts < 0.0 ) stop("'maxZealousAttempts' may not be negative.")
@@ -144,14 +145,14 @@ salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, prob
     if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
   }
   seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
-  if ( ( maxSize == 0 ) && ( ! is.null(z$psm) ) && ( ! is.null(z$draws) ) ) {
-    maxSize <- max(apply(z$draws, 1, function(x) length(unique(x))))
+  if ( ( maxNClusters == 0 ) && ( ! is.null(z$psm) ) && ( ! is.null(z$draws) ) ) {
+    maxNClusters <- max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, z$a, maxSize, nRunsX, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, nCores, seed)
+  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, z$a, maxNClusters, nRunsX, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, nCores, seed)
   estimate <- y[[1]]
   attr(estimate,"info") <- {
     attr <- y[[2]]
-    names(attr) <- c("loss","a","maxSize","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","seconds")
+    names(attr) <- c("loss","a","maxNClusters","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","seconds")
     attr$loss <- z$loss
     if ( ! z$loss %in% c("binder","VI") ) attr$a <- NULL
     attr$initMethod <- names(which(initMethodMapping==attr$initMethod))
@@ -163,11 +164,11 @@ salso <- function(x, loss=VI(), maxSize=0, nRuns=16, maxZealousAttempts=10, prob
   if ( is.finite(nRuns) && ( actualNRuns < nRunsX ) ) {
     warning(sprintf("Only %s of the requested %s run%s performed. Consider increasing 'seconds' or lowering 'nRuns'.",actualNRuns,nRuns,ifelse(actualNRuns==1L," was","s were")))
   }
-  if ( ( maxSize == 0 ) && ( length(unique(estimate)) == attr(estimate,"info")$maxSize ) ) {
+  if ( ( maxNClusters == 0 ) && ( length(unique(estimate)) == attr(estimate,"info")$maxNClusters ) ) {
     warning("The number of clusters equals the default maximum possible number of clusters.")
   }
   if ( ( maxZealousAttempts > 0 ) && ( attr(estimate,"info")$nZAtt > maxZealousAttempts ) ) {
-    warning("The number of possible zealous attempts exceeded the maximum. Do you really want that many clusters? Consider lowering 'maxSize' or increasing 'maxZealousAttempts'.")
+    warning("The number of possible zealous attempts exceeded the maximum. Do you really want that many clusters? Consider lowering 'maxNClusters' or increasing 'maxZealousAttempts'.")
   }
   class(estimate) <- "salso.estimate"
   estimate

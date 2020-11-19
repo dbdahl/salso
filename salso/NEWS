@@ -1,5 +1,6 @@
-0.2.4 (2020-11-18)
+0.2.5 (2020-11-18)
   * Solved issue when compiling from source using an old version of Rust.
+  * In salso function, renamed maxSize to maxNClusters for increased clarity.
 
 0.2.3 (2020-11-09)
   * Bump to version 0.2.x series to reflect major improvements.

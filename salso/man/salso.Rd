@@ -7,7 +7,7 @@
 salso(
   x,
   loss = VI(),
-  maxSize = 0,
+  maxNClusters = 0,
   nRuns = 16,
   maxZealousAttempts = 10,
   probSequentialAllocation = 0.5,
@@ -34,8 +34,8 @@ cluster) of a partition (i.e., clustering). The loss functions
 generally not recommended and the current implementation requires that
 \code{maxZealousAttempts = 0} and \code{probSequentialAllocation = 1.0}.}
 
-\item{maxSize}{The maximum number of clusters that can be considered by the
-optimization algorithm, which has important implications for the
+\item{maxNClusters}{The maximum number of clusters that can be considered by
+the optimization algorithm, which has important implications for the
 interpretability of the resulting clustering and can greatly influence the
 RAM needed for the optimization algorithm. If the supplied value is zero
 and \code{x} is a matrix of clusterings, the optimization is constrained by
@@ -55,7 +55,8 @@ also take more CPU time which might be better used trying additional runs.}
 
 \item{probSequentialAllocation}{For the initial allocation, the probability
 of sequential allocation instead of using \code{sample(1:K, ncol(x),
-TRUE)}, where \code{K} is set according to the \code{maxSize} argument.}
+TRUE)}, where \code{K} is set according to the \code{maxNClusters}
+argument.}
 
 \item{nCores}{The number of CPU cores to use, i.e., the number of
 simultaneous runs at any given time. A value of zero indicates to use all
@@ -71,8 +72,8 @@ maximum number of full reallocation scans. The actual number of scans may
 be less than \code{maxScans} since the method stops if the result does not
 change between scans, and 3. \code{probSingletonsInitialization}: When
 doing a sequential allocation to obtain the initial allocation, the
-probability of placing the first \code{maxSize} randomly-selected items in
-singletons subsets.}
+probability of placing the first \code{maxNClusters} randomly-selected
+items in singletons subsets.}
 }
 \value{
 An integer vector giving the estimated partition, encoded using
