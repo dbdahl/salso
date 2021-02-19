@@ -179,10 +179,9 @@ functions. Note that:
 }
 \examples{
 # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
-probs <- psm(iris.clusterings, nCores=1)
 partitions <- iris.clusterings[1:5,]
 
-all.equal(partition.loss(partitions, probs, loss=binder(a=2)), binder(partitions, probs, a=2))
+all.equal(partition.loss(partitions, partitions, loss=binder(a=2)), binder(partitions, partitions, a=2))
 all.equal(partition.loss(partitions, partitions, loss=omARI()), omARI(partitions, partitions))
 all.equal(partition.loss(partitions, partitions, loss=VI(a=0.8)), VI(partitions, partitions, a=0.8))
 
