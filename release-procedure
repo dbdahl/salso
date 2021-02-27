@@ -3,7 +3,7 @@ Bump version number in DESCRIPTION
 Update NEWS detailing changes (including the date)
 Make sure Cargo.toml dependencies are all to crates.io, not my own Git repositories.
 Commit everything to Git, but another commit is coming for the final release.
-build-R-package --rust --post
+build-R-package --post
 Check reverse dependencies
 Test on Linux, Mac OS, and Windows
   For Linux, R CMD check --as-cran ...
