@@ -186,9 +186,12 @@
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' partitions <- iris.clusterings[1:5,]
 #'
-#' all.equal(partition.loss(partitions, partitions, loss=binder(a=2)), binder(partitions, partitions, a=2))
-#' all.equal(partition.loss(partitions, partitions, loss=omARI()), omARI(partitions, partitions))
-#' all.equal(partition.loss(partitions, partitions, loss=VI(a=0.8)), VI(partitions, partitions, a=0.8))
+#' all.equal(partition.loss(partitions, partitions, loss=binder(a=2)),
+#'           binder(partitions, partitions, a=2))
+#' all.equal(partition.loss(partitions, partitions, loss=omARI()),
+#'           omARI(partitions, partitions))
+#' all.equal(partition.loss(partitions, partitions, loss=VI(a=0.8)),
+#'           VI(partitions, partitions, a=0.8))
 #'
 #' p1 <- iris.clusterings[1,]
 #' p2 <- iris.clusterings[2,]
