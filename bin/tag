@@ -4,7 +4,7 @@ set -e
 
 cd $(dirname $(readlink -f "$0"))
 
-VERSION=$(Rscript -e "cat(read.dcf('../cargo/DESCRIPTION')[,'Version'])")
+VERSION=$(Rscript -e "cat(read.dcf('../salso/DESCRIPTION')[,'Version'])")
 
 echo Tagging version $VERSION
 
