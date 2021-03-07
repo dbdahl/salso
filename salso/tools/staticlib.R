@@ -3,7 +3,7 @@ target <- args[1]
 
 if ( ! cargo::is_available("1.40") ) {
   cargo:::download_static_library(target, function(osName,pkgName,pkgVersion) {
-    sprintf("https://dbdahl.github.io/rpackages/lib/%s/%s/%s.tar.gz",osName,pkgName,pkgVersion)
+    sprintf("https://daviddahl.org/rrepository/staticlib/%s/%s_%s.tar.gz",osName,pkgName,pkgVersion)
   })
   quit(status=0)
 }
