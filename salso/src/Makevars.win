@@ -1,7 +1,6 @@
-TARGET = $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e "cat(cargo::target())")
-$(info Rust target: $(TARGET))
+LIBDIR = rustlib/target/release
+LIBDIR_TEMPLATE = rustlib/target/___/release
 
-LIBDIR = rustlib/target/$(TARGET)/release
 STATLIB = $(LIBDIR)/rustlib.lib
 PKG_LIBS = -L$(LIBDIR) -lrustlib -lws2_32 -ladvapi32 -luserenv -lbcrypt
 
@@ -10,7 +9,7 @@ all: clean
 $(SHLIB): $(STATLIB)
 
 $(STATLIB):
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript" ../tools/staticlib.R "$(TARGET)"
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript" ../tools/staticlib.R $(LIBDIR_TEMPLATE) $(STATLIB)
 
 clean:
 	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)
