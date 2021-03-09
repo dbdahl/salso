@@ -1,10 +1,9 @@
-TARGET = $(subst /x64,x86_64,$(subst /i386,i686,$(R_ARCH)))-pc-windows-gnu
+TARGET = $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e "cat(cargo::target())")
+$(info Rust target: $(TARGET))
+
 LIBDIR = rustlib/target/$(TARGET)/release
 STATLIB = $(LIBDIR)/rustlib.lib
 PKG_LIBS = -L$(LIBDIR) -lrustlib -lws2_32 -ladvapi32 -luserenv -lbcrypt
-
-$(info    TARGET is $(TARGET))
-$(info    R_ARCH is $(R_ARCH))
 
 all: clean
 

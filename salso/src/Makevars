@@ -1,4 +1,7 @@
-LIBDIR = rustlib/target/release
+TARGET = $(shell "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -e "cat(cargo::target())")
+$(info Rust target: $(TARGET))
+
+LIBDIR = rustlib/target/$(TARGET)/release
 STATLIB = $(LIBDIR)/librustlib.a
 PKG_LIBS = -L$(LIBDIR) -lrustlib -lresolv -pthread
 
@@ -7,7 +10,7 @@ all: clean
 $(SHLIB): $(STATLIB)
 
 $(STATLIB):
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript" ../tools/staticlib.R
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript" ../tools/staticlib.R "$(TARGET)"
 
 clean:
 	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)
