@@ -1,7 +1,7 @@
 LIBDIR = rustlib/target/release
 LIBDIR_TEMPLATE = rustlib/target/___/release
+STATLIB = $(LIBDIR)/librustlib.a
 
-STATLIB = $(LIBDIR)/rustlib.lib
 PKG_LIBS = -L$(LIBDIR) -lrustlib -lws2_32 -ladvapi32 -luserenv -lbcrypt
 
 all: clean

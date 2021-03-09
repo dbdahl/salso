@@ -1,4 +1,4 @@
-statlib_template <- commandArgs(TRUE)[1]
+lib_dir_template <- commandArgs(TRUE)[1]
 statlib          <- commandArgs(TRUE)[2]
 target <- cargo::target()
 
@@ -21,4 +21,5 @@ if ( cargo::is_available("1.40") ) {
 
 }
 
-file.copy(file.path(gsub("___",target,statlib_template),basename(statlib)), statlib)
+dir.create(dirname(statlib), showWarnings=FALSE, recursive=TRUE)
+file.copy(file.path(gsub("___",target,lib_dir_template),basename(statlib)), statlib)
