@@ -1,8 +1,7 @@
 .Rhistory
 .Rproj.user
-/deliveries
+salso.Rcheck
 /salso_*.tar.gz
-/salso.Rcheck
 /salso/src/*.o
 /salso/src/*.so
 /salso/src/*.dll
