@@ -34,3 +34,4 @@ salso:::confidence(clustering, psm)
 })
 
 }
+\keyword{internal}

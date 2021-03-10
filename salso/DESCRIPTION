@@ -1,13 +1,13 @@
 Package: salso
 Type: Package
 Title: Search Algorithms and Loss Functions for Bayesian Clustering
-Version: 0.2.12
+Version: 0.2.13
 Authors@R: c(person(given="David B.",family="Dahl",role=c("aut","cre"),email="dahl@stat.byu.edu",comment=c(ORCID="0000-0002-8173-1547")), person(given="Devin J.",family="Johnson",role=c("aut"),email="devin.j.johnson7@gmail.com",comment=c(ORCID="0000-0003-2619-6649")), person(given="Peter",family="Müller",role=c("aut"),email="pmueller@math.utexas.edu"))
 Description: The SALSO algorithm is an efficient greedy search procedure to obtain a clustering estimate based on a partition loss function. The algorithm is implemented for many loss functions, including the Binder loss and a generalization of the variation of information loss, both of which allow for unequal weights on the two types of clustering mistakes. Efficient implementations are also provided for Monte Carlo estimation of the posterior expected loss of a given clustering estimate. SALSO was first presented at the workshop "Bayesian Nonparametric Inference: Dependence Structures and their Applications" in Oaxaca, Mexico on December 6, 2017. See <https://www.birs.ca/events/2017/5-day-workshops/17w5060/schedule>.
 License: MIT + file LICENSE | Apache License 2.0
 Depends: R (>= 3.3.0)
 LinkingTo: cargo (>= 0.1.19)
-SystemRequirements: Cargo (>= 1.40.0) for installation from sources: see file INSTALL
+SystemRequirements: Cargo (>= 1.42.0) for installation from sources: see file INSTALL
 Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 7.1.1

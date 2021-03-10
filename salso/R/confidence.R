@@ -14,6 +14,7 @@
 #'   gives the relative frequency that that items \eqn{i} and \eqn{j} are in the
 #'   same subset (i.e., cluster).
 #'
+#' @keywords internal
 #' @examples
 #' suppressWarnings({  # For testing purposes, suppress deprecation warning.
 #'

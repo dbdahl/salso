@@ -4,21 +4,11 @@
 #' using the draws-based latent structure optimization (DLSO) method, which is
 #' also known as the least-squares clustering method (Dahl 2006). The method
 #' seeks to minimize an estimation criterion by picking the minimizer among the
-#' partitions supplied by the \code{draws} argument. The implementation
-#' currently supports the minimization of several partition estimation criteria.
-#' For details on these criteria, see \code{\link{partition.loss}}.
+#' partitions supplied. The implementation currently supports the minimization
+#' of several partition estimation criteria. For details on these criteria, see
+#' \code{\link{partition.loss}}.
 #'
-#' @param candidates A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
-#'   represents a clustering of \eqn{n} items using cluster labels. For the
-#'   \eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
-#'   \code{x[b,i] == x[b,j]}. One of the rows will be used as the partition
-#'   estimate.
-#' @param loss See the documentation for this argument in
-#'   \code{\link{partition.loss}}.
-#' @param x See the documentation for this argument in
-#'   \code{\link{partition.loss}}.
-#' @param parallel This argument is currently ignored and will be removed in the
-#'   future.
+#' @inheritParams partition.loss
 #'
 #' @return An integer vector giving the estimated partition, encoded using
 #'   cluster labels.
@@ -26,21 +16,27 @@
 #' @seealso \code{\link{partition.loss}}, \code{\link{psm}},
 #'   \code{\link{summary.salso.estimate}}, \code{\link{salso}}
 #'
+#' @references
+#'
+#' D. B. Dahl (2006), Model-Based Clustering for Expression Data via a Dirichlet
+#' Process Mixture Model, in \emph{Bayesian Inference for Gene Expression and
+#' Proteomics}, Kim-Anh Do, Peter Müller, Marina Vannucci (Eds.), Cambridge
+#' University Press.
+#
 #' @export
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' dlso(iris.clusterings, loss=VI())
-#' probs <- psm(iris.clusterings, nCores=1)
-#' dlso(iris.clusterings, loss=binder(), x=probs)
+#' dlso(iris.clusterings, loss=binder())
 #'
-#' # Compute loss with all draws, but pick the best among the first 10.
+#' # Compute expected loss using all draws, but pick the best among the first 10.
 #' dlso(iris.clusterings[1:10,], loss=VI(), x=iris.clusterings)
 #'
-dlso <- function(candidates, loss=VI(), x=NULL, parallel=FALSE) {
-  if ( is.null(x) ) x <- candidates
-  expectedLoss <- partition.loss(candidates, x, loss)
+dlso <- function(partitions, loss=VI(), x=NULL) {
+  if ( is.null(x) ) x <- partitions
+  expectedLoss <- partition.loss(partitions, x, loss)
   index <- which.min(expectedLoss)
-  estimate <-  candidates[index,]
+  estimate <-  partitions[index,]
   attr(estimate,"info") <- {
     if ( inherits(loss, "salso.loss") ) {
       if ( loss$loss == "binder" ) a <- loss$a
@@ -52,8 +48,5 @@ dlso <- function(candidates, loss=VI(), x=NULL, parallel=FALSE) {
   attr(estimate,"draws") <- x
   attr(estimate,"psm") <- NULL
   class(estimate) <- "salso.estimate"
-  if ( ( "sdols" %in% loadedNamespaces() ) && (all(grepl("^([^:]*:::?|)dlso\\(", deparse(sys.calls()[[sys.nframe()-1]])))) ) {  # Hack for 'sdols' version 2.0.0 capability.  Delete this when the package is updated.  Also remove the "parallel" argument.
-    return(list(estimate=estimate))
-  }
   estimate
 }

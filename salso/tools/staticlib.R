@@ -12,7 +12,7 @@ if ( cargo::is_available("1.40") ) {
 
   cargo:::download_static_library(target,
     mkURL1=function(pkgName,pkgVersion,osName,target) {
-      sprintf("https://daviddahl.org/rrepository/staticlib/%s_%s/%s/%s.tar.gz",pkgName,pkgVersion,osName,target)
+      sprintf("https://dbdahl.github.io/rrepository/staticlib/%s_%s/%s/%s.tar.gz",pkgName,pkgVersion,osName,target)
     },
     mkURL2=function(pkgName,pkgVersion,osName,target) {
       sprintf("https://dahl.byu.edu/rrepository/staticlib/%s_%s/%s/%s.tar.gz",pkgName,pkgVersion,osName,target)
