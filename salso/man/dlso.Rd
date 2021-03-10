@@ -42,7 +42,6 @@ of several partition estimation criteria. For details on these criteria, see
 \code{\link{partition.loss}}.
 }
 \examples{
-# For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 dlso(iris.clusterings, loss=VI())
 dlso(iris.clusterings, loss=binder())
 

@@ -1,6 +1,7 @@
-0.2.14 (2021-03-09)
+0.2.15 (2021-03-10)
   * Added "LinkingTo: cargo" in their DESCRIPTION to use the cargo package
     to manage Cargo, Rust's package manager.
+  * Addresses CRAN concerns regarding the use of ~/.cargo and multiple cores.
 
 0.2.5 (2020-11-18)
   * Solved issue when compiling from source using an old version of Rust.

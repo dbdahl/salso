@@ -32,11 +32,12 @@ relative frequency (i.e., estimated probability) that items \eqn{i} and
 adjacency matrices of the provided samples.
 }
 \examples{
+# For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
+
 partition <- iris.clusterings[1,]
-psm(partition)
+psm(partition, nCores=1)
 
 dim(iris.clusterings)
-# For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 probs <- psm(iris.clusterings, nCores=1)
 dim(probs)
 probs[1:6, 1:6]

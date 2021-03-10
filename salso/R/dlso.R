@@ -25,7 +25,6 @@
 #
 #' @export
 #' @examples
-#' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' dlso(iris.clusterings, loss=VI())
 #' dlso(iris.clusterings, loss=binder())
 #'
