@@ -8,12 +8,13 @@ psm(x, nCores = 0)
 }
 \arguments{
 \item{x}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
-represents a clustering of \eqn{n} items using cluster labels. For
-clustering \eqn{b}, items \eqn{i} and \eqn{j} are in the same cluster if
+represents a clustering of \eqn{n} items using cluster labels. For the
+\eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
 \code{x[b,i] == x[b,j]}.}
 
-\item{nCores}{The number of CPU cores to use. A value of zero indicates to
-use all cores on the system.}
+\item{nCores}{The number of CPU cores to use, i.e., the number of
+simultaneous runs at any given time. A value of zero indicates to use all
+cores on the system.}
 }
 \value{
 A \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives

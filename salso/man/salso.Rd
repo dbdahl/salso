@@ -81,9 +81,10 @@ An integer vector giving the estimated partition, encoded using
 }
 \description{
 This function provides a partition to summarize a partition distribution
-using the SALSO greedy search method. The implementation currently supports
-the minimization of several partition estimation criteria. For details on
-these criteria, see \code{\link{partition.loss}}.
+using the SALSO greedy search method (Dahl, Johnson, and Müller, 2021). The
+implementation currently supports the minimization of several partition
+estimation criteria. For details on these criteria, see
+\code{\link{partition.loss}}.
 }
 \details{
 The initial version of the SALSO method was presented at the workshop
@@ -100,6 +101,10 @@ salso(draws, loss=VI(a=0.7), nRuns=1, nCores=1)
 salso(draws, loss=binder(), nRuns=1, nCores=1)
 salso(iris.clusterings, binder(a=list(nClusters=3, upper=5)), nRuns=4, nCores=1)
 
+}
+\references{
+D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
+Functions for Bayesian Clustering, in preparation.
 }
 \seealso{
 \code{\link{partition.loss}}, \code{\link{psm}},

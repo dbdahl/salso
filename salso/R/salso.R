@@ -1,9 +1,10 @@
 #' SALSO Greedy Search
 #'
 #' This function provides a partition to summarize a partition distribution
-#' using the SALSO greedy search method. The implementation currently supports
-#' the minimization of several partition estimation criteria. For details on
-#' these criteria, see \code{\link{partition.loss}}.
+#' using the SALSO greedy search method (Dahl, Johnson, and Müller, 2021). The
+#' implementation currently supports the minimization of several partition
+#' estimation criteria. For details on these criteria, see
+#' \code{\link{partition.loss}}.
 #'
 #' The initial version of the SALSO method was presented at the workshop
 #' "Bayesian Nonparametric Inference: Dependence Structures and their
@@ -67,6 +68,11 @@
 #'
 #' @seealso \code{\link{partition.loss}}, \code{\link{psm}},
 #'   \code{\link{summary.salso.estimate}}, \code{\link{dlso}}
+#'
+#' @references
+#'
+#' D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
+#' Functions for Bayesian Clustering, in preparation.
 #'
 #' @importFrom stats uniroot
 #' @export

@@ -31,7 +31,7 @@
 #' clusters. Without loss of generality, the cost of the second mistake is fixed
 #' at one. The default cost of the first mistake is also one, but can be
 #' specified with the argument \code{a}. For a discussion of general weights,
-#' see Dahl, Johnson, and Müller (2020). For a discussion of the equal weights
+#' see Dahl, Johnson, and Müller (2021). For a discussion of the equal weights
 #' case, see also Dahl (2006), Lau and Green (2007), Dahl and Newton (2007),
 #' Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
 #'
@@ -57,13 +57,13 @@
 #' distribution are required for this loss. See Meilă (2007), Wade and
 #' Ghahramani (2018), and Rastelli and Friel (2018). The original variation of
 #' information of Meilă (2007) has been extended to the generalized variation of
-#' information of Dahl, Johnson, and  Müller (2020) to allow for unequal
+#' information of Dahl, Johnson, and  Müller (2021) to allow for unequal
 #' weighting of two possible mistakes: 1. Placing two items in separate clusters
 #' when in truth they belong to the same cluster, and 2. Placing two items in
 #' the same cluster when in truth they belong to separate clusters. Without loss
 #' of generality, the weight for the second mistake is fixed at one. The default
 #' weight of the first mistake is also one, but can be specified with the
-#' argument \code{a}. See Dahl, Johnson, Müller (2020).}
+#' argument \code{a}. See Dahl, Johnson, Müller (2021).}
 #'
 #' \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information. Computes
 #' the lower bound of the expectation of the variation of information loss,
@@ -177,7 +177,7 @@
 #' variable cluster models. \emph{Statistics and Computing}, \bold{28},
 #' 1169-1186.
 #'
-#' D. B. Dahl, D. J. Johnson, and P. Müller (2020), Search Algorithms and Loss
+#' D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
 #' Functions for Bayesian Clustering, in preparation.
 #
 #'
