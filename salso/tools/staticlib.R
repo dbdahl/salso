@@ -6,7 +6,9 @@ cat("Target is: ", target, "\n", sep="")
 
 if ( cargo::is_available("1.42") ) {
 
-  cargo::run(c("build", "--jobs", "1", "--target", target, "--release", "--manifest-path", "rustlib/Cargo.toml"))
+  nCores <- Sys.getenv("R_CARGO_NCORES","1")
+  if ( nCores == "0" ) nCores <- parallel::detectCores()
+  cargo::run(c("build", "--jobs", nCores, "--target", target, "--release", "--manifest-path", "rustlib/Cargo.toml"))
 
 } else {
 

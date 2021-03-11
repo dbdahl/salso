@@ -1,9 +1,12 @@
+.DS_Store
 .Rhistory
 .Rproj.user
-salso.Rcheck
+*.Rcheck
 /salso_*.tar.gz
 /salso/src/*.o
 /salso/src/*.so
 /salso/src/*.dll
 /salso/src/*.a
 /salso/src/rustlib/target
+/salso/src-i386
+/salso/src-x64
