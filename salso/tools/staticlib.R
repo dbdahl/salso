@@ -6,19 +6,14 @@ cat("Target is: ", target, "\n", sep="")
 
 if ( cargo::is_available("1.42") ) {
 
-  nCores <- Sys.getenv("R_CARGO_NCORES","1")
-  if ( nCores == "0" ) nCores <- parallel::detectCores()
-  cargo::run(c("build", "--jobs", nCores, "--target", target, "--release", "--manifest-path", "rustlib/Cargo.toml"))
+  cargo::run(c("build", "--target", target, "--release", "--manifest-path", "rustlib/Cargo.toml"))
 
 } else {
 
-  cargo:::download_static_library(target,
-    mkURL1=function(pkgName,pkgVersion,osName,target) {
-      sprintf("https://r.ddahl.org/staticlib/%s_%s/%s/%s.tar.gz",pkgName,pkgVersion,osName,target)
-    },
-    mkURL2=function(pkgName,pkgVersion,osName,target) {
-      sprintf("https://dahl.byu.edu/rrepository/staticlib/%s_%s/%s/%s.tar.gz",pkgName,pkgVersion,osName,target)
-    }
+  cargo:::download_staticlib(target,
+    "https://r.ddahl.org/staticlib/${name}_${version}/${target}.tar.gz"
+    ,
+    "https://dahl.byu.edu/rrepository/staticlib/${name}_${version}/${target}.tar.gz"
   )
 
 }

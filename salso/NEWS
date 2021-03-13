@@ -1,3 +1,6 @@
+0.2.16 (2021-03-15)
+  * Improved compiling the source package.
+
 0.2.15 (2021-03-10)
   * Added "LinkingTo: cargo" in their DESCRIPTION to use the cargo package
     to manage Cargo, Rust's package manager.
