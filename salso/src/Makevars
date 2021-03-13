@@ -2,7 +2,7 @@ LIBDIR = rustlib/target/release
 LIBDIR_TEMPLATE = rustlib/target/___/release
 STATLIB = $(LIBDIR)/librustlib.a
 
-PKG_LIBS = -L$(LIBDIR) -lrustlib -lresolv -pthread
+PKG_LIBS = -L$(LIBDIR) -lrustlib
 
 all: clean
 

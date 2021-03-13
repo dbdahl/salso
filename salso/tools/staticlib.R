@@ -4,11 +4,7 @@ target <- cargo::target()
 
 cat("Target is: ", target, "\n", sep="")
 
-if ( cargo::is_available("1.42") ) {
-
-  cargo::run(c("build", "--target", target, "--release", "--manifest-path", "rustlib/Cargo.toml"))
-
-} else {
+if ( ! cargo::build("1.42", "--target", target, "--release", "--manifest-path", "rustlib/Cargo.toml") ) {
 
   cargo:::download_staticlib(target,
     "https://r.ddahl.org/staticlib/${name}_${version}/${target}.tar.gz"
