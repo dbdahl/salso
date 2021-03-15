@@ -1,10 +1,6 @@
-lib_dir_template <- commandArgs(TRUE)[1]
-statlib          <- commandArgs(TRUE)[2]
 target <- cargo::target()
 
-cat("Target is: ", target, "\n", sep="")
-
-if ( ! cargo::build("1.42", "--target", target, "--release", "--manifest-path", "rustlib/Cargo.toml") ) {
+if ( ! cargo::run("build", "--target", target, "--release", "--manifest-path", "rustlib/Cargo.toml", minimum_version="1.42") ) {
 
   cargo:::download_staticlib(target,
     "https://r.ddahl.org/staticlib/${name}_${version}/${target}.tar.gz"
@@ -14,5 +10,8 @@ if ( ! cargo::build("1.42", "--target", target, "--release", "--manifest-path", 
 
 }
 
+args <- commandArgs(TRUE)
+lib_dir_template <- args[1]
+statlib          <- args[2]
 dir.create(dirname(statlib), showWarnings=FALSE, recursive=TRUE)
 file.copy(file.path(gsub("___",target,lib_dir_template),basename(statlib)), statlib)
