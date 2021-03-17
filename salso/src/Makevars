@@ -1,5 +1,4 @@
 LIBDIR = rustlib/target/release
-LIBDIR_TEMPLATE = rustlib/target/___/release
 STATLIB = $(LIBDIR)/librustlib.a
 
 PKG_LIBS = -L$(LIBDIR) -lrustlib
@@ -9,7 +8,7 @@ all: clean
 $(SHLIB): $(STATLIB)
 
 $(STATLIB):
-	"${R_HOME}/bin${R_ARCH_BIN}/Rscript" ../tools/staticlib.R $(LIBDIR_TEMPLATE) $(STATLIB)
+	"${R_HOME}/bin${R_ARCH_BIN}/Rscript" ../tools/staticlib.R
 
 clean:
 	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)
