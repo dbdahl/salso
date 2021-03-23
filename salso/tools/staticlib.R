@@ -20,14 +20,18 @@ if ( compareVersion(as.character(packageVersion("cargo")),"0.1.28") <= 0 ) {
     if ( file.exists(candidate) ) return(candidate)
     NULL
   }
-  rustc_cmd <- find_cmd("rustc")
-  if ( is.null(rustc_cmd) ) {
-    cat("The Rust compiler (rustc) is not found. Please see the package's INSTALL instructions.\n")
-  } else {
-    n <- function(x) normalizePath(x, mustWork=FALSE)
-    rustc_cmd <- n(rustc_cmd)
-    cat(sprintf("rustc executable: %s\n",rustc_cmd))
-    Sys.setenv(RUSTC=rustc_cmd)
+  n <- function(x) normalizePath(x, mustWork=FALSE)
+  if ( Sys.getenv("R_RUSTC","<unset>") != "<unset>" ) {
+    Sys.setenv(RUSTC=n(Sys.getenv("R_RUSTC")))
+  } else if ( Sys.getenv("RUSTC","<unset>") == "<unset>" ) {
+    rustc_cmd <- find_cmd("rustc")
+    if ( is.null(rustc_cmd) ) {
+      cat("The Rust compiler (rustc) is not found. Please see the package's INSTALL instructions.\n")
+    } else {
+      rustc_cmd <- n(rustc_cmd)
+      cat(sprintf("rustc executable: %s\n",rustc_cmd))
+      Sys.setenv(RUSTC=rustc_cmd)
+    }
   }
 }
 

@@ -1,5 +1,5 @@
-0.2.19 (2021-03-22)
-  * Improved compiling of the source package.
+0.2.20 (2021-03-23)
+  * Improved compiling the source package.
 
 0.2.15 (2021-03-10)
   * Added "LinkingTo: cargo" in their DESCRIPTION to use the cargo package
