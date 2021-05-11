@@ -9,7 +9,8 @@ Partition Estimation}
   x,
   type = c("heatmap", "mds", "pairs", "dendrogram")[1],
   data = NULL,
-  showLabels = length(x$estimate) <= 50,
+  showLabels = TRUE,
+  showIDs = length(x$estimate) <= 50,
   ...
 )
 }
@@ -23,8 +24,10 @@ or \code{"dendrogram"}.}
 \item{data}{The data from which the partition estimation was obtained. This
 is required when \code{type='pairs'} and ignored otherwise.}
 
-\item{showLabels}{Should the names of items be shown in the plot when
+\item{showLabels}{Should the cluster labels be shown in the plot when
 \code{type="heatmap"}?}
+
+\item{showIDs}{Should the ID of the items be shown in the plot?}
 
 \item{...}{Arguments to be passed to methods, such as graphical parameters
 (see \code{\link{par}}).}

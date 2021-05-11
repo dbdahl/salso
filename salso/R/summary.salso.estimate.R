@@ -13,6 +13,9 @@
 #'   other procedures. This clustering must be provided in canonical form:
 #'   cluster labels as integers starting at 1 for the first observation and
 #'   incrementing by one for each new label.
+#' @param orderingMethod An integer giving method to use to order the
+#'   observations for a heatmap plot.  Currently values \code{1} or \code{2} are
+#'   supported.
 #' @param ... Currently ignored.
 #'
 #' @return A list containing the estimate, the pairwise similarity matrix, the
@@ -33,7 +36,7 @@
 #' plot(summ, type="pairs", data=iris)
 #' plot(summ, type="dendrogram")
 #'
-summary.salso.estimate <- function(object, alternative, ...) {
+summary.salso.estimate <- function(object, alternative, orderingMethod=1, ...) {
   estimate <- as.vector(if ( ! missing(alternative) ) alternative else object)
   if ( missing(alternative) ) estimate <- object
   else {
@@ -76,7 +79,11 @@ summary.salso.estimate <- function(object, alternative, ...) {
     }
     order
   }
-  order <- order(order(walk(dendrogram))[estimate], -1*score)
+  order <- if ( orderingMethod == 1 ) {
+    order(order(walk(dendrogram))[estimate], -1*score)
+  } else if ( orderingMethod == 2 ) {
+    order(estimate, order(hclust(as.dist(1-psm))$order))
+  } else stop("Unsupported value for the 'orderingMethod' argument.")
   # nClusters
   nClusters <- length(exemplar)
   # pairwise similarity matrix averaged by clustering estimate
