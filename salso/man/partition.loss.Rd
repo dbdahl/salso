@@ -239,7 +239,7 @@ variable cluster models. \emph{Statistics and Computing}, \bold{28},
 1169-1186.
 
 D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
-Functions for Bayesian Clustering, in preparation.
+Functions for Bayesian Clustering, <arXiv:2105.04451>.
 }
 \seealso{
 \code{\link{psm}}, \code{\link{salso}}, \code{\link{dlso}}

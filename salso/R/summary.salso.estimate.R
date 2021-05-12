@@ -25,6 +25,7 @@
 #'   each cluster, and the number of clusters.
 #'
 #' @importFrom utils combn
+#' @importFrom stats as.dist hclust
 #' @export
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.

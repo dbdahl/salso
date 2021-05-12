@@ -1,8 +1,12 @@
-0.2.21 (2021-XX-XX)  DEVELOPMENT VERSION
-  * 
+0.2.21 (2021-05-12)
+  * Added orderingMethod argument to summary.salso.estimate function.
+  * Added showIDs argument to plot function on a salso.summary.
+  * Added reference to arXiv paper.
+  * Simplified compiling of the source package.
+  * Bump all dependencies.
 
 0.2.20 (2021-03-23)
-  * Improved compiling the source package.
+  * Improved compiling of the source package.
 
 0.2.15 (2021-03-10)
   * Added "LinkingTo: cargo" in their DESCRIPTION to use the cargo package

@@ -72,7 +72,7 @@
 #' @references
 #'
 #' D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
-#' Functions for Bayesian Clustering, in preparation.
+#' Functions for Bayesian Clustering, <arXiv:2105.04451>.
 #'
 #' @importFrom stats uniroot
 #' @export

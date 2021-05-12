@@ -104,7 +104,7 @@ salso(iris.clusterings, binder(a=list(nClusters=3, upper=5)), nRuns=4, nCores=1)
 }
 \references{
 D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
-Functions for Bayesian Clustering, in preparation.
+Functions for Bayesian Clustering, <arXiv:2105.04451>.
 }
 \seealso{
 \code{\link{partition.loss}}, \code{\link{psm}},
