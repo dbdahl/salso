@@ -1,4 +1,4 @@
-0.2.21 (2021-05-12)
+0.2.22 (2021-05-12)
   * Added orderingMethod argument to summary.salso.estimate function.
   * Added showIDs argument to plot function on a salso.summary.
   * Added reference to arXiv paper.

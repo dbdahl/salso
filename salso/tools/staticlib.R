@@ -1,6 +1,6 @@
 target_args <- if ( .Platform$OS.type == "windows" ) c("--target", cargo::target()) else NULL
 
-if ( cargo::run("build", target_args, "--release", "--manifest-path", "rustlib/Cargo.toml", minimum_version="1.42") ) {
+if ( cargo::run("build", target_args, "--release", "--manifest-path", "rustlib/Cargo.toml", minimum_version="1.49") ) {
 
   if ( ! is.null(target_args) ) {
     args <- commandArgs(TRUE)
