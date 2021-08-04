@@ -307,8 +307,6 @@ NID <- function(partitions, x) {
   }
 }
 
-#' @useDynLib salso .expected_loss
-#'
 expected.loss <- function(partitions, x, loss) {
   if ( ! is.matrix(x) ) dim(x) <- c(1,length(x))
   if ( ! is.matrix(partitions) ) dim(partitions) <- c(1,length(partitions))

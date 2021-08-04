@@ -25,6 +25,7 @@
 #' @param minimum_version A character string representing the minimum version of
 #'   Rust that is needed. Or a path to the DESCRIPTION file, in which case the
 #'   value is found from the field: \code{SystemRequirements: Cargo (>= XXXX)}.
+#' @param verbose Should Cargo be run in non-quiet mode?
 #'
 #' @return A logical equally \code{TRUE} if and only if the minimum version is
 #'   available and the exit status of the command is zero (indicating success).
@@ -36,41 +37,44 @@
 #' @importFrom utils packageVersion
 #'
 #' @examples
-#' run(minimum_version="1.51")
+#' run(minimum_version="1.53")
 #'
-run <- function(..., minimum_version=file.path("..","DESCRIPTION")) {
+run <- function(..., minimum_version=file.path("..","DESCRIPTION"), verbose=TRUE) {
+  cat <- function(..., force=FALSE) {
+    invisible(if ( isTRUE(verbose) || isTRUE(force) ) base::cat(...) else NULL)
+  }
   if ( Sys.getenv("R_CARGO_FORCE_FAIL") == "TRUE" ) {
-    cat("Cargo failed because of R_CARGO_FORCE_FAIL environment variable.\n")
+    cat("Cargo failed because of R_CARGO_FORCE_FAIL environment variable.\n", force=TRUE)
     return(FALSE)
   }
   n <- function(x) normalizePath(x, mustWork=FALSE)
   cargo_cmd <- find_cmd("cargo")
   if ( is.null(cargo_cmd) ) {
-    cat("Cargo is not found. Please see the package's INSTALL instructions.\n")
+    cat("Cargo is not found. Please see the package's INSTALL instructions.\n", force=TRUE)
     return(FALSE)
   }
   cargo_cmd <- n(cargo_cmd)
   cat(sprintf("Cargo executable: %s\n",cargo_cmd))
   output <- suppressWarnings(system2(cargo_cmd, "--version", stdout=TRUE))
   if ( ! is.null(attr(output,"status")) ) {
-    cat("Cargo is installed, but broken. Please see the package's INSTALL instructions.\n")
+    cat("Cargo is installed, but broken. Please see the package's INSTALL instructions.\n", force=TRUE)
     return(FALSE)
   }
   if ( file.exists(minimum_version) ) minimum_version <- msrv(minimum_version)
   version <- tryCatch({
     version <- strsplit(output," ",fixed=TRUE)[[1]][2]
     if ( is.na(version) ) {
-      cat(sprintf("Problem parsing Cargo version string: '%s'. Please see the package's INSTALL instructions.\n",paste(output,collapse=",")))
+      cat(sprintf("Problem parsing Cargo version string: '%s'. Please see the package's INSTALL instructions.\n",paste(output,collapse=",")), force=TRUE)
       return(FALSE)
     }
     if ( utils::compareVersion(version, minimum_version) < 0 ) {
-      cat(sprintf("Cargo version '%s' is installed, but '%s' is needed. Please see the package's INSTALL instructions.\n",version,minimum_version))
+      cat(sprintf("Cargo version '%s' is installed, but '%s' is needed. Please see the package's INSTALL instructions.\n",version,minimum_version), force=TRUE)
       return(FALSE)
     }
     version
   }, warning=function(e) e, error=function(e) e)
   if ( inherits(version,"warning") || inherits(version,"error") ) {
-    cat(sprintf("Problem parsing Cargo version string '%s' and comparing it against '%s'. Please see the package's INSTALL instructions.\n",paste(output,collapse=","),minimum_version))
+    cat(sprintf("Problem parsing Cargo version string '%s' and comparing it against '%s'. Please see the package's INSTALL instructions.\n",paste(output,collapse=","),minimum_version), force=TRUE)
     return(FALSE)
   }
   cat(sprintf("Cargo version: %s\n",version))
@@ -89,7 +93,7 @@ run <- function(..., minimum_version=file.path("..","DESCRIPTION")) {
   } else if ( Sys.getenv("RUSTC","<unset>") == "<unset>" ) {
     rustc_cmd <- find_cmd("rustc")
     if ( is.null(rustc_cmd) ) {
-      cat("The Rust compiler (rustc) is not found. Please see the package's INSTALL instructions.\n")
+      cat("The Rust compiler (rustc) is not found. Please see the package's INSTALL instructions.\n", force=TRUE)
       return(FALSE)
     }
     env <- c(env, RUSTC=n(rustc_cmd))
@@ -104,12 +108,12 @@ run <- function(..., minimum_version=file.path("..","DESCRIPTION")) {
   status <- tryCatch(system3(command=cargo_cmd, args=args, env=env),
                      warning=function(e) e, error=function(e) e)
   if ( status != 0 || inherits(status,"warning") || inherits(status,"error") ) {
-    cat(sprintf("There was a problem in running Cargo. Please see the package's INSTALL instructions.\n"))
+    cat("There was a problem in running Cargo. See the instructions on installing it.\n", force=TRUE)
     FALSE
   } else TRUE
 }
 
-#' Determine Rust Target
+#' Determine the Rust Build Target
 #'
 #' This function tries to determine the appropriate Rust target for this
 #' instance of R.

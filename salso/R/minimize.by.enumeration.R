@@ -1,5 +1,3 @@
-#' @useDynLib salso .minimize_by_enumeration
-#'
 minimize.by.enumeration <- function(x, loss="VI") {
   FORCE_INEFFICIENT <- if ( is.character(loss) && grepl("^__", loss) ) {
     loss <- gsub("^__","",loss)

@@ -1,3 +1,7 @@
+0.2.23 (2021-08-04)
+  * Port to use cargo/roxido package.
+  * Bump all dependencies.
+
 0.2.22 (2021-05-12)
   * Added orderingMethod argument to summary.salso.estimate function.
   * Added showIDs argument to plot function on a salso.summary.

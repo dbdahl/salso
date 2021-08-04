@@ -9,7 +9,6 @@
 #'   logarithm.
 #'
 #' @export
-#' @useDynLib salso .bell
 #' @rdname bell
 #' @examples
 #' bell(12)
@@ -21,7 +20,6 @@ bell <- function(nItems) {
 }
 
 #' @export
-#' @useDynLib salso .lbell
 #' @rdname bell
 #'
 lbell <- function(nItems) {

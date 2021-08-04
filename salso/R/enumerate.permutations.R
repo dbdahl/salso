@@ -8,7 +8,6 @@
 #' @return A matrix of integers, where each row is a permutation.
 #'
 #' @export
-#' @useDynLib salso .enumerate_partitions
 #' @examples
 #' enumerate.permutations(5)
 #'

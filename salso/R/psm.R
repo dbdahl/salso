@@ -16,7 +16,6 @@
 #'   subset (i.e., cluster).
 #'
 #' @export
-#' @useDynLib salso .psm
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #'

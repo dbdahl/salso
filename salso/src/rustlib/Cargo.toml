@@ -1,13 +1,17 @@
 [package]
 name = "rustlib"
 version = "0.1.0"
-authors = ["David B. Dahl <dahl@stat.byu.edu>"]
 edition = "2018"
 
 [lib]
 crate-type = ["staticlib"]
 
 [dependencies]
+rand = "0.8.4"
+rand_pcg = "0.3.1"
+num-traits = "0.2.14"
+roxido = { path="roxido" }
+
 dahl-partition = "0.5.3"
 # dahl-partition = { git="https://dahl-git.byu.edu/dahl/rust-dahl-partition.git" }
 # dahl-partition = { path="/home/dahl/docs/devel/rust-dahl-partition" }
@@ -15,7 +19,7 @@ dahl-partition = "0.5.3"
 dahl-bellnumber = "0.1.1"
 # dahl-bellnumber = { path="/home/dahl/docs/devel/rust-dahl-bellnumber" }
 
-dahl-salso = "0.5.6"
+dahl-salso = "0.6.0"
 # dahl-salso = { git="https://dahl-git.byu.edu/dahl/rust-dahl-salso.git" }
 # dahl-salso = { path="/home/dahl/docs/devel/rust-dahl-salso" }
 
