@@ -44,7 +44,7 @@ fn psm(x: Robj, nCores: Robj) -> Robj {
 }
 
 #[roxido]
-fn minimize_by_salso(unnamed1: Robj, unnamed2: Robj, unnamed3: Robj, unnamed4: Robj, maxNClusters: Robj, nRunsX: Robj, seconds: Robj, maxScans: Robj, maxZealousAttempts: Robj, probSequentialAllocation: Robj, probSingletonsInitialization: Robj, nCores: Robj, seed: Robj) -> Robj {
+fn minimize_by_salso(unnamed1: Robj, unnamed2: Robj, unnamed3: Robj, unnamed4: Robj, maxNClusters: Robj, nRunsX: Robj, seconds: Robj, maxScans: Robj, maxZealousAttempts: Robj, probSequentialAllocation: Robj, probSingletonsInitialization: Robj, nCores: Robj) -> Robj {
     Robj::nil()
 }
 */
