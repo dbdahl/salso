@@ -14,38 +14,38 @@ mod registration;
 use roxido::*;
 
 #[roxido]
-fn bell(nItems: Robj) -> Robj {
-    Robj::nil()
+fn bell(nItems: Rval) -> Rval {
+    Rval::nil()
 }
 
 #[roxido]
-fn enumerate_partitions(nItems: Robj) -> Robj {
-    Robj::nil()
+fn enumerate_partitions(nItems: Rval) -> Rval {
+    Rval::nil()
 }
 
 #[roxido]
-fn expected_loss(partitions: Robj, unnamed1: Robj, unnamed2: Robj, unnamed3: Robj, unnamed4: Robj) -> Robj {
-    Robj::nil()
+fn expected_loss(partitions: Rval, unnamed1: Rval, unnamed2: Rval, unnamed3: Rval, unnamed4: Rval) -> Rval {
+    Rval::nil()
 }
 
 #[roxido]
-fn lbell(nItems: Robj) -> Robj {
-    Robj::nil()
+fn lbell(nItems: Rval) -> Rval {
+    Rval::nil()
 }
 
 #[roxido]
-fn minimize_by_enumeration(unnamed1: Robj, unnamed2: Robj, unnamed3: Robj) -> Robj {
-    Robj::nil()
+fn minimize_by_enumeration(unnamed1: Rval, unnamed2: Rval, unnamed3: Rval) -> Rval {
+    Rval::nil()
 }
 
 #[roxido]
-fn psm(x: Robj, nCores: Robj) -> Robj {
-    Robj::nil()
+fn psm(x: Rval, nCores: Rval) -> Rval {
+    Rval::nil()
 }
 
 #[roxido]
-fn minimize_by_salso(unnamed1: Robj, unnamed2: Robj, unnamed3: Robj, unnamed4: Robj, maxNClusters: Robj, nRunsX: Robj, seconds: Robj, maxScans: Robj, maxZealousAttempts: Robj, probSequentialAllocation: Robj, probSingletonsInitialization: Robj, nCores: Robj) -> Robj {
-    Robj::nil()
+fn minimize_by_salso(unnamed1: Rval, unnamed2: Rval, unnamed3: Rval, unnamed4: Rval, maxNClusters: Rval, nRunsX: Rval, seconds: Rval, maxScans: Rval, maxZealousAttempts: Rval, probSequentialAllocation: Rval, probSingletonsInitialization: Rval, nCores: Rval) -> Rval {
+    Rval::nil()
 }
 */
 

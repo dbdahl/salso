@@ -7,26 +7,26 @@ use roxido::*;
 use std::convert::TryFrom;
 
 #[roxido]
-fn bell(n_items: Robj) -> Robj {
+fn bell(n_items: Rval) -> Rval {
     let x = match dahl_bellnumber::bell(n_items.as_usize()).to_f64() {
         Some(x) => x,
         None => f64::INFINITY,
     };
-    Robj::new(x, &mut pc)
+    Rval::new(x, &mut pc)
 }
 
 #[roxido]
-fn lbell(n_items: Robj) -> Robj {
+fn lbell(n_items: Rval) -> Rval {
     let x = dahl_bellnumber::lbell(n_items.as_usize());
-    Robj::new(x, &mut pc)
+    Rval::new(x, &mut pc)
 }
 
 #[roxido]
-fn enumerate_partitions(n_items: Robj) -> Robj {
+fn enumerate_partitions(n_items: Rval) -> Rval {
     let n_items = n_items.as_usize();
     let bell_number = dahl_bellnumber::bell(n_items);
     let n_partitions = usize::try_from(bell_number).unwrap();
-    let (partitions, slice) = Robj::new_matrix_integer(n_partitions, n_items, &mut pc);
+    let (partitions, slice) = Rval::new_matrix_integer(n_partitions, n_items, &mut pc);
     let mut phv =
         dahl_partition::PartitionsHolderBorrower::from_slice(slice, n_partitions, n_items, true);
     for mut p in dahl_partition::Partition::iter(n_items) {
@@ -37,13 +37,13 @@ fn enumerate_partitions(n_items: Robj) -> Robj {
 }
 
 #[roxido]
-fn expected_loss(partitions: Robj, draws: Robj, psm: Robj, loss: Robj, a: Robj) -> Robj {
+fn expected_loss(partitions: Rval, draws: Rval, psm: Rval, loss: Rval, a: Rval) -> Rval {
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
     let (_, partitions_slice) = partitions.coerce_integer(&mut pc).unwrap();
     let (_, draws_slice) = draws.coerce_integer(&mut pc).unwrap();
     let (_, psm_slice) = psm.coerce_double(&mut pc).unwrap();
-    let (results, results_slice) = Robj::new_vector_double(n_partitions, &mut pc);
+    let (results, results_slice) = Rval::new_vector_double(n_partitions, &mut pc);
     let loss = loss.as_i32();
     let a = a.as_f64();
     let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
@@ -184,12 +184,12 @@ fn expected_loss(partitions: Robj, draws: Robj, psm: Robj, loss: Robj, a: Robj) 
 }
 
 #[roxido]
-fn psm(partitions: Robj, n_cores: Robj) -> Robj {
+fn psm(partitions: Rval, n_cores: Rval) -> Rval {
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
     let (_, partitions_slice) = partitions.coerce_integer(&mut pc).unwrap();
     let n_cores = n_cores.as_usize() as u32;
-    let (psm, psm_slice) = Robj::new_matrix_double(n_items, n_items, &mut pc);
+    let (psm, psm_slice) = Rval::new_matrix_double(n_items, n_items, &mut pc);
     let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
         partitions_slice,
         n_partitions,
@@ -202,7 +202,7 @@ fn psm(partitions: Robj, n_cores: Robj) -> Robj {
 }
 
 #[roxido]
-fn minimize_by_enumeration(psm: Robj, loss: Robj, a: Robj) -> Robj {
+fn minimize_by_enumeration(psm: Rval, loss: Rval, a: Rval) -> Rval {
     let loss = loss.as_i32();
     let a = a.as_f64();
     let n_items = psm.nrow();
@@ -223,7 +223,7 @@ fn minimize_by_enumeration(psm: Robj, loss: Robj, a: Robj) -> Robj {
         None => panic!("Unsupported loss method: code = {}", loss),
     };
     let minimizer = dahl_salso::optimize::minimize_by_enumeration(f, &psm);
-    let (results, results_slice) = Robj::new_vector_integer(n_items, &mut pc);
+    let (results, results_slice) = Rval::new_vector_integer(n_items, &mut pc);
     for (i, v) in minimizer.iter().enumerate() {
         results_slice[i] = i32::try_from(*v + 1).unwrap();
     }
@@ -232,19 +232,19 @@ fn minimize_by_enumeration(psm: Robj, loss: Robj, a: Robj) -> Robj {
 
 #[roxido]
 fn minimize_by_salso(
-    draws: Robj,
-    psm: Robj,
-    loss: Robj,
-    a: Robj,
-    max_n_clusters: Robj,
-    n_runs: Robj,
-    seconds: Robj,
-    max_scans: Robj,
-    max_zealous_attempts: Robj,
-    prob_sequential_allocation: Robj,
-    prob_singletons_initialization: Robj,
-    n_cores: Robj,
-) -> Robj {
+    draws: Rval,
+    psm: Rval,
+    loss: Rval,
+    a: Rval,
+    max_n_clusters: Rval,
+    n_runs: Rval,
+    seconds: Rval,
+    max_scans: Rval,
+    max_zealous_attempts: Rval,
+    prob_sequential_allocation: Rval,
+    prob_singletons_initialization: Rval,
+    n_cores: Rval,
+) -> Rval {
     let n_items;
     let draws2;
     let psm2;
@@ -326,8 +326,8 @@ fn minimize_by_salso(
         n_cores,
         &mut rng,
     );
-    let info_attr = Robj::new_list(10, &mut pc);
-    info_attr.names_gets(Robj::new(
+    let info_attr = Rval::new_list(10, &mut pc);
+    info_attr.names_gets(Rval::new(
         [
             "loss",
             "a",
@@ -345,38 +345,38 @@ fn minimize_by_salso(
     info_attr.set_list_element(1, a);
     info_attr.set_list_element(
         2,
-        Robj::new(i32::try_from(results.max_size).unwrap(), &mut pc),
+        Rval::new(i32::try_from(results.max_size).unwrap(), &mut pc),
     );
-    info_attr.set_list_element(3, Robj::new(results.expected_loss, &mut pc));
+    info_attr.set_list_element(3, Rval::new(results.expected_loss, &mut pc));
     info_attr.set_list_element(
         4,
-        Robj::new(
+        Rval::new(
             i32::try_from(results.initialization_method.to_code()).unwrap(),
             &mut pc,
         ),
     );
     info_attr.set_list_element(
         5,
-        Robj::new(i32::try_from(results.n_scans).unwrap(), &mut pc),
+        Rval::new(i32::try_from(results.n_scans).unwrap(), &mut pc),
     );
     info_attr.set_list_element(
         6,
-        Robj::new(i32::try_from(results.n_zealous_accepts).unwrap(), &mut pc),
+        Rval::new(i32::try_from(results.n_zealous_accepts).unwrap(), &mut pc),
     );
     info_attr.set_list_element(
         7,
-        Robj::new(i32::try_from(results.n_zealous_attempts).unwrap(), &mut pc),
+        Rval::new(i32::try_from(results.n_zealous_attempts).unwrap(), &mut pc),
     );
     info_attr.set_list_element(
         8,
-        Robj::new(i32::try_from(results.n_runs).unwrap(), &mut pc),
+        Rval::new(i32::try_from(results.n_runs).unwrap(), &mut pc),
     );
-    info_attr.set_list_element(9, Robj::new(results.seconds, &mut pc));
-    let (r, r_slice) = Robj::new_vector_integer(n_items, &mut pc);
+    info_attr.set_list_element(9, Rval::new(results.seconds, &mut pc));
+    let (r, r_slice) = Rval::new_vector_integer(n_items, &mut pc);
     for (v, rr) in results.clustering.iter().zip(r_slice.iter_mut()) {
         *rr = i32::try_from(*v + 1).unwrap();
     }
-    r.class_gets(Robj::new("salso.estimate", &mut pc));
+    r.class_gets(Rval::new("salso.estimate", &mut pc));
     r.set_attribute("info", info_attr, &mut pc);
     r
 }
