@@ -113,4 +113,5 @@ extern "C" fn R_init_salso_librust(info: *mut rbindings::DllInfo) {
         rbindings::R_useDynamicSymbols(info, 1);
         rbindings::R_forceSymbols(info, 1);
     }
+    roxido::r::set_custom_panic_hook();
 }

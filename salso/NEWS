@@ -1,5 +1,6 @@
-0.2.23 (2021-08-04)
-  * Port to use cargo/roxido package.
+0.2.23 (2021-08-12)
+  * Port to use the cargo framework, dropping the dependency on the cargo
+    package.
   * Bump all dependencies.
 
 0.2.22 (2021-05-12)
