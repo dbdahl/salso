@@ -8,5 +8,4 @@ License: MIT + file LICENSE | Apache License 2.0
 Depends: R (>= 4.0.0)
 SystemRequirements: Cargo (>= 1.51.0) for installation from sources: see INSTALL file
 Encoding: UTF-8
-LazyData: TRUE
 RoxygenNote: 7.1.1

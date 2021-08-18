@@ -2,9 +2,9 @@
 #'
 #' This function finds and runs Cargo (Rust's package manager) with the
 #' \code{...} arguments passed as command line arguments but, by default, runs
-#' according to CRAN policies.  First, it does not write to the user's file
+#' according to CRAN policies. First, it does not write to the user's file
 #' system (e.g., \code{~/.cargo}). Second, it only uses at most two parallel
-#' jobs when building (i.e., compiling).
+#' jobs.
 #'
 #' To enable caching, set the \code{R_CARGO_SAVE_CACHE} environment variable to
 #' \code{TRUE}. Then, if defined, the \code{R_CARGO_HOME} environment variable
@@ -27,9 +27,9 @@
 #'   value is found from the field: \code{SystemRequirements: Cargo (>= XXXX)}.
 #' @param verbose Should Cargo be run in non-quiet mode?
 #'
-#' @return A logical equally \code{TRUE} if and only if the minimum version is
+#' @return A logical equaling \code{TRUE} if and only if the minimum version is
 #'   available and the exit status of the command is zero (indicating success).
-#'   The function should never throw a warning or error.
+#'   The function is designed to never throw a warning or error.
 #'
 #' @seealso [base::Sys.setenv()]
 #'
@@ -37,7 +37,7 @@
 #' @importFrom utils packageVersion
 #'
 #' @examples
-#' run(minimum_version="1.53")
+#' run(minimum_version="1.54")
 #'
 run <- function(..., minimum_version=file.path("..","DESCRIPTION"), verbose=TRUE) {
   cat <- function(..., force=FALSE) {
@@ -50,31 +50,31 @@ run <- function(..., minimum_version=file.path("..","DESCRIPTION"), verbose=TRUE
   n <- function(x) normalizePath(x, mustWork=FALSE)
   cargo_cmd <- find_cmd("cargo")
   if ( is.null(cargo_cmd) ) {
-    cat("Cargo is not found. Please see the package's INSTALL instructions.\n", force=TRUE)
+    cat("Cargo is not found. Please see the installation instructions.\n", force=TRUE)
     return(FALSE)
   }
   cargo_cmd <- n(cargo_cmd)
   cat(sprintf("Cargo executable: %s\n",cargo_cmd))
   output <- suppressWarnings(system2(cargo_cmd, "--version", stdout=TRUE))
   if ( ! is.null(attr(output,"status")) ) {
-    cat("Cargo is installed, but broken. Please see the package's INSTALL instructions.\n", force=TRUE)
+    cat("Cargo is installed, but broken. Please see the installation instructions.\n", force=TRUE)
     return(FALSE)
   }
   if ( file.exists(minimum_version) ) minimum_version <- msrv(minimum_version)
   version <- tryCatch({
     version <- strsplit(output," ",fixed=TRUE)[[1]][2]
     if ( is.na(version) ) {
-      cat(sprintf("Problem parsing Cargo version string: '%s'. Please see the package's INSTALL instructions.\n",paste(output,collapse=",")), force=TRUE)
+      cat(sprintf("Problem parsing Cargo version string: '%s'. Please see the installation instructions.\n",paste(output,collapse=",")), force=TRUE)
       return(FALSE)
     }
     if ( utils::compareVersion(version, minimum_version) < 0 ) {
-      cat(sprintf("Cargo version '%s' is installed, but '%s' is needed. Please see the package's INSTALL instructions.\n",version,minimum_version), force=TRUE)
+      cat(sprintf("Cargo version '%s' is installed, but '%s' is needed. Please see the installation instructions.\n",version,minimum_version), force=TRUE)
       return(FALSE)
     }
     version
   }, warning=function(e) e, error=function(e) e)
   if ( inherits(version,"warning") || inherits(version,"error") ) {
-    cat(sprintf("Problem parsing Cargo version string '%s' and comparing it against '%s'. Please see the package's INSTALL instructions.\n",paste(output,collapse=","),minimum_version), force=TRUE)
+    cat(sprintf("Problem parsing Cargo version string '%s' and comparing it against '%s'. Please see the installation instructions.\n",paste(output,collapse=","),minimum_version), force=TRUE)
     return(FALSE)
   }
   cat(sprintf("Cargo version: %s\n",version))
@@ -93,7 +93,7 @@ run <- function(..., minimum_version=file.path("..","DESCRIPTION"), verbose=TRUE
   } else if ( Sys.getenv("RUSTC","<unset>") == "<unset>" ) {
     rustc_cmd <- find_cmd("rustc")
     if ( is.null(rustc_cmd) ) {
-      cat("The Rust compiler (rustc) is not found. Please see the package's INSTALL instructions.\n", force=TRUE)
+      cat("The Rust compiler (rustc) is not found. Please see the installation instructions.\n", force=TRUE)
       return(FALSE)
     }
     env <- c(env, RUSTC=n(rustc_cmd))
@@ -108,7 +108,7 @@ run <- function(..., minimum_version=file.path("..","DESCRIPTION"), verbose=TRUE
   status <- tryCatch(system3(command=cargo_cmd, args=args, env=env),
                      warning=function(e) e, error=function(e) e)
   if ( status != 0 || inherits(status,"warning") || inherits(status,"error") ) {
-    cat("There was a problem in running Cargo. See the instructions on installing it.\n", force=TRUE)
+    cat("There was a problem in running Cargo. Please see the installation instructions.\n", force=TRUE)
     FALSE
   } else TRUE
 }
@@ -154,8 +154,7 @@ target <- function() {
   result
 }
 
-
-## Private
+## Available to users of the cargo framework.
 
 download_staticlib <- function(..., description_file=file.path("..","DESCRIPTION")) {
   templates <- list(...)
@@ -176,6 +175,8 @@ download_staticlib <- function(..., description_file=file.path("..","DESCRIPTION
   utils::untar(staticlib_filename)
   unlink(staticlib_filename)
 }
+
+## Private
 
 install <- function(force=FALSE) {
   windows <- .Platform$OS.type=="windows"
