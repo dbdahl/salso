@@ -1,3 +1,7 @@
+0.2.24 (202X-XX-XX)
+  * Don't use diagonal elements when computing the meanPSM in the summary
+    function.
+
 0.2.23 (2021-08-12)
   * Port to use the cargo framework, dropping the dependency on the cargo
     package.
