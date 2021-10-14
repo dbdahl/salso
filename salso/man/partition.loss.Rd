@@ -179,6 +179,7 @@ functions. Note that:
 }
 \examples{
 # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
+data(iris.clusterings)
 partitions <- iris.clusterings[1:5,]
 
 all.equal(partition.loss(partitions, partitions, loss=binder(a=2)),

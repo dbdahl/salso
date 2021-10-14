@@ -42,6 +42,7 @@ of several partition estimation criteria. For details on these criteria, see
 \code{\link{partition.loss}}.
 }
 \examples{
+data(iris.clusterings)
 dlso(iris.clusterings, loss=VI())
 dlso(iris.clusterings, loss=binder())
 

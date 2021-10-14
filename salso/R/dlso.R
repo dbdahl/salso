@@ -25,6 +25,7 @@
 #
 #' @export
 #' @examples
+#' data(iris.clusterings)
 #' dlso(iris.clusterings, loss=VI())
 #' dlso(iris.clusterings, loss=binder())
 #'

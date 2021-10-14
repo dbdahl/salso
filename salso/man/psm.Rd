@@ -33,7 +33,7 @@ adjacency matrices of the provided samples.
 }
 \examples{
 # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
-
+data(iris.clusterings)
 partition <- iris.clusterings[1,]
 psm(partition, nCores=1)
 

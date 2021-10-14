@@ -79,7 +79,7 @@
 #'
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
-#'
+#' data(iris.clusterings)
 #' draws <- iris.clusterings
 #' salso(draws, loss=VI(), nRuns=1, nCores=1)
 #' salso(draws, loss=VI(a=0.7), nRuns=1, nCores=1)

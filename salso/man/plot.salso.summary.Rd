@@ -49,6 +49,7 @@ increase in the expectation of the posterior loss is minimized.
 }
 \examples{
 # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
+data(iris.clusterings)
 draws <- iris.clusterings
 est <- salso(draws, nCores=1)
 summ <- summary(est)
