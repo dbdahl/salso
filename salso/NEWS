@@ -1,4 +1,5 @@
-0.2.24 (202X-XX-XX)
+0.2.25 (202X-XX-XX)
+  * Bug fix regarding unequal weights in Binder and GVI losses.
   * Don't use diagonal elements when computing the meanPSM in the summary
     function.
 

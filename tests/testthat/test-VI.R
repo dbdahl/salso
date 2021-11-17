@@ -11,10 +11,6 @@ test_that("Computation of variation of information loss using existing packages"
 
 test_that("Computations with unequal weights using by-hand calculations", {
   byhand <- function(p1,p2,a,type=c("binder","binder2","VI")) {
-    psm1 <- salso::psm(p1)
-    u1 <- psm1[upper.tri(psm1)]
-    psm2 <- salso::psm(p2)
-    u2 <- psm2[upper.tri(psm2)]
     tab <- table(p1,p2)
     n <- length(p1)
     if ( type == "VI" ) {
@@ -23,6 +19,10 @@ test_that("Computations with unequal weights using by-hand calculations", {
     } else if ( type == "binder" ) {
       a * sum((apply(tab,1,sum)/n)^2) + sum((apply(tab,2,sum)/n)^2) - (a+1)*sum((tab/n)^2)
     } else if ( type == "binder2" ) {
+      psm1 <- salso::psm(p1)
+      u1 <- psm1[upper.tri(psm1)]
+      psm2 <- salso::psm(p2)
+      u2 <- psm2[upper.tri(psm2)]
       2 * ( a * sum(u2[u1==1] != 1) + sum(u1[u2==1] != 1) ) / n^2
     } else stop("Unrecognized loss.")
   }
