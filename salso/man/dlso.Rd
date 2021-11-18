@@ -4,14 +4,13 @@
 \alias{dlso}
 \title{Latent Structure Optimization Based on Draws}
 \usage{
-dlso(partitions, loss = VI(), x = NULL)
+dlso(truth, loss = VI(), estimate = NULL)
 }
 \arguments{
-\item{partitions}{An integer matrix of cluster labels with \eqn{n} columns,
-where each row is a partition of \eqn{n} items given as cluster labels. Two
-items are in the same subset (i.e., cluster) if their labels are equal. Or,
-a vector of length \eqn{n} which will be converted to a \eqn{1}-by-\eqn{n}
-matrix.}
+\item{truth}{An integer vector of cluster labels for \eqn{n} items
+representing the true clustering. Two items are in the same cluster if
+their labels are equal. Or, a matrix of \eqn{n} columns where each row is a
+clustering.}
 
 \item{loss}{The loss function to use, as indicated by \code{"binder"},
 \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
@@ -23,10 +22,9 @@ symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
 probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
 cluster) of a partition (i.e., clustering).}
 
-\item{x}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
-represents a clustering of \eqn{n} items using cluster labels. For the
-\eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
-\code{x[b,i] == x[b,j]}.}
+\item{estimate}{An integer vector of cluster labels having the same length as
+\code{truth} representing the estimated clustering. Or, a matrix of
+\eqn{}n] columns where each row is a clustering.}
 }
 \value{
 An integer vector giving the estimated partition, encoded using
@@ -47,7 +45,7 @@ dlso(iris.clusterings, loss=VI())
 dlso(iris.clusterings, loss=binder())
 
 # Compute expected loss using all draws, but pick the best among the first 10.
-dlso(iris.clusterings[1:10,], loss=VI(), x=iris.clusterings)
+dlso(iris.clusterings, loss=VI(), estimate=iris.clusterings[1:10,])
 
 }
 \references{

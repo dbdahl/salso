@@ -57,7 +57,7 @@ summary.salso.estimate <- function(object, alternative, orderingMethod=1, ...) {
   score <- sapply(one2n, function(i) {
     subset <- ( estimate == estimate[i] ) & ( one2n != i )
     xi <- if ( isPSM ) x[subset, subset, drop=FALSE] else x[, subset, drop=FALSE]
-    partition.loss(rep(1,ncol(xi)), xi, loss)
+    partition.loss(xi, rep(1,ncol(xi)), loss)
   })
   score[is.na(score)] <- 0
   # meanPS

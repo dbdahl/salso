@@ -10,7 +10,7 @@ minimize.by.enumeration <- function(x, loss="VI") {
   } else {
     cat("The current implementation is not parallelized nor memory efficient.\n")
     all <- enumerate.partitions(ncol(x))
-    y <- all[which.min(partition.loss(all, x, loss)),]
+    y <- all[which.min(partition.loss(x, all, loss)),]
     names(y) <- if ( !is.null(z$draws) ) colnames(z$draws) else colnames(z$psm)
   }
   y

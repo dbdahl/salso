@@ -30,13 +30,13 @@
 #' dlso(iris.clusterings, loss=binder())
 #'
 #' # Compute expected loss using all draws, but pick the best among the first 10.
-#' dlso(iris.clusterings[1:10,], loss=VI(), x=iris.clusterings)
+#' dlso(iris.clusterings, loss=VI(), estimate=iris.clusterings[1:10,])
 #'
-dlso <- function(partitions, loss=VI(), x=NULL) {
-  if ( is.null(x) ) x <- partitions
-  expectedLoss <- partition.loss(partitions, x, loss)
+dlso <- function(truth, loss=VI(), estimate=NULL) {
+  if ( is.null(estimate) ) estimate <- truth
+  expectedLoss <- partition.loss(truth, estimate, loss)
   index <- which.min(expectedLoss)
-  estimate <-  partitions[index,]
+  estimate <- truth[index,]
   attr(estimate,"info") <- {
     if ( inherits(loss, "salso.loss") ) {
       if ( loss$loss == "binder" ) a <- loss$a
@@ -45,7 +45,7 @@ dlso <- function(partitions, loss=VI(), x=NULL) {
     attr <- list(loss=loss, expectedLoss=expectedLoss[index])
     as.data.frame(attr, row.names="")
   }
-  attr(estimate,"draws") <- x
+  attr(estimate,"draws") <- truth
   attr(estimate,"psm") <- NULL
   class(estimate) <- "salso.estimate"
   estimate

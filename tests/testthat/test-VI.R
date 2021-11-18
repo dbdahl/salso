@@ -9,59 +9,59 @@ test_that("Computation of variation of information loss using existing packages"
   expect_true(isTRUE(all.equal(s,o2)))
 })
 
-byhand <- function(p1,p2,a,type=c("binder","binder2","VI")) {
-  tab <- table(p1,p2)
-  n <- length(p1)
+byhand <- function(truth,estimate,a,b,type=c("binder","binder2","VI")) {
+  tab <- table(truth,estimate)
+  n <- length(truth)
   if ( type == "VI" ) {
     plogp <- function(p) ifelse(p==0,rep(0,length(p)),p*log2(p))
-    a * sum(plogp(apply(tab,1,sum)/n)) + sum(plogp(apply(tab,2,sum)/n)) - (a+1)*sum(plogp(tab/n))
+    a * sum(plogp(apply(tab,1,sum)/n)) + b * sum(plogp(apply(tab,2,sum)/n)) - (a+b)*sum(plogp(tab/n))
   } else if ( type == "binder" ) {
-    a * sum((apply(tab,1,sum)/n)^2) + sum((apply(tab,2,sum)/n)^2) - (a+1)*sum((tab/n)^2)
+    a * sum((apply(tab,1,sum)/n)^2) + b * sum((apply(tab,2,sum)/n)^2) - (a+b)*sum((tab/n)^2)
   } else if ( type == "binder2" ) {
-    psm1 <- salso::psm(p1)
+    psm1 <- salso::psm(truth)
     u1 <- psm1[upper.tri(psm1)]
-    psm2 <- salso::psm(p2)
+    psm2 <- salso::psm(estimate)
     u2 <- psm2[upper.tri(psm2)]
-    2 * ( a * sum(u2[u1==1] != 1) + sum(u1[u2==1] != 1) ) / n^2
+    2 * ( a * sum(u2[u1==1] != 1) + b * sum(u1[u2==1] != 1) ) / n^2
   } else stop("Unrecognized loss.")
 }
 
 test_that("Computations with unequal weights using by-hand calculations", {
   # VI
   s <- salso::VI(p1, p2, a=0.5)
-  o1 <- byhand(p1, p2, a=0.5, "VI")
+  o1 <- byhand(p1, p2, a=1, b=0.5, "VI")
   expect_true(isTRUE(all.equal(s,o1)))
   s <- salso::VI(p1, p2, a=4)
-  o1 <- byhand(p1, p2, a=4, "VI")
+  o1 <- byhand(p1, p2, a=1, b=4, "VI")
   expect_true(isTRUE(all.equal(s,o1)))
   # binder
   s <- salso::binder(p1, p2, a=0.5)
-  o1 <- byhand(p1, p2, a=0.5, "binder")
+  o1 <- byhand(p1, p2, a=1, b=0.5, "binder")
   expect_true(isTRUE(all.equal(s,o1)))
   s <- salso::binder(p1, p2, a=4)
-  o1 <- byhand(p1, p2, a=4, "binder")
+  o1 <- byhand(p1, p2, a=1, b=4, "binder")
   expect_true(isTRUE(all.equal(s,o1)))
   # binder
   s <- salso::binder(p1, p2, a=0.5)
-  o1 <- byhand(p1, p2, a=0.5, "binder2")
+  o1 <- byhand(p1, p2, a=1, b=0.5, "binder2")
   expect_true(isTRUE(all.equal(s,o1)))
   s <- salso::binder(p1, p2, a=4)
-  o1 <- byhand(p1, p2, a=4, "binder2")
+  o1 <- byhand(p1, p2, a=1, b=4, "binder2")
   expect_true(isTRUE(all.equal(s,o1)))
 })
 
 test_that("Computation of expectation of variation of information loss", {
-  s1 <- salso::VI(subset, draws, a=1)
-  s2 <- salso::partition.loss(subset, draws, loss=salso::VI(a=1))
+  s1 <- salso::VI(draws, subset, a=1)
+  s2 <- salso::partition.loss(draws, subset, loss=salso::VI(a=1))
   o <- mcclust.ext::VI(subset, draws)
   expect_true(isTRUE(all.equal(s1,o)))
   expect_true(isTRUE(all.equal(s2,s1)))
-  s1 <- salso::VI(subset[1,], draws, a=4)
-  o1 <- mean(apply(draws, 1, function(draw) byhand(subset[1,], draw, 4, "VI")))
+  s1 <- salso::VI(draws, subset[1,], a=4)
+  o1 <- mean(apply(draws, 1, function(draw) byhand(draw, subset[1,], 1, 4, "VI")))
   expect_true(isTRUE(all.equal(s1,o1)))
-  s1 <- salso::binder(subset[1,], draws, a=4)
-  o1 <- mean(apply(draws, 1, function(draw) byhand(subset[1,], draw, 4, "binder")))
-  o2 <- mean(apply(draws, 1, function(draw) byhand(subset[1,], draw, 4, "binder2")))
+  s1 <- salso::binder(draws, subset[1,], a=4)
+  o1 <- mean(apply(draws, 1, function(draw) byhand(draw, subset[1,], 1, 4, "binder")))
+  o2 <- mean(apply(draws, 1, function(draw) byhand(draw, subset[1,], 1, 4, "binder2")))
   expect_true(isTRUE(all.equal(s1,o1)))
   expect_true(isTRUE(all.equal(s1,o2)))
 })

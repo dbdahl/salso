@@ -14,39 +14,37 @@
 \alias{NID}
 \title{Compute Partition Loss or the Expectation of Partition Loss}
 \usage{
-partition.loss(partitions, x, loss = VI())
+partition.loss(truth, estimate, loss = VI())
 
-binder(partitions, x, a = 1)
+binder(truth, estimate, a = 1)
 
-RI(partition1, partition2)
+RI(truth, estimate)
 
-omARI(partitions, x)
+omARI(truth, estimate)
 
-omARI.approx(partitions, x)
+omARI.approx(truth, estimate)
 
-ARI(partition1, partition2)
+ARI(truth, estimate)
 
-VI(partitions, x, a = 1)
+VI(truth, estimate, a = 1)
 
-VI.lb(partitions, x)
+VI.lb(truth, estimate)
 
-NVI(partitions, x)
+NVI(truth, estimate)
 
-ID(partitions, x)
+ID(truth, estimate)
 
-NID(partitions, x)
+NID(truth, estimate)
 }
 \arguments{
-\item{partitions}{An integer matrix of cluster labels with \eqn{n} columns,
-where each row is a partition of \eqn{n} items given as cluster labels. Two
-items are in the same subset (i.e., cluster) if their labels are equal. Or,
-a vector of length \eqn{n} which will be converted to a \eqn{1}-by-\eqn{n}
-matrix.}
+\item{truth}{An integer vector of cluster labels for \eqn{n} items
+representing the true clustering. Two items are in the same cluster if
+their labels are equal. Or, a matrix of \eqn{n} columns where each row is a
+clustering.}
 
-\item{x}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
-represents a clustering of \eqn{n} items using cluster labels. For the
-\eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
-\code{x[b,i] == x[b,j]}.}
+\item{estimate}{An integer vector of cluster labels having the same length as
+\code{truth} representing the estimated clustering. Or, a matrix of
+\eqn{}n] columns where each row is a clustering.}
 
 \item{loss}{The loss function to use, as indicated by \code{"binder"},
 \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
@@ -71,12 +69,6 @@ without modifying \code{maxSize} in the \code{\link{salso}} function. To
 increase the probability of hitting exactly the desired number of clusters,
 the \code{nRuns} in the \code{\link{salso}} function may need to be
 increased.}
-
-\item{partition1}{An integer vector of cluster labels for \eqn{n} items. Two
-items are in the same subset (i.e., cluster) if their labels are equal.}
-
-\item{partition2}{An integer vector of cluster labels having the same length
-as \code{partition1}.}
 }
 \value{
 A numeric vector.
@@ -173,7 +165,7 @@ and Rastelli and Friel (2018).}
 The functions \code{\link{RI}} and \code{\link{ARI}} are convenience
 functions. Note that:
 \itemize{
-\item \code{binder(p1, p2) = ( 1 - RI(p1, p2) )*(n-1)/n}
+\item \code{binder(p1, p2, a=1) = ( 1 - RI(p1, p2) )*(n-1)/n}
 \item \code{omARI(p1, p2) = 1 - ARI(p1, p2)}
 }
 }
@@ -189,12 +181,13 @@ all.equal(partition.loss(partitions, partitions, loss=omARI()),
 all.equal(partition.loss(partitions, partitions, loss=VI(a=0.8)),
           VI(partitions, partitions, a=0.8))
 
-p1 <- iris.clusterings[1,]
-p2 <- iris.clusterings[2,]
+truth <- iris.clusterings[1,]
+estimate <- iris.clusterings[2,]
 
-VI(p1, p2, a=1.0)
-all.equal(binder(p1, p2), ( 1 - RI(p1, p2) ) * (length(p1)-1) / length(p1))
-all.equal(omARI(p1, p2), 1 - ARI(p1, p2))
+VI(truth, estimate, a=1.0)
+n <- length(truth)
+all.equal(binder(truth, estimate), ( 1 - RI(truth, estimate) ) * (n-1) / n)
+all.equal(omARI(truth, estimate), 1 - ARI(truth, estimate))
 
 }
 \references{

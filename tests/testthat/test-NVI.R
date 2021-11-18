@@ -7,8 +7,8 @@ test_that("Computation of normalized variation of information loss", {
 })
 
 test_that("Computation of expectation of normalized variation of information loss", {
-  s1 <- salso::NVI(subset, draws)
-  s2 <- salso::partition.loss(subset, draws, loss="NVI")
+  s1 <- salso::NVI(draws, subset)
+  s2 <- salso::partition.loss(draws, subset, loss="NVI")
   o <- apply(subset, 1, function(x) mean(apply(draws, 1, function(y) aricode::NVI(x, y))))
   expect_true(isTRUE(all.equal(s1,o)))
   expect_true(isTRUE(all.equal(s2,s1)))

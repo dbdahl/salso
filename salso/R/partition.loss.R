@@ -90,23 +90,17 @@
 #' The functions \code{\link{RI}} and \code{\link{ARI}} are convenience
 #' functions. Note that:
 #' \itemize{
-#' \item \code{binder(p1, p2) = ( 1 - RI(p1, p2) )*(n-1)/n}
+#' \item \code{binder(p1, p2, a=1) = ( 1 - RI(p1, p2) )*(n-1)/n}
 #' \item \code{omARI(p1, p2) = 1 - ARI(p1, p2)}
 #' }
 #'
-#' @param partition1 An integer vector of cluster labels for \eqn{n} items. Two
-#'   items are in the same subset (i.e., cluster) if their labels are equal.
-#' @param partition2 An integer vector of cluster labels having the same length
-#'   as \code{partition1}.
-#' @param partitions An integer matrix of cluster labels with \eqn{n} columns,
-#'   where each row is a partition of \eqn{n} items given as cluster labels. Two
-#'   items are in the same subset (i.e., cluster) if their labels are equal. Or,
-#'   a vector of length \eqn{n} which will be converted to a \eqn{1}-by-\eqn{n}
-#'   matrix.
-#' @param x A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
-#'   represents a clustering of \eqn{n} items using cluster labels. For the
-#'   \eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
-#'   \code{x[b,i] == x[b,j]}.
+#' @param truth An integer vector of cluster labels for \eqn{n} items
+#'   representing the true clustering. Two items are in the same cluster if
+#'   their labels are equal. Or, a matrix of \eqn{n} columns where each row is a
+#'   clustering.
+#' @param estimate An integer vector of cluster labels having the same length as
+#'   \code{truth} representing the estimated clustering. Or, a matrix of
+#'   \eqn{}n] columns where each row is a clustering.
 #' @param loss The loss function to use, as indicated by \code{"binder"},
 #'   \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
 #'   the result of calling a function with these names. Also supported are
@@ -193,15 +187,16 @@
 #' all.equal(partition.loss(partitions, partitions, loss=VI(a=0.8)),
 #'           VI(partitions, partitions, a=0.8))
 #'
-#' p1 <- iris.clusterings[1,]
-#' p2 <- iris.clusterings[2,]
+#' truth <- iris.clusterings[1,]
+#' estimate <- iris.clusterings[2,]
 #'
-#' VI(p1, p2, a=1.0)
-#' all.equal(binder(p1, p2), ( 1 - RI(p1, p2) ) * (length(p1)-1) / length(p1))
-#' all.equal(omARI(p1, p2), 1 - ARI(p1, p2))
+#' VI(truth, estimate, a=1.0)
+#' n <- length(truth)
+#' all.equal(binder(truth, estimate), ( 1 - RI(truth, estimate) ) * (n-1) / n)
+#' all.equal(omARI(truth, estimate), 1 - ARI(truth, estimate))
 #'
-partition.loss <- function(partitions, x, loss=VI()) {
-  expected.loss(partitions, x, loss)
+partition.loss <- function(truth, estimate, loss=VI()) {
+  expected.loss(truth, estimate, loss)
 }
 
 checkAokay <- function(a) {
@@ -216,107 +211,109 @@ checkAokay <- function(a) {
 
 #' @export
 #' @rdname partition.loss
-binder <- function(partitions, x, a=1) {
-  if ( missing(partitions) && missing(x) ) {
+binder <- function(truth, estimate, a=1) {
+  if ( missing(truth) && missing(estimate) ) {
     checkAokay(a)
     structure(list(loss="binder", a=a), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall(a=a))
+    expected.loss(truth, estimate, Recall(a=a))
   }
 }
 
 #' @export
 #' @rdname partition.loss
-RI <- function(partition1, partition2) {
-  1 - binder(partition1, psm(partition2)) * length(partition1) / (length(partition1)-1)
+RI <- function(truth, estimate) {
+  1 - binder(truth, estimate) * length(truth) / (length(truth)-1)
 }
 
 #' @export
 #' @rdname partition.loss
-omARI <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+omARI <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="omARI"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
 #' @export
 #' @rdname partition.loss
-omARI.approx <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+omARI.approx <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="omARI.approx"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
 #' @export
 #' @rdname partition.loss
-ARI <- function(partition1, partition2) {
-  1 - omARI(partition1, partition2)
+ARI <- function(truth, estimate) {
+  1 - omARI(truth, estimate)
 }
 
 #' @export
 #' @rdname partition.loss
-VI <- function(partitions, x, a=1) {
-  if ( missing(partitions) && missing(x) ) {
+VI <- function(truth, estimate, a=1) {
+  if ( missing(truth) && missing(estimate) ) {
     checkAokay(a)
     structure(list(loss="VI", a=a), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall(a=a))
+    expected.loss(truth, estimate, Recall(a=a))
   }
 }
 
 #' @export
 #' @rdname partition.loss
-VI.lb <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+VI.lb <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="VI.lb"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
 #' @export
 #' @rdname partition.loss
-NVI <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+NVI <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="NVI"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
 #' @export
 #' @rdname partition.loss
-ID <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+ID <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="ID"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
 #' @export
 #' @rdname partition.loss
-NID <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+NID <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="NID"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
-expected.loss <- function(partitions, x, loss) {
-  if ( ! is.matrix(x) ) dim(x) <- c(1,length(x))
-  if ( ! is.matrix(partitions) ) dim(partitions) <- c(1,length(partitions))
-  if ( nrow(partitions) == 0 ) return(numeric())
-  if ( ncol(x) != ncol(partitions) ) {
-    stop("The number of items (i.e., number of columns) in 'partitions' and 'x' are not the same.")
+expected.loss <- function(truth, estimate, loss) {
+  truth <- unclass(truth)
+  estimate <- unclass(estimate)
+  if ( ! is.matrix(truth) ) dim(truth) <- c(1,length(truth))
+  if ( ! is.matrix(estimate) ) dim(estimate) <- c(1,length(estimate))
+  if ( nrow(estimate) == 0 ) return(numeric())
+  if ( ncol(truth) != ncol(estimate) ) {
+    stop("The number of items (i.e., number of columns) in 'truth' and 'estimate' are not the same.")
   }
-  if ( ncol(x) == 0 ) return(rep(NA, nrow(partitions)))
-  z <- x2drawspsm(x, loss)
+  if ( ncol(truth) == 0 ) return(rep(NA, nrow(estimate)))
+  z <- x2drawspsm(truth, loss)
   if ( is.list(z$a) ) stop("'a' must be explicitly provided when computing the expected loss.")
-  .Call(.expected_loss, partitions, z$draws, z$psm, z$lossCode, z$a)
+  .Call(.expected_loss, estimate, z$draws, z$psm, z$lossCode, z$a)
 }
