@@ -44,7 +44,7 @@ clustering.}
 
 \item{estimate}{An integer vector of cluster labels having the same length as
 \code{truth} representing the estimated clustering. Or, a matrix of
-\eqn{}n] columns where each row is a clustering.}
+\eqn{n} columns where each row is a clustering.}
 
 \item{loss}{The loss function to use, as indicated by \code{"binder"},
 \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or

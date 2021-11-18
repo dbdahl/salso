@@ -24,7 +24,7 @@ cluster) of a partition (i.e., clustering).}
 
 \item{estimate}{An integer vector of cluster labels having the same length as
 \code{truth} representing the estimated clustering. Or, a matrix of
-\eqn{}n] columns where each row is a clustering.}
+\eqn{n} columns where each row is a clustering.}
 }
 \value{
 An integer vector giving the estimated partition, encoded using

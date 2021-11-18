@@ -122,9 +122,9 @@ dependencies = [
 
 [[package]]
 name = "dahl-salso"
-version = "0.6.2"
+version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab774925f23dc40b432dd2564a2fe80055ca8786361d7f29d0f482fc01b7bde8"
+checksum = "b98680448f41ff9b0f25bae1b659b39db5dd1ff1d0ef62cb3b1ff79f5bc6b0d6"
 dependencies = [
  "approx 0.5.0",
  "crossbeam",
