@@ -9,7 +9,8 @@ test_that("Computation of variation of information loss using existing packages"
   expect_true(isTRUE(all.equal(s,o2)))
 })
 
-byhand <- function(truth,estimate,a,b,type=c("binder","binder2","VI")) {
+byhand <- function(truth,estimate,a,type=c("binder","binder2","VI")) {
+  b <- 2.0 - a
   tab <- table(truth,estimate)
   n <- length(truth)
   if ( type == "VI" ) {
@@ -29,24 +30,24 @@ byhand <- function(truth,estimate,a,b,type=c("binder","binder2","VI")) {
 test_that("Computations with unequal weights using by-hand calculations", {
   # VI
   s <- salso::VI(p1, p2, a=0.5)
-  o1 <- byhand(p1, p2, a=0.5, b=1, "VI")
+  o1 <- byhand(p1, p2, a=0.5, "VI")
   expect_true(isTRUE(all.equal(s,o1)))
-  s <- salso::VI(p1, p2, a=4)
-  o1 <- byhand(p1, p2, a=4, b=1, "VI")
-  expect_true(isTRUE(all.equal(s,o1)))
-  # binder
-  s <- salso::binder(p1, p2, a=0.5)
-  o1 <- byhand(p1, p2, a=0.5, b=1, "binder")
-  expect_true(isTRUE(all.equal(s,o1)))
-  s <- salso::binder(p1, p2, a=4)
-  o1 <- byhand(p1, p2, a=4, b=1, "binder")
+  s <- salso::VI(p1, p2, a=1.3)
+  o1 <- byhand(p1, p2, a=1.3, "VI")
   expect_true(isTRUE(all.equal(s,o1)))
   # binder
   s <- salso::binder(p1, p2, a=0.5)
-  o1 <- byhand(p1, p2, a=0.5, b=1, "binder2")
+  o1 <- byhand(p1, p2, a=0.5, "binder")
   expect_true(isTRUE(all.equal(s,o1)))
-  s <- salso::binder(p1, p2, a=4)
-  o1 <- byhand(p1, p2, a=4, b=1, "binder2")
+  s <- salso::binder(p1, p2, a=1.3)
+  o1 <- byhand(p1, p2, a=1.3, "binder")
+  expect_true(isTRUE(all.equal(s,o1)))
+  # binder
+  s <- salso::binder(p1, p2, a=0.5)
+  o1 <- byhand(p1, p2, a=0.5, "binder2")
+  expect_true(isTRUE(all.equal(s,o1)))
+  s <- salso::binder(p1, p2, a=1.3)
+  o1 <- byhand(p1, p2, a=1.3, "binder2")
   expect_true(isTRUE(all.equal(s,o1)))
 })
 
@@ -56,12 +57,12 @@ test_that("Computation of expectation of variation of information loss", {
   o <- mcclust.ext::VI(subset, draws)
   expect_true(isTRUE(all.equal(s1,o)))
   expect_true(isTRUE(all.equal(s2,s1)))
-  s1 <- salso::VI(draws, subset[1,], a=4)
-  o1 <- mean(apply(draws, 1, function(draw) byhand(draw, subset[1,], 4, 1, "VI")))
+  s1 <- salso::VI(draws, subset[1,], a=1.2)
+  o1 <- mean(apply(draws, 1, function(draw) byhand(draw, subset[1,], 1.2, "VI")))
   expect_true(isTRUE(all.equal(s1,o1)))
-  s1 <- salso::binder(draws, subset[1,], a=4)
-  o1 <- mean(apply(draws, 1, function(draw) byhand(draw, subset[1,], 4, 1, "binder")))
-  o2 <- mean(apply(draws, 1, function(draw) byhand(draw, subset[1,], 4, 1, "binder2")))
+  s1 <- salso::binder(draws, subset[1,], a=1.2)
+  o1 <- mean(apply(draws, 1, function(draw) byhand(draw, subset[1,], 1.2, "binder")))
+  o2 <- mean(apply(draws, 1, function(draw) byhand(draw, subset[1,], 1.2, "binder2")))
   expect_true(isTRUE(all.equal(s1,o1)))
   expect_true(isTRUE(all.equal(s1,o2)))
 })

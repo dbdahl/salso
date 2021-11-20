@@ -28,12 +28,12 @@
 #' discussed by Binder (1978), two mistakes are possible: 1. Placing two items
 #' in separate clusters when in truth they belong to the same cluster, and 2.
 #' Placing two items in the same cluster when in truth they belong to separate
-#' clusters. Without loss of generality, the cost of the second mistake is fixed
-#' at one. The default cost of the first mistake is also one, but can be
-#' specified with the argument \code{a}. For a discussion of general weights,
-#' see Dahl, Johnson, and Müller (2021). For a discussion of the equal weights
-#' case, see also Dahl (2006), Lau and Green (2007), Dahl and Newton (2007),
-#' Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
+#' clusters. The default cost of the first mistake is one, but can be specified
+#' with the argument \code{a} in [0,2]. Without loss of generality, the cost of
+#' the second mistake is fixed at \code{2-a}. For a discussion of general
+#' weights, see Dahl, Johnson, and Müller (2021). For a discussion of the equal
+#' weights case, see also Dahl (2006), Lau and Green (2007), Dahl and Newton
+#' (2007), Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
 #'
 #' \item{\code{"omARI"}}{One Minus Adjusted Rand Index. Computes the expectation
 #' of one minus the adjusted Rand index (Hubert and Arabie, 1985). Whereas high
@@ -60,10 +60,11 @@
 #' information of Dahl, Johnson, and  Müller (2021) to allow for unequal
 #' weighting of two possible mistakes: 1. Placing two items in separate clusters
 #' when in truth they belong to the same cluster, and 2. Placing two items in
-#' the same cluster when in truth they belong to separate clusters. Without loss
-#' of generality, the weight for the second mistake is fixed at one. The default
-#' weight of the first mistake is also one, but can be specified with the
-#' argument \code{a}. See Dahl, Johnson, Müller (2021).}
+#' the same cluster when in truth they belong to separate clusters.  The value
+#' \code{a} controls the cost of the first mistake and defaults to one, but can
+#' be specified with the argument \code{a} in [0,2]. Without loss of generality,
+#' the cost of the second mistake is controlled by \code{2-a}. See Dahl,
+#' Johnson, Müller (2021).}
 #'
 #' \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information. Computes
 #' the lower bound of the expectation of the variation of information loss,
@@ -110,19 +111,20 @@
 #'   symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
 #'   probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
 #'   cluster) of a partition (i.e., clustering).
-#' @param a (Only used for Binder and VI loss) Without loss of generality, the
-#'   cost under Binder loss of placing two items in the same cluster when in
-#'   truth they belong to separate clusters is fixed at one. The argument
-#'   \code{a} is either: i. a nonnegative scalar giving the cost of the
-#'   complementary mistake, i.e., placing two items in separate clusters when in
-#'   truth they belong to the same cluster, or ii. a list containing the desired
-#'   number of clusters (\code{"nClusters"}) and an upper bound (\code{"upper"})
-#'   when searching for \code{"a"} that yields the desired number of clusters.
-#'   In the second case, the desired number of clusters may not be achievable
-#'   without modifying \code{maxSize} in the \code{\link{salso}} function. To
-#'   increase the probability of hitting exactly the desired number of clusters,
-#'   the \code{nRuns} in the \code{\link{salso}} function may need to be
-#'   increased.
+#' @param a (Only used for Binder and VI loss) The argument \code{a} is either:
+#'   i. a nonnegative scalar in [0,2] giving (for Binder loss) the cost of
+#'   placing two items in separate clusters when in truth they belong to the
+#'   same cluster, ii. \code{NULL}, in which case \code{a} that maximizes the
+#'   expected loss is found, and iii. a list containing the desired number of
+#'   clusters (\code{"nClusters"}) when searching for \code{a} that yields this
+#'   number of clusters. In all but the first case, one may want to modifying
+#'   \code{maxSize} in the \code{\link{salso}} function. To increase the
+#'   probability of hitting exactly the desired number of clusters, the
+#'   \code{nRuns} in the \code{\link{salso}} function may need to be increased.
+#'   Without loss of generality, the cost (under Binder loss) of placing two
+#'   items in the same cluster when in truth they belong to separate clusters is
+#'   fixed \code{2-a}. For VI, \code{a} has a similar interpretation, although is
+#'   not a unit cost. See Dahl, Johnson, Müller (2021).
 #'
 #' @return A numeric vector.
 #'
@@ -180,8 +182,8 @@
 #' data(iris.clusterings)
 #' partitions <- iris.clusterings[1:5,]
 #'
-#' all.equal(partition.loss(partitions, partitions, loss=binder(a=2)),
-#'           binder(partitions, partitions, a=2))
+#' all.equal(partition.loss(partitions, partitions, loss=binder(a=1.4)),
+#'           binder(partitions, partitions, a=1.4))
 #' all.equal(partition.loss(partitions, partitions, loss=omARI()),
 #'           omARI(partitions, partitions))
 #' all.equal(partition.loss(partitions, partitions, loss=VI(a=0.8)),
@@ -200,12 +202,15 @@ partition.loss <- function(truth, estimate, loss=VI()) {
 }
 
 checkAokay <- function(a) {
-  if ( is.vector(a) && length(a) == 1 && is.numeric(a) && a >= 0 && is.finite(a) ) {
-  } else if ( is.list(a) && all(c("nClusters","upper") %in% names(a)) &&
-              is.vector(a$nClusters) && length(a$nClusters) == 1 && is.numeric(a$nClusters) && a$nClusters >= 1 &&
-              is.vector(a$upper) && length(a$upper) == 1 && is.numeric(a$upper) && a$upper > 0 && is.finite(a$upper) ) {
+  if ( is.vector(a) && length(a) == 1 && is.numeric(a) && 0.0 <= a && a <= 2.0 ) {
+      return()
+  } else if ( is.null(a) ) {
+      return()
+  } else if ( is.list(a) && all(c("nClusters") %in% names(a)) &&
+              is.vector(a$nClusters) && length(a$nClusters) == 1 && is.numeric(a$nClusters) && a$nClusters >= 1 ) {
+      return()
   } else {
-     stop("'a' should be a nonnegative, finite scalar or a list with 'nClusters' >= 1 and 'upper' > 0.")
+     stop("'a' should be in a scalar in [0,2].")
   }
 }
 

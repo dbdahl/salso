@@ -74,7 +74,7 @@
 #' D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
 #' Functions for Bayesian Clustering, <arXiv:2105.04451>.
 #'
-#' @importFrom stats uniroot
+#' @importFrom stats uniroot optimize
 #' @export
 #'
 #' @examples
@@ -84,11 +84,12 @@
 #' salso(draws, loss=VI(), nRuns=1, nCores=1)
 #' salso(draws, loss=VI(a=0.7), nRuns=1, nCores=1)
 #' salso(draws, loss=binder(), nRuns=1, nCores=1)
-#' salso(iris.clusterings, binder(a=list(nClusters=3, upper=5)), nRuns=4, nCores=1)
+#' salso(iris.clusterings, binder(a=NULL), nRuns=4, nCores=1)
+#' salso(iris.clusterings, binder(a=list(nClusters=3)), nRuns=4, nCores=1)
 #'
 salso <- function(x, loss=VI(), maxNClusters=0, nRuns=16, maxZealousAttempts=10, probSequentialAllocation=0.5, nCores=0, ...) {
   z <- x2drawspsm(x, loss, nCores)
-  if ( ( z$lossStr %in% c("binder.draws","VI") ) && is.list(z$a) ) {
+  if ( ( z$lossStr %in% c("binder.draws","VI") ) && ( ! is.numeric(z$a) ) ) {
     argg <- c(as.list(environment()), list(...))
     argg$z <- NULL
     salsoFnc <- if ( z$lossStr == "binder.draws" ) {
@@ -102,9 +103,15 @@ salso <- function(x, loss=VI(), maxNClusters=0, nRuns=16, maxZealousAttempts=10,
         suppressWarnings(do.call(salso, argg))
       }
     } else stop("Unexpected loss function.")
-    f <- function(a) length(unique(salsoFnc(a))) - round(z$a$nClusters)
-    search <- uniroot(f, c(0.0,z$a$upper), extendInt="no")
-    return(salsoFnc(search$root))
+    if ( is.null(z$a) ) {
+      f <- function(a) attr(salsoFnc(a),"info")$expectedLoss
+      search <- optimize(f, c(0.0,2.0), maximum=TRUE)
+      return(salsoFnc(search$maximum))
+    } else {
+      f <- function(a) length(unique(salsoFnc(a))) - round(z$a$nClusters)
+      search <- uniroot(f, c(0.0,2.0), extendInt="no")
+      return(salsoFnc(search$root))
+    }
   }
   if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
   if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
