@@ -311,6 +311,9 @@ NID <- function(truth, estimate) {
 expected.loss <- function(truth, estimate, loss) {
   truth <- unclass(truth)
   estimate <- unclass(estimate)
+  if ( ! ( is.atomic(truth) && is.atomic(estimate) ) ) {
+    stop("'truth' and 'estimate' must be atomic.")
+  }
   if ( ! is.matrix(truth) ) dim(truth) <- c(1,length(truth))
   if ( ! is.matrix(estimate) ) dim(estimate) <- c(1,length(estimate))
   if ( nrow(estimate) == 0 ) return(numeric())

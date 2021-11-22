@@ -1,6 +1,7 @@
-0.2.26 (202X-XX-XX)
+0.2.27 (202X-XX-XX)
   * For (generalized) Binder and (generalized) VI losses, let a be in [0,2] and
     b = 2 - a.
+  * Better elapse timings.
   * Don't use diagonal elements when computing the meanPSM in the summary
     function.
 
