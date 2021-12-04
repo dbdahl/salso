@@ -10,7 +10,7 @@
 #' similarity matrix (as computed, for example, by \code{\link{psm}}) whereas
 #' others require samples from a partition distribution. For those criteria that
 #' only need the pairwise similarity matrix, posterior samples can still be
-#' provided in the \code{x} argument and the pairwise similarity matrix will
+#' provided in the \code{truth} argument and the pairwise similarity matrix will
 #' automatically be computed as needed.
 #'
 #' The partition estimation criterion can be specified using the \code{loss}
@@ -30,7 +30,7 @@
 #' Placing two items in the same cluster when in truth they belong to separate
 #' clusters. The default cost of the first mistake is one, but can be specified
 #' with the argument \code{a} in [0,2]. Without loss of generality, the cost of
-#' the second mistake is fixed at \code{2-a}. For a discussion of general
+#' the second mistake is set as \code{2-a}. For a discussion of general
 #' weights, see Dahl, Johnson, and Müller (2021). For a discussion of the equal
 #' weights case, see also Dahl (2006), Lau and Green (2007), Dahl and Newton
 #' (2007), Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
@@ -52,7 +52,7 @@
 #' E(X)/E(Y)}. Only the pairwise similarity matrix is required for this
 #' criterion, but samples can be provided. See Fritsch and Ickstadt (2009).}
 #'
-#' \item{\code{"VI"}}{Variation of Information. Computes the expectations of the
+#' \item{\code{"VI"}}{Variation of Information. Computes the expectation of the
 #' (generalized) variation of information loss. Samples from a partition
 #' distribution are required for this loss. See Meilă (2007), Wade and
 #' Ghahramani (2018), and Rastelli and Friel (2018). The original variation of

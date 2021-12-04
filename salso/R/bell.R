@@ -1,7 +1,7 @@
 #' Compute the Bell Number
 #'
-#' These functions compute the Bell number (the number of partitions of a set)
-#' or its natural logarithm.
+#' These functions compute the Bell number (the number of partitions of a given
+#' number of items) or its natural logarithm.
 #'
 #' @param nItems The size of the set \eqn{{1, 2, ..., n}}.
 #'

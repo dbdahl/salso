@@ -1,7 +1,10 @@
-0.2.27 (202X-XX-XX)
+0.3.0 (2021-12-04)
+  * The order of the first two arguments in the partition.loss function (as VI,
+    binder, etc.) have been swapped (to be consistent with the paper) and the
+    argument names are now much more descriptive.
   * For (generalized) Binder and (generalized) VI losses, let a be in [0,2] and
     b = 2 - a.
-  * Better elapse timings.
+  * More accurate elapse timings.
   * Don't use diagonal elements when computing the meanPSM in the summary
     function.
 
