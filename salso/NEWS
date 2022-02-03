@@ -1,6 +1,32 @@
-0.2.10 (2021-03-09)
+0.3.0 (2021-12-04)
+  * The order of the first two arguments in the partition.loss function (as VI,
+    binder, etc.) have been swapped (to be consistent with the paper) and the
+    argument names are now much more descriptive.
+  * For (generalized) Binder and (generalized) VI losses, let a be in [0,2] and
+    b = 2 - a.
+  * More accurate elapse timings.
+  * Don't use diagonal elements when computing the meanPSM in the summary
+    function.
+
+0.2.23 (2021-08-12)
+  * Port to use the cargo framework, dropping the dependency on the cargo
+    package.
+  * Bump all dependencies.
+
+0.2.22 (2021-05-12)
+  * Added orderingMethod argument to summary.salso.estimate function.
+  * Added showIDs argument to plot function on a salso.summary.
+  * Added reference to arXiv paper.
+  * Simplified compiling of the source package.
+  * Bump all dependencies.
+
+0.2.20 (2021-03-23)
+  * Improved compiling of the source package.
+
+0.2.15 (2021-03-10)
   * Added "LinkingTo: cargo" in their DESCRIPTION to use the cargo package
     to manage Cargo, Rust's package manager.
+  * Addresses CRAN concerns regarding the use of ~/.cargo and multiple cores.
 
 0.2.5 (2020-11-18)
   * Solved issue when compiling from source using an old version of Rust.

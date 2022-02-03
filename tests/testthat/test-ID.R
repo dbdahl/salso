@@ -13,8 +13,8 @@ test_that("Computation of information distance loss", {
 })
 
 test_that("Computation of expectation of information distance loss", {
-  s1 <- salso::ID(subset, draws)
-  s2 <- salso::partition.loss(subset, draws, loss="ID")
+  s1 <- salso::ID(draws, subset)
+  s2 <- salso::partition.loss(draws, subset, loss="ID")
   o <- apply(subset, 1, function(x) mean(apply(draws, 1, function(y) aricode__ID(x, y))))
   expect_true(isTRUE(all.equal(s1,o)))
   expect_true(isTRUE(all.equal(s2,s1)))

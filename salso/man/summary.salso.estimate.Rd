@@ -4,7 +4,7 @@
 \alias{summary.salso.estimate}
 \title{Summary of Partitions Estimated Using Posterior Expected Loss}
 \usage{
-\method{summary}{salso.estimate}(object, alternative, ...)
+\method{summary}{salso.estimate}(object, alternative, orderingMethod = 1, ...)
 }
 \arguments{
 \item{object}{An object returned by the \code{\link{salso}} function.}
@@ -15,6 +15,10 @@ obtain numerical and graphical summaries of a clustering estimate from
 other procedures. This clustering must be provided in canonical form:
 cluster labels as integers starting at 1 for the first observation and
 incrementing by one for each new label.}
+
+\item{orderingMethod}{An integer giving method to use to order the
+observations for a heatmap plot.  Currently values \code{1} or \code{2} are
+supported.}
 
 \item{...}{Currently ignored.}
 }
@@ -34,6 +38,7 @@ in the future.
 }
 \examples{
 # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
+data(iris.clusterings)
 draws <- iris.clusterings
 est <- salso(draws, nCores=1)
 summ <- summary(est)

@@ -15,7 +15,7 @@ Unknown.
 iris.clusterings
 }
 \description{
-Randomly generated clusterings of the \code{iris} dataset.
+Randomly generated clusterings for the \code{iris} dataset.
 }
 \seealso{
 \code{\link[datasets]{iris}}

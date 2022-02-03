@@ -15,9 +15,9 @@ test_that("Computation of adjusted Rand index", {
 })
 
 test_that("Computation of expectation of one minus adjusted Rand index loss", {
-  s1 <- salso::omARI(subset, draws)
-  s2 <- salso::partition.loss(subset, draws, loss="omARI")
-  o <- 1 - apply(subset, 1, function(x) mean(apply(draws, 1, function(y) mcclust::arandi(x, y))))
+  s1 <- salso::omARI(draws, subset)
+  s2 <- salso::partition.loss(draws, subset, loss="omARI")
+  o <- 1 - apply(subset, 1, function(x) mean(apply(draws, 1, function(y) mcclust::arandi(y, x))))
   expect_true(isTRUE(all.equal(s1,o)))
   expect_true(isTRUE(all.equal(s2,s1)))
 })

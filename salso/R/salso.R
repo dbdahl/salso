@@ -1,9 +1,10 @@
 #' SALSO Greedy Search
 #'
 #' This function provides a partition to summarize a partition distribution
-#' using the SALSO greedy search method. The implementation currently supports
-#' the minimization of several partition estimation criteria. For details on
-#' these criteria, see \code{\link{partition.loss}}.
+#' using the SALSO greedy search method (Dahl, Johnson, and Müller, 2021). The
+#' implementation currently supports the minimization of several partition
+#' estimation criteria. For details on these criteria, see
+#' \code{\link{partition.loss}}.
 #'
 #' The initial version of the SALSO method was presented at the workshop
 #' "Bayesian Nonparametric Inference: Dependence Structures and their
@@ -68,22 +69,27 @@
 #' @seealso \code{\link{partition.loss}}, \code{\link{psm}},
 #'   \code{\link{summary.salso.estimate}}, \code{\link{dlso}}
 #'
-#' @importFrom stats uniroot
+#' @references
+#'
+#' D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
+#' Functions for Bayesian Clustering, <arXiv:2105.04451>.
+#'
+#' @importFrom stats uniroot optimize
 #' @export
-#' @useDynLib salso .minimize_by_salso
 #'
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
-#'
+#' data(iris.clusterings)
 #' draws <- iris.clusterings
 #' salso(draws, loss=VI(), nRuns=1, nCores=1)
 #' salso(draws, loss=VI(a=0.7), nRuns=1, nCores=1)
 #' salso(draws, loss=binder(), nRuns=1, nCores=1)
-#' salso(iris.clusterings, binder(a=list(nClusters=3, upper=5)), nRuns=4, nCores=1)
+#' salso(iris.clusterings, binder(a=NULL), nRuns=4, nCores=1)
+#' salso(iris.clusterings, binder(a=list(nClusters=3)), nRuns=4, nCores=1)
 #'
 salso <- function(x, loss=VI(), maxNClusters=0, nRuns=16, maxZealousAttempts=10, probSequentialAllocation=0.5, nCores=0, ...) {
   z <- x2drawspsm(x, loss, nCores)
-  if ( ( z$lossStr %in% c("binder.draws","VI") ) && is.list(z$a) ) {
+  if ( ( z$lossStr %in% c("binder.draws","VI") ) && ( ! is.numeric(z$a) ) ) {
     argg <- c(as.list(environment()), list(...))
     argg$z <- NULL
     salsoFnc <- if ( z$lossStr == "binder.draws" ) {
@@ -97,9 +103,15 @@ salso <- function(x, loss=VI(), maxNClusters=0, nRuns=16, maxZealousAttempts=10,
         suppressWarnings(do.call(salso, argg))
       }
     } else stop("Unexpected loss function.")
-    f <- function(a) length(unique(salsoFnc(a))) - round(z$a$nClusters)
-    search <- uniroot(f, c(0.0,z$a$upper), extendInt="no")
-    return(salsoFnc(search$root))
+    if ( is.null(z$a) ) {
+      f <- function(a) attr(salsoFnc(a),"info")$expectedLoss
+      search <- optimize(f, c(0.0,2.0), maximum=TRUE)
+      return(salsoFnc(search$maximum))
+    } else {
+      f <- function(a) length(unique(salsoFnc(a))) - round(z$a$nClusters)
+      search <- uniroot(f, c(0.0,2.0), extendInt="no")
+      return(salsoFnc(search$root))
+    }
   }
   if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
   if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
@@ -144,33 +156,27 @@ salso <- function(x, loss=VI(), maxNClusters=0, nRuns=16, maxZealousAttempts=10,
     probSingletonsInitialization <- dots[["probSingletonsInitialization"]]
     if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
   }
-  seed <- sapply(1:32, function(i) sample.int(256L,1L)-1L)
   if ( ( maxNClusters == 0 ) && ( ! is.null(z$psm) ) && ( ! is.null(z$draws) ) ) {
     maxNClusters <- max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  y <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, z$a, maxNClusters, nRunsX, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, nCores, seed)
-  estimate <- y[[1]]
-  attr(estimate,"info") <- {
-    attr <- y[[2]]
-    names(attr) <- c("loss","a","maxNClusters","expectedLoss","initMethod","nScans","nZAcc","nZAtt","nRuns","seconds")
-    attr$loss <- z$loss
-    if ( ! z$loss %in% c("binder","VI") ) attr$a <- NULL
-    attr$initMethod <- names(which(initMethodMapping==attr$initMethod))
-    as.data.frame(attr, row.names="")
-  }
-  attr(estimate,"draws") <- z$draws
-  attr(estimate,"psm") <- z$psm
-  actualNRuns <- attr(estimate,"info")$nRuns
+  estimate <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, z$a, maxNClusters, nRunsX, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, nCores)
+  info <- attr(estimate, "info")
+  info$loss <- z$loss
+  if ( ! z$loss %in% c("binder","VI") ) info$a <- NULL
+  info$initMethod <- names(which(initMethodMapping==info$initMethod))
+  attr(estimate, "info") <- as.data.frame(info, row.names="")
+  attr(estimate, "draws") <- z$draws
+  attr(estimate, "psm") <- z$psm
+  actualNRuns <- info$nRuns
   if ( is.finite(nRuns) && ( actualNRuns < nRunsX ) ) {
     warning(sprintf("Only %s of the requested %s run%s performed. Consider increasing 'seconds' or lowering 'nRuns'.",actualNRuns,nRuns,ifelse(actualNRuns==1L," was","s were")))
   }
-  if ( ( maxNClusters == 0 ) && ( length(unique(estimate)) == attr(estimate,"info")$maxNClusters ) ) {
+  if ( ( maxNClusters == 0 ) && ( length(unique(estimate)) == info$maxNClusters ) ) {
     warning("The number of clusters equals the default maximum possible number of clusters.")
   }
-  if ( ( maxZealousAttempts > 0 ) && ( attr(estimate,"info")$nZAtt > maxZealousAttempts ) ) {
+  if ( ( maxZealousAttempts > 0 ) && ( info$nZAtt > maxZealousAttempts ) ) {
     warning("The number of possible zealous attempts exceeded the maximum. Do you really want that many clusters? Consider lowering 'maxNClusters' or increasing 'maxZealousAttempts'.")
   }
-  class(estimate) <- "salso.estimate"
   estimate
 }
 

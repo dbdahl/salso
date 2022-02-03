@@ -10,7 +10,7 @@
 #' similarity matrix (as computed, for example, by \code{\link{psm}}) whereas
 #' others require samples from a partition distribution. For those criteria that
 #' only need the pairwise similarity matrix, posterior samples can still be
-#' provided in the \code{x} argument and the pairwise similarity matrix will
+#' provided in the \code{truth} argument and the pairwise similarity matrix will
 #' automatically be computed as needed.
 #'
 #' The partition estimation criterion can be specified using the \code{loss}
@@ -28,12 +28,12 @@
 #' discussed by Binder (1978), two mistakes are possible: 1. Placing two items
 #' in separate clusters when in truth they belong to the same cluster, and 2.
 #' Placing two items in the same cluster when in truth they belong to separate
-#' clusters. Without loss of generality, the cost of the second mistake is fixed
-#' at one. The default cost of the first mistake is also one, but can be
-#' specified with the argument \code{a}. For a discussion of general weights,
-#' see Dahl, Johnson, and Müller (2020). For a discussion of the equal weights
-#' case, see also Dahl (2006), Lau and Green (2007), Dahl and Newton (2007),
-#' Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
+#' clusters. The default cost of the first mistake is one, but can be specified
+#' with the argument \code{a} in [0,2]. Without loss of generality, the cost of
+#' the second mistake is set as \code{2-a}. For a discussion of general
+#' weights, see Dahl, Johnson, and Müller (2021). For a discussion of the equal
+#' weights case, see also Dahl (2006), Lau and Green (2007), Dahl and Newton
+#' (2007), Fritsch and Ickstadt (2009), and Wade and Ghahramani (2018).}
 #'
 #' \item{\code{"omARI"}}{One Minus Adjusted Rand Index. Computes the expectation
 #' of one minus the adjusted Rand index (Hubert and Arabie, 1985). Whereas high
@@ -52,18 +52,19 @@
 #' E(X)/E(Y)}. Only the pairwise similarity matrix is required for this
 #' criterion, but samples can be provided. See Fritsch and Ickstadt (2009).}
 #'
-#' \item{\code{"VI"}}{Variation of Information. Computes the expectations of the
+#' \item{\code{"VI"}}{Variation of Information. Computes the expectation of the
 #' (generalized) variation of information loss. Samples from a partition
 #' distribution are required for this loss. See Meilă (2007), Wade and
 #' Ghahramani (2018), and Rastelli and Friel (2018). The original variation of
 #' information of Meilă (2007) has been extended to the generalized variation of
-#' information of Dahl, Johnson, and  Müller (2020) to allow for unequal
+#' information of Dahl, Johnson, and  Müller (2021) to allow for unequal
 #' weighting of two possible mistakes: 1. Placing two items in separate clusters
 #' when in truth they belong to the same cluster, and 2. Placing two items in
-#' the same cluster when in truth they belong to separate clusters. Without loss
-#' of generality, the weight for the second mistake is fixed at one. The default
-#' weight of the first mistake is also one, but can be specified with the
-#' argument \code{a}. See Dahl, Johnson, Müller (2020).}
+#' the same cluster when in truth they belong to separate clusters.  The value
+#' \code{a} controls the cost of the first mistake and defaults to one, but can
+#' be specified with the argument \code{a} in [0,2]. Without loss of generality,
+#' the cost of the second mistake is controlled by \code{2-a}. See Dahl,
+#' Johnson, Müller (2021).}
 #'
 #' \item{\code{"VI.lb"}}{Lower Bound of the Variation of Information. Computes
 #' the lower bound of the expectation of the variation of information loss,
@@ -90,23 +91,17 @@
 #' The functions \code{\link{RI}} and \code{\link{ARI}} are convenience
 #' functions. Note that:
 #' \itemize{
-#' \item \code{binder(p1, p2) = ( 1 - RI(p1, p2) )*(n-1)/n}
+#' \item \code{binder(p1, p2, a=1) = ( 1 - RI(p1, p2) )*(n-1)/n}
 #' \item \code{omARI(p1, p2) = 1 - ARI(p1, p2)}
 #' }
 #'
-#' @param partition1 An integer vector of cluster labels for \eqn{n} items. Two
-#'   items are in the same subset (i.e., cluster) if their labels are equal.
-#' @param partition2 An integer vector of cluster labels having the same length
-#'   as \code{partition1}.
-#' @param partitions An integer matrix of cluster labels with \eqn{n} columns,
-#'   where each row is a partition of \eqn{n} items given as cluster labels. Two
-#'   items are in the same subset (i.e., cluster) if their labels are equal. Or,
-#'   a vector of length \eqn{n} which will be converted to a \eqn{1}-by-\eqn{n}
-#'   matrix.
-#' @param x A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
-#'   represents a clustering of \eqn{n} items using cluster labels. For the
-#'   \eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
-#'   \code{x[b,i] == x[b,j]}.
+#' @param truth An integer vector of cluster labels for \eqn{n} items
+#'   representing the true clustering. Two items are in the same cluster if
+#'   their labels are equal. Or, a matrix of \eqn{n} columns where each row is a
+#'   clustering.
+#' @param estimate An integer vector of cluster labels having the same length as
+#'   \code{truth} representing the estimated clustering. Or, a matrix of
+#'   \eqn{n} columns where each row is a clustering.
 #' @param loss The loss function to use, as indicated by \code{"binder"},
 #'   \code{"omARI"}, \code{"VI"}, \code{"NVI"}, \code{"ID"}, \code{"NID"}, or
 #'   the result of calling a function with these names. Also supported are
@@ -116,19 +111,20 @@
 #'   symmetric matrix whose \eqn{(i,j)} element gives the (estimated)
 #'   probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
 #'   cluster) of a partition (i.e., clustering).
-#' @param a (Only used for Binder and VI loss) Without loss of generality, the
-#'   cost under Binder loss of placing two items in the same cluster when in
-#'   truth they belong to separate clusters is fixed at one. The argument
-#'   \code{a} is either: i. a nonnegative scalar giving the cost of the
-#'   complementary mistake, i.e., placing two items in separate clusters when in
-#'   truth they belong to the same cluster, or ii. a list containing the desired
-#'   number of clusters (\code{"nClusters"}) and an upper bound (\code{"upper"})
-#'   when searching for \code{"a"} that yields the desired number of clusters.
-#'   In the second case, the desired number of clusters may not be achievable
-#'   without modifying \code{maxSize} in the \code{\link{salso}} function. To
-#'   increase the probability of hitting exactly the desired number of clusters,
-#'   the \code{nRuns} in the \code{\link{salso}} function may need to be
-#'   increased.
+#' @param a (Only used for Binder and VI loss) The argument \code{a} is either:
+#'   i. a nonnegative scalar in [0,2] giving (for Binder loss) the cost of
+#'   placing two items in separate clusters when in truth they belong to the
+#'   same cluster, ii. \code{NULL}, in which case \code{a} that maximizes the
+#'   expected loss is found, and iii. a list containing the desired number of
+#'   clusters (\code{"nClusters"}) when searching for \code{a} that yields this
+#'   number of clusters. In all but the first case, one may want to modifying
+#'   \code{maxSize} in the \code{\link{salso}} function. To increase the
+#'   probability of hitting exactly the desired number of clusters, the
+#'   \code{nRuns} in the \code{\link{salso}} function may need to be increased.
+#'   Without loss of generality, the cost (under Binder loss) of placing two
+#'   items in the same cluster when in truth they belong to separate clusters is
+#'   fixed \code{2-a}. For VI, \code{a} has a similar interpretation, although is
+#'   not a unit cost. See Dahl, Johnson, Müller (2021).
 #'
 #' @return A numeric vector.
 #'
@@ -177,148 +173,155 @@
 #' variable cluster models. \emph{Statistics and Computing}, \bold{28},
 #' 1169-1186.
 #'
-#' D. B. Dahl, D. J. Johnson, and P. Müller (2020), Search Algorithms and Loss
-#' Functions for Bayesian Clustering, in preparation.
-#
+#' D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
+#' Functions for Bayesian Clustering, <arXiv:2105.04451>.
 #'
 #' @export
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
+#' data(iris.clusterings)
 #' partitions <- iris.clusterings[1:5,]
 #'
-#' all.equal(partition.loss(partitions, partitions, loss=binder(a=2)),
-#'           binder(partitions, partitions, a=2))
+#' all.equal(partition.loss(partitions, partitions, loss=binder(a=1.4)),
+#'           binder(partitions, partitions, a=1.4))
 #' all.equal(partition.loss(partitions, partitions, loss=omARI()),
 #'           omARI(partitions, partitions))
 #' all.equal(partition.loss(partitions, partitions, loss=VI(a=0.8)),
 #'           VI(partitions, partitions, a=0.8))
 #'
-#' p1 <- iris.clusterings[1,]
-#' p2 <- iris.clusterings[2,]
+#' truth <- iris.clusterings[1,]
+#' estimate <- iris.clusterings[2,]
 #'
-#' VI(p1, p2, a=1.0)
-#' all.equal(binder(p1, p2), ( 1 - RI(p1, p2) ) * (length(p1)-1) / length(p1))
-#' all.equal(omARI(p1, p2), 1 - ARI(p1, p2))
+#' VI(truth, estimate, a=1.0)
+#' n <- length(truth)
+#' all.equal(binder(truth, estimate), ( 1 - RI(truth, estimate) ) * (n-1) / n)
+#' all.equal(omARI(truth, estimate), 1 - ARI(truth, estimate))
 #'
-partition.loss <- function(partitions, x, loss=VI()) {
-  expected.loss(partitions, x, loss)
+partition.loss <- function(truth, estimate, loss=VI()) {
+  expected.loss(truth, estimate, loss)
 }
 
 checkAokay <- function(a) {
-  if ( is.vector(a) && length(a) == 1 && is.numeric(a) && a >= 0 && is.finite(a) ) {
-  } else if ( is.list(a) && all(c("nClusters","upper") %in% names(a)) &&
-              is.vector(a$nClusters) && length(a$nClusters) == 1 && is.numeric(a$nClusters) && a$nClusters >= 1 &&
-              is.vector(a$upper) && length(a$upper) == 1 && is.numeric(a$upper) && a$upper > 0 && is.finite(a$upper) ) {
+  if ( is.vector(a) && length(a) == 1 && is.numeric(a) && 0.0 <= a && a <= 2.0 ) {
+      return()
+  } else if ( is.null(a) ) {
+      return()
+  } else if ( is.list(a) && all(c("nClusters") %in% names(a)) &&
+              is.vector(a$nClusters) && length(a$nClusters) == 1 && is.numeric(a$nClusters) && a$nClusters >= 1 ) {
+      return()
   } else {
-     stop("'a' should be a nonnegative, finite scalar or a list with 'nClusters' >= 1 and 'upper' > 0.")
+     stop("'a' should be in a scalar in [0,2].")
   }
 }
 
 #' @export
 #' @rdname partition.loss
-binder <- function(partitions, x, a=1) {
-  if ( missing(partitions) && missing(x) ) {
+binder <- function(truth, estimate, a=1) {
+  if ( missing(truth) && missing(estimate) ) {
     checkAokay(a)
     structure(list(loss="binder", a=a), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall(a=a))
+    expected.loss(truth, estimate, Recall(a=a))
   }
 }
 
 #' @export
 #' @rdname partition.loss
-RI <- function(partition1, partition2) {
-  1 - binder(partition1, psm(partition2)) * length(partition1) / (length(partition1)-1)
+RI <- function(truth, estimate) {
+  1 - binder(truth, estimate) * length(truth) / (length(truth)-1)
 }
 
 #' @export
 #' @rdname partition.loss
-omARI <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+omARI <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="omARI"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
 #' @export
 #' @rdname partition.loss
-omARI.approx <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+omARI.approx <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="omARI.approx"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
 #' @export
 #' @rdname partition.loss
-ARI <- function(partition1, partition2) {
-  1 - omARI(partition1, partition2)
+ARI <- function(truth, estimate) {
+  1 - omARI(truth, estimate)
 }
 
 #' @export
 #' @rdname partition.loss
-VI <- function(partitions, x, a=1) {
-  if ( missing(partitions) && missing(x) ) {
+VI <- function(truth, estimate, a=1) {
+  if ( missing(truth) && missing(estimate) ) {
     checkAokay(a)
     structure(list(loss="VI", a=a), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall(a=a))
+    expected.loss(truth, estimate, Recall(a=a))
   }
 }
 
 #' @export
 #' @rdname partition.loss
-VI.lb <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+VI.lb <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="VI.lb"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
 #' @export
 #' @rdname partition.loss
-NVI <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+NVI <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="NVI"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
 #' @export
 #' @rdname partition.loss
-ID <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+ID <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="ID"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
 #' @export
 #' @rdname partition.loss
-NID <- function(partitions, x) {
-  if ( missing(partitions) && missing(x) ) {
+NID <- function(truth, estimate) {
+  if ( missing(truth) && missing(estimate) ) {
     structure(list(loss="NID"), class="salso.loss")
   } else {
-    expected.loss(partitions, x, Recall())
+    expected.loss(truth, estimate, Recall())
   }
 }
 
-#' @useDynLib salso .expected_loss
-#'
-expected.loss <- function(partitions, x, loss) {
-  if ( ! is.matrix(x) ) dim(x) <- c(1,length(x))
-  if ( ! is.matrix(partitions) ) dim(partitions) <- c(1,length(partitions))
-  if ( nrow(partitions) == 0 ) return(numeric())
-  if ( ncol(x) != ncol(partitions) ) {
-    stop("The number of items (i.e., number of columns) in 'partitions' and 'x' are not the same.")
+expected.loss <- function(truth, estimate, loss) {
+  truth <- unclass(truth)
+  estimate <- unclass(estimate)
+  if ( ! ( is.atomic(truth) && is.atomic(estimate) ) ) {
+    stop("'truth' and 'estimate' must be atomic.")
   }
-  if ( ncol(x) == 0 ) return(rep(NA, nrow(partitions)))
-  z <- x2drawspsm(x, loss)
+  if ( ! is.matrix(truth) ) dim(truth) <- c(1,length(truth))
+  if ( ! is.matrix(estimate) ) dim(estimate) <- c(1,length(estimate))
+  if ( nrow(estimate) == 0 ) return(numeric())
+  if ( ncol(truth) != ncol(estimate) ) {
+    stop("The number of items (i.e., number of columns) in 'truth' and 'estimate' are not the same.")
+  }
+  if ( ncol(truth) == 0 ) return(rep(NA, nrow(estimate)))
+  z <- x2drawspsm(truth, loss)
   if ( is.list(z$a) ) stop("'a' must be explicitly provided when computing the expected loss.")
-  .Call(.expected_loss, partitions, z$draws, z$psm, z$lossCode, z$a)
+  .Call(.expected_loss, estimate, z$draws, z$psm, z$lossCode, z$a)
 }

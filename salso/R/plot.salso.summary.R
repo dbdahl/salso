@@ -18,8 +18,9 @@
 #'   or \code{"dendrogram"}.
 #' @param data The data from which the partition estimation was obtained. This
 #'   is required when \code{type='pairs'} and ignored otherwise.
-#' @param showLabels Should the names of items be shown in the plot when
+#' @param showLabels Should the cluster labels be shown in the plot when
 #'   \code{type="heatmap"}?
+#' @param showIDs Should the ID of the items be shown in the plot?
 #' @param ... Arguments to be passed to methods, such as graphical parameters
 #'   (see \code{\link{par}}).
 #'
@@ -27,6 +28,7 @@
 #'
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
+#' data(iris.clusterings)
 #' draws <- iris.clusterings
 #' est <- salso(draws, nCores=1)
 #' summ <- summary(est)
@@ -44,7 +46,7 @@
 #'   text legend
 #' @export
 #'
-plot.salso.summary <- function(x, type=c("heatmap","mds","pairs","dendrogram")[1], data=NULL, showLabels=length(x$estimate)<=50, ...) {
+plot.salso.summary <- function(x, type=c("heatmap","mds","pairs","dendrogram")[1], data=NULL, showLabels=TRUE, showIDs=length(x$estimate)<=50, ...) {
   opar <- NULL
   if ( type == "dendrogram" ) {
     plot(x$dendrogram)
@@ -59,7 +61,7 @@ plot.salso.summary <- function(x, type=c("heatmap","mds","pairs","dendrogram")[1
     centers <- ( c(0,cuts[-length(cuts)]) + cuts ) / 2
     cuts <- cuts[-length(cuts)]
     labels <- rle(estimate[o])$values
-    if ( showLabels ) {
+    if ( showIDs ) {
       mymar <- c(1.5,0.5,0.5,1.5)
       cexscale <- 0.85 * 50 / length(estimate)
     } else {
@@ -72,8 +74,10 @@ plot.salso.summary <- function(x, type=c("heatmap","mds","pairs","dendrogram")[1
     box()
     abline(v=cuts+0.5,lwd=3)
     abline(h=n-cuts+0.5,lwd=3)
-    text(centers+0.5,n-centers+0.5,labels,cex=0.8*cexscale*sizes)
     if ( showLabels ) {
+      text(centers+0.5,n-centers+0.5,labels,cex=0.8*cexscale*sizes)
+    }
+    if ( showIDs ) {
       axisLabels <- if ( is.null(names(estimate)) ) o
       else names(estimate[o])
       axis(4,1:length(estimate),rev(axisLabels),las=2,cex.axis=0.8*cexscale)
@@ -112,11 +116,11 @@ plot.salso.summary <- function(x, type=c("heatmap","mds","pairs","dendrogram")[1
       points <- cmdscale(distances, list.=TRUE)$points
       # points <- MASS::isoMDS(distances)$points
       opar <- par(pty="s", mar=c(0,0,0,0))
-      plot(points[,1], points[,2], pch=20, col=colorsExpanded, type=ifelse(showLabels, "n", "p"), xlab="", ylab="", axes=FALSE, ...)
+      plot(points[,1], points[,2], pch=20, col=colorsExpanded, type=ifelse(showIDs, "n", "p"), xlab="", ylab="", axes=FALSE, ...)
       box()
       permutation <- sample(seq_along(x$estimate))
       segments(points[permutation,1],points[permutation,2],points[i[permutation],1],points[i[permutation],2],col=colorsExpanded[permutation],...)
-      if ( showLabels ) {
+      if ( showIDs ) {
         text(points[permutation,1], points[permutation,2], as.character(seq_along(x$estimate))[permutation], col=colorsExpanded[permutation],...)
       }
       points(points[x$exemplar,1],points[x$exemplar,2],pch=22,bg="white",cex=2,...)

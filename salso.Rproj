@@ -19,5 +19,4 @@ BuildType: Package
 PackageUseDevtools: Yes
 PackagePath: salso
 PackageInstallArgs: --no-multiarch --with-keep.source
-PackageCheckArgs: --as-cran
 PackageRoxygenize: rd,collate,namespace
