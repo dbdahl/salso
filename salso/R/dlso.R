@@ -26,11 +26,15 @@
 #' @export
 #' @examples
 #' data(iris.clusterings)
+#' # R_CARGO \dontrun{
+#' # R_CARGO # Example disabled since Cargo was not found when installing from source package.
+#' # R_CARGO # You can still run the example if you install Cargo. Hint: cargo::install().
 #' dlso(iris.clusterings, loss=VI())
 #' dlso(iris.clusterings, loss=binder())
 #'
 #' # Compute expected loss using all draws, but pick the best among the first 10.
 #' dlso(iris.clusterings, loss=VI(), estimate=iris.clusterings[1:10,])
+#' # R_CARGO }
 #'
 dlso <- function(truth, loss=VI(), estimate=NULL) {
   if ( is.null(estimate) ) estimate <- truth
