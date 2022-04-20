@@ -12,7 +12,11 @@
 #'
 #' @export
 #' @examples
+#' # R_CARGO \dontrun{
+#' # R_CARGO # Example disabled since Cargo was not found when installing from source package.
+#' # R_CARGO # You can still run the example if you install Cargo. Hint: cargo::install().
 #' enumerate.partitions(5)
+#' # R_CARGO }
 #'
 enumerate.partitions <- function(nItems) {
   if ( nItems > 13 ) stop("Long vectors are not supported; 'nItems' may be at most 13.")
