@@ -7,7 +7,7 @@ Description: The SALSO algorithm is an efficient randomized greedy search method
 License: MIT + file LICENSE | Apache License 2.0
 Depends: R (>= 4.2.0)
 Imports: cargo (>= 0.2.3)
-SystemRequirements: Cargo (>= 1.60) for installation from sources: see INSTALL file
+SystemRequirements: Cargo (>= 1.60) for installation from source: see INSTALL file
 Encoding: UTF-8
 LazyData: TRUE
 RoxygenNote: 7.1.2
