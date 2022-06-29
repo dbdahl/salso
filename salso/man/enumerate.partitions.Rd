@@ -11,7 +11,7 @@ enumerate.partitions(nItems)
 }
 \value{
 A matrix of integers, where each row is a partition encoded as a
-  vector of cluster labels.
+vector of cluster labels.
 }
 \description{
 This function produces a matrix whose rows provide all possible partitions of

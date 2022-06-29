@@ -28,7 +28,7 @@ cluster) of a partition (i.e., clustering).}
 }
 \value{
 An integer vector giving the estimated partition, encoded using
-  cluster labels.
+cluster labels.
 }
 \description{
 This function provides a partition to summarize a partition distribution
@@ -60,5 +60,5 @@ University Press.
 }
 \seealso{
 \code{\link{partition.loss}}, \code{\link{psm}},
-  \code{\link{summary.salso.estimate}}, \code{\link{salso}}
+\code{\link{summary.salso.estimate}}, \code{\link{salso}}
 }

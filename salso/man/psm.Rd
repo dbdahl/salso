@@ -18,8 +18,8 @@ cores on the system.}
 }
 \value{
 A \eqn{n}-by-\eqn{n} symmetric matrix whose \eqn{(i,j)} element gives
-  the relative frequency that that items \eqn{i} and \eqn{j} are in the same
-  subset (i.e., cluster).
+the relative frequency that that items \eqn{i} and \eqn{j} are in the same
+subset (i.e., cluster).
 }
 \description{
 If only one sample is provided, this function computes an adjacency matrix,

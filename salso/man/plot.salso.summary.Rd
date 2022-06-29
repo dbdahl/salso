@@ -65,5 +65,5 @@ plot(summ, type="dendrogram")
 }
 \seealso{
 \code{\link{salso}}, \code{\link{summary.salso.estimate}},
-  \code{\link[stats]{cmdscale}}.
+\code{\link[stats]{cmdscale}}.
 }

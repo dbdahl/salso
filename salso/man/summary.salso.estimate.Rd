@@ -24,10 +24,10 @@ supported.}
 }
 \value{
 A list containing the estimate, the pairwise similarity matrix, the
-  mean pairwise similarity matrix, the score and mean pairwise similarity for
-  each observation, exemplar observation for each cluster, a dendrogram
-  object, a vector for ordering observations in the heatmap plot, the size of
-  each cluster, and the number of clusters.
+mean pairwise similarity matrix, the score and mean pairwise similarity for
+each observation, exemplar observation for each cluster, a dendrogram
+object, a vector for ordering observations in the heatmap plot, the size of
+each cluster, and the number of clusters.
 }
 \description{
 Assessing the quality of clusters in a partition estimate is added by this

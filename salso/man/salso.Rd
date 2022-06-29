@@ -55,7 +55,7 @@ also take more CPU time which might be better used trying additional runs.}
 
 \item{probSequentialAllocation}{For the initial allocation, the probability
 of sequential allocation instead of using \code{sample(1:K, ncol(x),
-TRUE)}, where \code{K} is set according to the \code{maxNClusters}
+  TRUE)}, where \code{K} is set according to the \code{maxNClusters}
 argument.}
 
 \item{nCores}{The number of CPU cores to use, i.e., the number of
@@ -77,20 +77,14 @@ items in singletons subsets.}
 }
 \value{
 An integer vector giving the estimated partition, encoded using
-  cluster labels.
+cluster labels.
 }
 \description{
 This function provides a partition to summarize a partition distribution
-using the SALSO greedy search method (Dahl, Johnson, and Müller, 2021). The
+using the SALSO greedy search method (Dahl, Johnson, and Müller, 2022). The
 implementation currently supports the minimization of several partition
 estimation criteria. For details on these criteria, see
 \code{\link{partition.loss}}.
-}
-\details{
-The initial version of the SALSO method was presented at the workshop
-"Bayesian Nonparametric Inference: Dependence Structures and their
-Applications" in Oaxaca, Mexico on December 6, 2017. See
-<https://www.birs.ca/events/2017/5-day-workshops/17w5060/schedule>.
 }
 \examples{
 # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
@@ -108,10 +102,11 @@ salso(iris.clusterings, binder(a=list(nClusters=3)), nRuns=4, nCores=1)
 
 }
 \references{
-D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
-Functions for Bayesian Clustering, <arXiv:2105.04451>.
+D. B. Dahl, D. J. Johnson, and P. Müller (2022), Search Algorithms and Loss
+Functions for Bayesian Clustering, \emph{Journal of Computational and
+Graphical Statistics}, \bold{31:2}, \url{doi:10.1080/10618600.2022.2069779}.
 }
 \seealso{
 \code{\link{partition.loss}}, \code{\link{psm}},
-  \code{\link{summary.salso.estimate}}, \code{\link{dlso}}
+\code{\link{summary.salso.estimate}}, \code{\link{dlso}}
 }

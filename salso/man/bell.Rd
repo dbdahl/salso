@@ -14,7 +14,7 @@ lbell(nItems)
 }
 \value{
 A numeric vector of length one giving the Bell number or its natural
-  logarithm.
+logarithm.
 }
 \description{
 These functions compute the Bell number (the number of partitions of a given

@@ -1,5 +1,6 @@
-0.3.1 (2022-04-20)
-  * Updated to latest Cargo Framework.
+0.3.4 (2022-06-28)
+  * Updated to latest Cargo Framework from the cargo package.
+  * Added reference for paper.
 
 0.3.0 (2021-12-04)
   * The order of the first two arguments in the partition.loss function (as VI,

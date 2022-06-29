@@ -29,7 +29,7 @@
 #' in separate clusters when in truth they belong to the same cluster, and 2.
 #' Placing two items in the same cluster when in truth they belong to separate
 #' clusters. The default cost of the first mistake is one, but can be specified
-#' with the argument \code{a} in [0,2]. Without loss of generality, the cost of
+#' with the argument \code{a} in \eqn{[0,2]}. Without loss of generality, the cost of
 #' the second mistake is set as \code{2-a}. For a discussion of general
 #' weights, see Dahl, Johnson, and Müller (2021). For a discussion of the equal
 #' weights case, see also Dahl (2006), Lau and Green (2007), Dahl and Newton
@@ -62,7 +62,7 @@
 #' when in truth they belong to the same cluster, and 2. Placing two items in
 #' the same cluster when in truth they belong to separate clusters.  The value
 #' \code{a} controls the cost of the first mistake and defaults to one, but can
-#' be specified with the argument \code{a} in [0,2]. Without loss of generality,
+#' be specified with the argument \code{a} in \eqn{[0,2]}. Without loss of generality,
 #' the cost of the second mistake is controlled by \code{2-a}. See Dahl,
 #' Johnson, Müller (2021).}
 #'
@@ -112,7 +112,7 @@
 #'   probability that items \eqn{i} and \eqn{j} are in the same subset (i.e.,
 #'   cluster) of a partition (i.e., clustering).
 #' @param a (Only used for Binder and VI loss) The argument \code{a} is either:
-#'   i. a nonnegative scalar in [0,2] giving (for Binder loss) the cost of
+#'   i. a nonnegative scalar in \eqn{[0,2]} giving (for Binder loss) the cost of
 #'   placing two items in separate clusters when in truth they belong to the
 #'   same cluster, ii. \code{NULL}, in which case \code{a} that maximizes the
 #'   expected loss is found, and iii. a list containing the desired number of
@@ -173,8 +173,9 @@
 #' variable cluster models. \emph{Statistics and Computing}, \bold{28},
 #' 1169-1186.
 #'
-#' D. B. Dahl, D. J. Johnson, and P. Müller (2021), Search Algorithms and Loss
-#' Functions for Bayesian Clustering, <arXiv:2105.04451>.
+#' D. B. Dahl, D. J. Johnson, and P. Müller (2022), Search Algorithms and Loss
+#' Functions for Bayesian Clustering, \emph{Journal of Computational and
+#' Graphical Statistics}, \bold{31:2}, <doi:10.1080/10618600.2022.2069779>.
 #'
 #' @export
 #' @examples
