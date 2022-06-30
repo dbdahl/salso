@@ -12,13 +12,13 @@ fn bell(n_items: Rval) -> Rval {
         Some(x) => x,
         None => f64::INFINITY,
     };
-    Rval::new(x, pc)
+    rval!(x)
 }
 
 #[roxido]
 fn lbell(n_items: Rval) -> Rval {
     let x = dahl_bellnumber::lbell(n_items.as_usize());
-    Rval::new(x, pc)
+    rval!(x)
 }
 
 #[roxido]
@@ -327,7 +327,7 @@ fn minimize_by_salso(
         &mut rng,
     );
     let info_attr = Rval::new_list(10, pc);
-    info_attr.names_gets(Rval::new(
+    info_attr.names_gets(rval!(
         [
             "loss",
             "a",
@@ -339,44 +339,42 @@ fn minimize_by_salso(
             "nZAtt",
             "nRuns",
             "seconds",
-        ],
-        pc,
+        ]
     ));
     info_attr.set_list_element(1, a);
     info_attr.set_list_element(
         2,
-        Rval::new(i32::try_from(results.max_size).unwrap(), pc),
+        rval!(i32::try_from(results.max_size).unwrap()),
     );
-    info_attr.set_list_element(3, Rval::new(results.expected_loss, pc));
+    info_attr.set_list_element(3, rval!(results.expected_loss));
     info_attr.set_list_element(
         4,
-        Rval::new(
-            i32::try_from(results.initialization_method.to_code()).unwrap(),
-            pc,
+        rval!(
+            i32::try_from(results.initialization_method.to_code()).unwrap()
         ),
     );
     info_attr.set_list_element(
         5,
-        Rval::new(i32::try_from(results.n_scans).unwrap(), pc),
+        rval!(i32::try_from(results.n_scans).unwrap()),
     );
     info_attr.set_list_element(
         6,
-        Rval::new(i32::try_from(results.n_zealous_accepts).unwrap(), pc),
+        rval!(i32::try_from(results.n_zealous_accepts).unwrap()),
     );
     info_attr.set_list_element(
         7,
-        Rval::new(i32::try_from(results.n_zealous_attempts).unwrap(), pc),
+        rval!(i32::try_from(results.n_zealous_attempts).unwrap()),
     );
     info_attr.set_list_element(
         8,
-        Rval::new(i32::try_from(results.n_runs).unwrap(), pc),
+        rval!(i32::try_from(results.n_runs).unwrap()),
     );
-    info_attr.set_list_element(9, Rval::new(results.seconds, pc));
+    info_attr.set_list_element(9, rval!(results.seconds));
     let (r, r_slice) = Rval::new_vector_integer(n_items, pc);
     for (v, rr) in results.clustering.iter().zip(r_slice.iter_mut()) {
         *rr = i32::try_from(*v + 1).unwrap();
     }
-    r.class_gets(Rval::new("salso.estimate", pc));
+    r.class_gets(rval!("salso.estimate"));
     r.set_attribute("info", info_attr, pc);
     r
 }
