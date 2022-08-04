@@ -10,4 +10,4 @@ SystemRequirements: Cargo (>= 1.56) for installation from source: see INSTALL fi
 Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
