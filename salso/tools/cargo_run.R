@@ -35,6 +35,9 @@
 #'   \code{CARGO_ENCODED_RUSTFLAGS} environment variables is constructed and
 #'   then temporarily set. Or, if \code{NULL}, this environment variable is left
 #'   unchanged.
+#' @param verbose If \code{TRUE}, details of the search for Cargo are shown.
+#'   If \code{FALSE}, no details are shown.  If it is a connection, then details
+#'   are shown and also written to the connection.
 #' @param stdout See argument of the same name in [base::system2()].
 #' @param stderr See argument of the same name in [base::system2()].
 #'
@@ -143,7 +146,8 @@ run <- function(..., minimum_version=".", search_methods=c("path","convention","
     }
     if ( condition ) {
       cargo_cmd <- normalizePath(cargo_cmd, mustWork=FALSE)
-      vars <- c(CARGO_HOME=cargo_home_env, mk_rustflags(rustflags), environment_variables)
+      vars <- c(PATH=paste0(Sys.getenv("PATH"),.Platform$path.sep,paste0(dirname(cargo_cmd))),
+                CARGO_HOME=cargo_home_env, mk_rustflags(rustflags), environment_variables)
       status <- check_candidate(cargo_cmd, vars, can_update)
       if ( status == 0 ) {
         result <- system3(cargo_cmd, args, env=vars, stdout=stdout, stderr=stderr)
