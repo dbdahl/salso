@@ -11,8 +11,6 @@ source in the 'src/rust' directory, most of which are in the archive
 approx         : Brendan Zabarauskas <bjzaba@yahoo.com.au>
 autocfg        : Josh Stone <cuviper@gmail.com>
 cfg-if         : Alex Crichton <alex@alexcrichton.com>
-crossbeam      : The Crossbeam Project Developers
-crossbeam-deque: The Crossbeam Project Developers
 dahl-bellnumber: David B. Dahl <dahl@stat.byu.edu>
 dahl-partition : David B. Dahl <dahl@stat.byu.edu>
 dahl-salso     : David B. Dahl <dahl@stat.byu.edu>
@@ -31,9 +29,9 @@ once_cell      : Aleksey Kladov <aleksey.kladov@gmail.com>
 ppv-lite86     : The CryptoCorrosion Contributors
 proc-macro2    : Alex Crichton <alex@alexcrichton.com>, David Tolnay <dtolnay@gmail.com>
 quote          : David Tolnay <dtolnay@gmail.com>
-rand           : The Rust Project Developers, The Rand Project Developers
-rand_chacha    : The Rust Project Developers, The CryptoCorrosion Contributors, The Rand Project Developers
-rand_core      : The Rust Project Developers, The Rand Project Developers
+rand           : The Rand Project Developers, The Rust Project Developers
+rand_chacha    : The CryptoCorrosion Contributors, The Rand Project Developers, The Rust Project Developers
+rand_core      : The Rand Project Developers, The Rust Project Developers
 rand_pcg       : The Rand Project Developers
 rawpointer     : bluss
 roxido         : David B. Dahl <dahl@stat.byu.edu>
