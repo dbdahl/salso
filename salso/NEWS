@@ -1,9 +1,9 @@
-0.3.13 (2022-08-19)
+0.3.15 (2022-09-19)
   * Added reference for paper.
   * Updated to latest Cargo Framework from the cargo package.
   * Noted authorship of depending Rust crates in DESCRIPTION, inst/AUTHORS, and
     LICENSE.note
-  * Modified configure script based on CRAN feedback.
+  * Modified 'configure' script based on CRAN feedback.
 
 0.3.0 (2021-12-04)
   * The order of the first two arguments in the partition.loss function (as VI,
