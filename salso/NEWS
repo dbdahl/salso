@@ -1,4 +1,4 @@
-0.3.17 (2022-09-27)
+0.3.18 (2022-09-27)
   * Added reference for paper.
   * Updated to latest Cargo Framework from the cargo package.
   * Noted authorship of depending Rust crates in DESCRIPTION, inst/AUTHORS, and
