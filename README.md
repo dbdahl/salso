@@ -1,6 +1,6 @@
 # Installation:
 
 ```r
-remotes::install_git("https://dahl-git.byu.edu/dahl/salso.git", subdir="salso")
+remotes::install_git("https://github.com/dbdahl/salso.git", subdir="salso")
 ```
 
