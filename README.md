@@ -1,6 +1,6 @@
 # Installation:
 
 ```r
-remotes::install_github("https://github.com/dbdahl/salso", subdir="salso")
+remotes::install_github("dbdahl/salso", subdir="salso")
 ```
 
