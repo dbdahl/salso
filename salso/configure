@@ -8,12 +8,26 @@ setwd("src/rust")
 if ( ! dir.exists("vendor") ) untar("vendor.tar.xz", tar="internal")
 
 con <- file("../../inst/cargo.log", "w")
-if ( run('build', '--offline', '--release', '--jobs', '2', minimum_version='../..', leave_no_trace=TRUE, verbose=con) == 0 ) {
-    print(list.files("target/release"))  # temporary
-    file.copy("target/release/librust.a", "..", overwrite=TRUE)
-    message("Built Rust static library.")
+okay <- run('build', '--offline', '--release', '--jobs', '2', minimum_version='../..', leave_no_trace=TRUE, verbose=con) == 0
+close(con)
 
-} else {
+if ( okay ) {
+
+    message("Built Rust static library.")
+        
+    okay <- tryCatch({
+        if ( file.exists("target/release/librust.a") ) {
+            file.copy("target/release/librust.a", "../librust.a", overwrite=TRUE)
+        }
+        if ( file.exists("target/release/rust.lib") ) {
+            file.copy("target/release/rust.lib", "../librust.a", overwrite=TRUE)
+        }
+        TRUE
+     }, warning=\(w) FALSE, error=\(e) FALSE)
+
+}
+
+if ( ! okay ) {
 
     message("No suitable version of Cargo was found.\n")
     if ( ( Sys.getenv("MY_UNIVERSE","<unset>") == "<unset>" ) && ( Sys.getenv("NOT_CRAN","<unset>") == "<unset>" ) ) {
@@ -27,6 +41,5 @@ if ( run('build', '--offline', '--release', '--jobs', '2', minimum_version='../.
     }
 
 }
-close(con)
 
 EOF
