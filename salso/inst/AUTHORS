@@ -17,7 +17,7 @@ dahl-salso     : David B. Dahl <dahl@stat.byu.edu>
 getrandom      : The Rand Project Developers
 hermit-abi     : Stefan Lankes
 libc           : The Rust Project Developers
-matrixmultiply : bluss, R. Janis Goldschmidt
+matrixmultiply : R. Janis Goldschmidt, bluss
 memoffset      : Gilad Naaman <gilad.naaman@gmail.com>
 ndarray        : Ulrik Sverdrup "bluss", Jim Turner
 num-bigint     : The Rust Project Developers
@@ -29,7 +29,7 @@ ppv-lite86     : The CryptoCorrosion Contributors
 proc-macro2    : Alex Crichton <alex@alexcrichton.com>, David Tolnay <dtolnay@gmail.com>
 quote          : David Tolnay <dtolnay@gmail.com>
 rand           : The Rust Project Developers, The Rand Project Developers
-rand_chacha    : The Rand Project Developers, The Rust Project Developers, The CryptoCorrosion Contributors
+rand_chacha    : The Rust Project Developers, The Rand Project Developers, The CryptoCorrosion Contributors
 rand_core      : The Rand Project Developers, The Rust Project Developers
 rand_pcg       : The Rand Project Developers
 rawpointer     : bluss
