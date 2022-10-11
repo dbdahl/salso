@@ -9,7 +9,6 @@ if ( ! dir.exists("vendor") ) untar("vendor.tar.xz", tar="internal")
 
 if ( .Platform$OS.type == "windows" ) {
   print(list.files("c:\\"))
-
   Sys.setenv(PATH=paste0("c:\\rtools40\\ucrt64\\bin;",Sys.getenv("PATH")))i
   Sys.setenv(CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER="gcc")
 }
