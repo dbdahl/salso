@@ -7,13 +7,13 @@ source("tools/cargo_run.R")
 setwd("src/rust")
 if ( ! dir.exists("vendor") ) untar("vendor.tar.xz", tar="internal")
 
-con <- file("../../inst/cargo.log", "w")
-if ( run('build', '--offline', '--release', '--jobs', '2', minimum_version='../..', leave_no_trace=TRUE, verbose=con) == 0 ) {
+#con <- file("../../inst/cargo.log", "w")
+#if ( run('build', '--offline', '--release', '--jobs', '2', minimum_version='../..', leave_no_trace=TRUE, verbose=con) == 0 ) {
 
-    file.copy("target/release/librust.a", "..", overwrite=TRUE)
-    message("Built Rust static library.")
+#    file.copy("target/release/librust.a", "..", overwrite=TRUE)
+#    message("Built Rust static library.")
 
-} else {
+#} else {
 
     message("No suitable version of Cargo was found.\n")
     if ( ( Sys.getenv("MY_UNIVERSE","<unset>") == "<unset>" ) && ( Sys.getenv("NOT_CRAN","<unset>") == "<unset>" ) ) {
@@ -26,7 +26,7 @@ if ( run('build', '--offline', '--release', '--jobs', '2', minimum_version='../.
         download.file(url, "../librust.a")
     }
 
-}
-close(con)
+#}
+#close(con)
 
 EOF
