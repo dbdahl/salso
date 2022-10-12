@@ -8,7 +8,10 @@ setwd("src/rust")
 if ( ! dir.exists("vendor") ) untar("vendor.tar.xz", tar="internal")
 
 con <- file("../../inst/cargo.log", "w")
-if ( run('build', '--offline', '--release', '--jobs', '2', minimum_version='../..', leave_no_trace=TRUE, verbose=con) == 0 ) {
+okay <- run('build', '--offline', '--release', '--jobs', '2', minimum_version='../..', leave_no_trace=TRUE, verbose=con) == 0
+close(con)
+
+if ( okay && file.exists("target/release/librust.a") ) {
 
     file.copy("target/release/librust.a", "..", overwrite=TRUE)
     message("Built Rust static library.")
@@ -27,6 +30,5 @@ if ( run('build', '--offline', '--release', '--jobs', '2', minimum_version='../.
     }
 
 }
-close(con)
 
 EOF
