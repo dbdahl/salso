@@ -7,12 +7,6 @@ source("tools/cargo_run.R")
 setwd("src/rust")
 if ( ! dir.exists("vendor") ) untar("vendor.tar.xz", tar="internal")
 
-if ( .Platform$OS.type == "windows" ) {
-  print(list.files("c:\\"))
-  Sys.setenv(PATH=paste0("c:\\rtools40\\ucrt64\\bin;",Sys.getenv("PATH")))
-  Sys.setenv(CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER="gcc")
-}
-
 con <- file("../../inst/cargo.log", "w")
 if ( run('build', '--offline', '--release', '--jobs', '2', minimum_version='../..', leave_no_trace=TRUE, verbose=con) == 0 ) {
 
@@ -29,7 +23,7 @@ if ( run('build', '--offline', '--release', '--jobs', '2', minimum_version='../.
         desc <- read.dcf("../../DESCRIPTION")
         url_base <- "https://dahl.byu.edu/public"
         url <- file.path(url_base, "r_cargo_cross_compile", desc[,"Package"], desc[,"Version"], target(), "librust.a")
-        download.file(url, "../librust.a")
+        download.file(url, "../librust.a", mode="wb")
     }
 
 }

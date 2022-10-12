@@ -19,7 +19,7 @@ hermit-abi     : Stefan Lankes
 libc           : The Rust Project Developers
 matrixmultiply : bluss, R. Janis Goldschmidt
 memoffset      : Gilad Naaman <gilad.naaman@gmail.com>
-ndarray        : Ulrik Sverdrup "bluss", Jim Turner
+ndarray        : Jim Turner, Ulrik Sverdrup "bluss"
 num-bigint     : The Rust Project Developers
 num-complex    : The Rust Project Developers
 num-integer    : The Rust Project Developers
@@ -29,7 +29,7 @@ ppv-lite86     : The CryptoCorrosion Contributors
 proc-macro2    : David Tolnay <dtolnay@gmail.com>, Alex Crichton <alex@alexcrichton.com>
 quote          : David Tolnay <dtolnay@gmail.com>
 rand           : The Rand Project Developers, The Rust Project Developers
-rand_chacha    : The CryptoCorrosion Contributors, The Rand Project Developers, The Rust Project Developers
+rand_chacha    : The Rand Project Developers, The Rust Project Developers, The CryptoCorrosion Contributors
 rand_core      : The Rand Project Developers, The Rust Project Developers
 rand_pcg       : The Rand Project Developers
 rawpointer     : bluss
