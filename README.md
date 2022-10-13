@@ -1,4 +1,4 @@
-## Installation Source Package from GitHub:
+## Installation source package from GitHub:
 
 ```r
 install.packages("remotes")
