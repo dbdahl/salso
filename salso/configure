@@ -21,15 +21,7 @@ if ( okay ) {
 } else {
 
     message("No suitable version of Cargo was found.\n")
-    if ( ( Sys.getenv("MY_UNIVERSE","<unset>") == "<unset>" ) && ( Sys.getenv("NOT_CRAN","<unset>") == "<unset>" ) ) {
-        message(paste0(readLines("../../INSTALL"), collapse="\n"))
-    } else {
-        message("Downloading prebuild static library.\n")
-        desc <- read.dcf("../../DESCRIPTION")
-        url_base <- "https://dahl.byu.edu/public"
-        url <- file.path(url_base, "r_cargo_cross_compile", desc[,"Package"], desc[,"Version"], triple, "librust.a")
-        download.file(url, "../librust.a", mode="wb")
-    }
+    message(paste0(readLines("../../INSTALL"), collapse="\n"))
 
 }
 
