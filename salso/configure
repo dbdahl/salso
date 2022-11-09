@@ -22,7 +22,7 @@ if ( okay ) {
 
     message("No suitable version of Cargo was found.\n")
     if ( ( Sys.getenv("MY_UNIVERSE","<unset>") == "<unset>" ) && ( Sys.getenv("NOT_CRAN","<unset>") == "<unset>" ) ) {
-        message("Please run 'install()' from the 'cargo' package, or set the environment variable 'NOT_CRAN'.\n")
+        message(paste0(readLines("../../INSTALL"), collapse="\n"))
     } else {
         message("Downloading prebuild static library.\n")
         desc <- read.dcf("../../DESCRIPTION")
