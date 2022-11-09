@@ -1,5 +1,6 @@
-This R package relies on Cargo, the Rust package manager. Cargo can be provided in a number of way.
-Either of the following methods should work:
+This R package relies on Cargo, the Rust package manager. Cargo can be provided in a number of ways.
+Either of the following methods should work (although the first method will guarantee that the most
+recent version is installed):
 
 1. Install from https://rustup.rs, an official Rust website, e.g.:
 
