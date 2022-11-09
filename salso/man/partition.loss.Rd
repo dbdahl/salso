@@ -240,7 +240,7 @@ variable cluster models. \emph{Statistics and Computing}, \bold{28},
 
 D. B. Dahl, D. J. Johnson, and P. Müller (2022), Search Algorithms and Loss
 Functions for Bayesian Clustering, \emph{Journal of Computational and
-Graphical Statistics}, \bold{31:2}, \doi{10.1080/10618600.2022.2069779}.
+Graphical Statistics}, \doi{10.1080/10618600.2022.2069779}.
 }
 \seealso{
 \code{\link{psm}}, \code{\link{salso}}, \code{\link{dlso}}

@@ -1,12 +1,12 @@
-The R package authors are:
+The authors are:
 
     David B. Dahl <dahl@stat.byu.edu> [aut, cre] (<https://orcid.org/0000-0002-8173-1547>)
     Devin J. Johnson <devin.j.johnson7@gmail.com> [aut] (<https://orcid.org/0000-0003-2619-6649>)
     Peter Müller <pmueller@math.utexas.edu> [aut]
+    The authors of the dependency Rust crates [ctb] (see inst/AUTHORS file for details)
 
-The Rust crates upon which this package depends are included in the package
-source in the 'src/rust' directory, most of which are in the archive
-'vendor.tar.xz'.  The names and authors are as follows:
+The depending Rust crates are in the 'src/rust' directory of the package source
+(including in the archive 'vendor.tar.xz') and give the authors as follows:
 
 approx         : Brendan Zabarauskas <bjzaba@yahoo.com.au>
 autocfg        : Josh Stone <cuviper@gmail.com>
@@ -17,9 +17,9 @@ dahl-salso     : David B. Dahl <dahl@stat.byu.edu>
 getrandom      : The Rand Project Developers
 hermit-abi     : Stefan Lankes
 libc           : The Rust Project Developers
-matrixmultiply : bluss, R. Janis Goldschmidt
+matrixmultiply : R. Janis Goldschmidt, bluss
 memoffset      : Gilad Naaman <gilad.naaman@gmail.com>
-ndarray        : Jim Turner, Ulrik Sverdrup "bluss"
+ndarray        : Ulrik Sverdrup "bluss", Jim Turner
 num-bigint     : The Rust Project Developers
 num-complex    : The Rust Project Developers
 num-integer    : The Rust Project Developers
@@ -29,7 +29,7 @@ ppv-lite86     : The CryptoCorrosion Contributors
 proc-macro2    : David Tolnay <dtolnay@gmail.com>, Alex Crichton <alex@alexcrichton.com>
 quote          : David Tolnay <dtolnay@gmail.com>
 rand           : The Rand Project Developers, The Rust Project Developers
-rand_chacha    : The Rand Project Developers, The Rust Project Developers, The CryptoCorrosion Contributors
+rand_chacha    : The Rust Project Developers, The Rand Project Developers, The CryptoCorrosion Contributors
 rand_core      : The Rand Project Developers, The Rust Project Developers
 rand_pcg       : The Rand Project Developers
 rawpointer     : bluss
