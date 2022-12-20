@@ -1,7 +1,7 @@
 Package: salso
 Type: Package
 Title: Search Algorithms and Loss Functions for Bayesian Clustering
-Version: 0.3.28
+Version: 0.3.29
 Authors@R: c(person(given = "David B.", family = "Dahl", role = c("aut", "cre"), email = "dahl@stat.byu.edu", comment = c(ORCID = "0000-0002-8173-1547")), 
     person(given = "Devin J.", family = "Johnson", role = c("aut"), email = "devin.j.johnson7@gmail.com", comment = c(ORCID = "0000-0003-2619-6649")), 
     person(given = "Peter", family = "Müller", role = c("aut"), email = "pmueller@math.utexas.edu"), 
@@ -32,7 +32,7 @@ Authors@R: c(person(given = "David B.", family = "Dahl", role = c("aut", "cre"),
     person(given = "The matrixmultiply Authors", role = "cph", comment = "Rust crate: matrixmultiply. See AUTHORS file."),
     person(given = "The ndarray Developers", role = "cph", comment = "Rust crate: ndarray. See AUTHORS file."),
     person(given = "The Rand Project Developers", role = "cph", comment = "Rust crates: rand_core, rand_chacha, rand_pcg, rand, getrandom. See AUTHORS file."),
-    person(given = "The Rust Project Developers", role = "cph", comment = "Rust crates: crossbmean-channel, rand_chacha, num-bigint, num-integer, rand_core, num-complex, libc, num-traits, rand. See AUTHORS file."),
+    person(given = "The Rust Project Developers", role = "cph", comment = "Rust crates: crossbmean-channel, rand_chacha, num-integer, rand_core, num-complex, libc, num-traits, rand. See AUTHORS file."),
     person(given = "The scopeguard Developers", role = "cph", comment = "Rust crates: scopeguard. See AUTHORS file."),
     person(given = "Unicode, Inc.", role = "cph", comment = "Rust crate: unicode-ident. See AUTHORS file.")
     )
