@@ -13,31 +13,42 @@ use std::ffi::CStr;
 use std::num::TryFromIntError;
 use std::os::raw::{c_char, c_void};
 
-/// A Rust representation of an R object.
-///
-/// Technically, this is simply a Rust new type idiom (newtype) for R's `SEXP`, a pointer to R's `SEXPREC` structure.
-///
-#[derive(Copy, Clone)]
-#[repr(C)]
-pub struct Rval(pub SEXP);
+pub struct R;
 
-/// Generate random bytes using R's RNG.
-///
-/// # Examples:
-/// ```
-/// let mut rng = rand_pcg::Pcg64Mcg::from_seed(crate::r::random_bytes::<16>());
-/// ```
-///
-pub fn random_bytes<const LENGTH: usize>() -> [u8; LENGTH] {
-    unsafe {
-        let m = (u8::MAX as f64) + 1.0;
-        let mut bytes: [u8; LENGTH] = [0; LENGTH];
-        GetRNGstate();
-        for x in bytes.iter_mut() {
-            *x = R_unif_index(m) as u8;
+pub struct RError(pub String);
+
+impl R {
+    /// Generate random bytes using R's RNG.
+    ///
+    /// # Examples:
+    /// ```
+    /// let mut rng = rand_pcg::Pcg64Mcg::from_seed(crate::r::random_bytes::<16>());
+    /// ```
+    ///
+    pub fn random_bytes<const LENGTH: usize>() -> [u8; LENGTH] {
+        unsafe {
+            let m = (u8::MAX as f64) + 1.0;
+            let mut bytes: [u8; LENGTH] = [0; LENGTH];
+            GetRNGstate();
+            for x in bytes.iter_mut() {
+                *x = R_unif_index(m) as u8;
+            }
+            PutRNGstate();
+            bytes
         }
-        PutRNGstate();
-        bytes
+    }
+
+    /// Flush the R console.
+    pub fn flush_console() {
+        unsafe { R_FlushConsole() };
+    }
+
+    /// Check to see if the user has attempted to interrupt the execution.
+    pub fn check_user_interrupt() -> bool {
+        extern "C" fn check_interrupt_fn(_: *mut c_void) {
+            unsafe { R_CheckUserInterrupt() };
+        }
+        unsafe { R_ToplevelExec(Some(check_interrupt_fn), std::ptr::null_mut()) == 0 }
     }
 }
 
@@ -50,6 +61,7 @@ pub fn random_bytes<const LENGTH: usize>() -> [u8; LENGTH] {
 ///
 #[doc(hidden)]
 pub fn _print(x: &str, use_stdout: bool) -> bool {
+    #[repr(C)]
     struct DummyFat {
         len: usize,
         ptr: *const c_char,
@@ -132,18 +144,27 @@ macro_rules! reprintln {
     }
 }
 
-/// Flush the R console.
-pub fn flush_console() {
-    unsafe { R_FlushConsole() };
+/// Throw an R error.
+#[macro_export]
+macro_rules! stop {
+    () => {
+        std::panic::panic_any(r::RError(String::new()))
+    };
+    ($fmt_string:expr) => {
+        std::panic::panic_any(r::RError(format!($fmt_string)))
+    };
+    ($fmt_string:expr, $( $arg:expr ),* ) => {
+        std::panic::panic_any(r::RError(format!($fmt_string, $($arg),*)))
+    }
 }
 
-/// Check to see if the user has attempted to interrupt the execution.
-pub fn check_user_interrupt() -> bool {
-    extern "C" fn check_interrupt_fn(_: *mut c_void) {
-        unsafe { R_CheckUserInterrupt() };
-    }
-    unsafe { R_ToplevelExec(Some(check_interrupt_fn), std::ptr::null_mut()) == 0 }
-}
+/// A Rust representation of an R object.
+///
+/// Technically, this is simply a Rust new type idiom (newtype) for R's `SEXP`, a pointer to R's `SEXPREC` structure.
+///
+#[derive(Copy, Clone)]
+#[repr(C)]
+pub struct Rval(pub SEXP);
 
 impl Rval {
     fn new_vector<T>(
@@ -264,15 +285,15 @@ impl Rval {
 
     /// Define a new error.
     ///
-    /// This does *not* throw an error.  Instead, simply use `panic!`.
+    /// This does *not* throw an error.  To throw an R error, simply use `stop!`.
     ///
-    pub fn new_error(message: &str, pc: &mut Pc) -> Self {
+    pub fn new_error(message: &str, pc: &mut Pc) -> Result<Self, String> {
         let list = Self::new_list(2, pc);
-        list.set_list_element(0, Self::new(message, pc));
-        list.set_list_element(1, Self::nil());
-        list.names_gets(Self::new(["message", "calls"], pc));
-        list.class_gets(Self::new(["error", "condition"], pc));
-        list
+        list.set_list_element(0, Self::new(message, pc))?;
+        list.set_list_element(1, Self::nil())?;
+        list.names_gets(Self::new(["message", "calls"], pc))?;
+        list.class_gets(Self::new(["error", "condition"], pc))?;
+        Ok(list)
     }
 
     /// Define a new element for a character vector.
@@ -538,34 +559,36 @@ impl Rval {
 
     /// Get an element of a character vector, with indexing starting at zero.
     ///
-    /// # Panics
+    /// This function returns an error if the object is not a character vector or if `i` is greater than or equal to the length of the vector.
     ///
-    /// This function panics if the object is not a character vector or if `i` is greater than or equal to the length of the vector.
-    ///
-    pub fn get_character_element(self, i: usize) -> Self {
+    pub fn get_character_element(self, i: usize) -> Result<Self, String> {
         if !self.is_character() {
-            panic!("Not of storage mode `character`");
+            return Err("Not of storage mode `character`".to_string());
         }
         let len = self.len();
         if i >= len {
-            panic!("Index {} is out of bounds for vector of length {}", i, len);
+            return Err(format!(
+                "Index {} is out of bounds for vector of length {}",
+                i, len
+            ));
         }
-        Self(unsafe { STRING_ELT(self.0, i.try_into().unwrap()) })
+        Ok(Self(unsafe { STRING_ELT(self.0, i.try_into().unwrap()) }))
     }
 
     /// Set an element of a character vector, with indexing starting at zero.
     ///
-    /// # Panics
+    /// This function returns an error if the object is not a character vector or if `i` is greater than or equal to the length of the vector.
     ///
-    /// This function panics if the object is not a character vector or if `i` is greater than or equal to the length of the vector.
-    ///
-    pub fn set_character_element(self, i: usize, value: &str, pc: &mut Pc) {
+    pub fn set_character_element(self, i: usize, value: &str, pc: &mut Pc) -> Result<(), String> {
         if !self.is_character() {
-            panic!("Not of storage mode `character`");
+            return Err("Not of storage mode `character`".to_string());
         }
         let len = self.len();
         if i >= len {
-            panic!("Index {} is out of bounds for vector of length {}", i, len);
+            return Err(format!(
+                "Index {} is out of bounds for vector of length {}",
+                i, len
+            ));
         }
         unsafe {
             SET_STRING_ELT(
@@ -573,43 +596,47 @@ impl Rval {
                 i.try_into().unwrap(),
                 Self::new_character(value, pc).0,
             );
-        }
+        };
+        Ok(())
     }
 
     /// Get an element of a list, with indexing starting at zero.
     ///
-    /// # Panics
+    /// This function returns an error if the object is not a list or if `i` is greater than or equal to the length of the list.
     ///
-    /// This function panics if the object is not a list or if `i` is greater than or equal to the length of the list.
-    ///
-    pub fn get_list_element(self, i: usize) -> Self {
+    pub fn get_list_element(self, i: usize) -> Result<Self, String> {
         if !self.is_list() {
-            panic!("Not a list");
+            return Err("Not a list".to_string());
         }
         let len = self.len();
         if i >= len {
-            panic!("Index {} is out of bounds for list of length {}", i, len);
+            return Err(format!(
+                "Index {} is out of bounds for vector of length {}",
+                i, len
+            ));
         }
-        Self(unsafe { VECTOR_ELT(self.0, i.try_into().unwrap()) })
+        Ok(Self(unsafe { VECTOR_ELT(self.0, i.try_into().unwrap()) }))
     }
 
     /// Set an element of a list, with indexing starting at zero.
     ///
-    /// # Panics
+    /// This function returns an error if the object is not a list or if `i` is greater than or equal to the length of the list.
     ///
-    /// This function panics if the object is not a list or if `i` is greater than or equal to the length of the list.
-    ///
-    pub fn set_list_element(self, i: usize, value: Self) {
+    pub fn set_list_element(self, i: usize, value: Self) -> Result<(), String> {
         if !self.is_list() {
-            panic!("Not a list");
+            return Err("Not a list".to_string());
         }
         let len = self.len();
         if i >= len {
-            panic!("Index {} is out of bounds for list of length {}", i, len);
+            return Err(format!(
+                "Index {} is out of bounds for vector of length {}",
+                i, len
+            ));
         }
         unsafe {
             SET_VECTOR_ELT(self.0, i.try_into().unwrap(), value.0);
         }
+        Ok(())
     }
 
     /// Get an attribute.
@@ -626,57 +653,53 @@ impl Rval {
 
     /// Create a new binding (or changes the value of an existing binding) in the specified environment frame.  It is the analogue of `assign(self, value, envir = environment, inherits = FALSE)`.
     ///
-    /// # Panics
-    ///
-    /// The function panics if the object is not a symbol.
+    /// The function returns an error if the object is not a symbol.
     ///   
-    pub fn assign(self, value: Self, environment: Self) {
+    pub fn assign(self, value: Self, environment: Self) -> Result<(), String> {
         if !self.is_symbol() {
-            panic!("Not a symbol")
+            return Err("Not a symbol".to_string());
         }
         unsafe { Rf_defineVar(self.0, value.0, environment.0) };
+        Ok(())
     }
 
     /// Search for an existing binding in the specified environment or its enclosing environments.  If a binding is found, its value is changed to `value`.  Otherwise, a new binding is created in the global environment.  This corresponds to `assign(self, value, envir = environment, inherits = TRUE)`.
     ///
-    /// # Panics
-    ///
-    /// The function panics if the object is not a symbol.
+    /// The function returns an error if the object is not a symbol.
     ///   
-    pub fn assign_inherits(self, value: Self, environment: Self) {
+    pub fn assign_inherits(self, value: Self, environment: Self) -> Result<(), String> {
         if !self.is_symbol() {
-            panic!("Not a symbol")
+            return Err("Not a symbol".to_string());
         }
         unsafe { Rf_setVar(self.0, value.0, environment.0) };
+        Ok(())
     }
 
     /// Set the names attribute of an object.
     ///
-    /// # Panics
+    /// The function returns an error if `names` is not an vector object of the same length as the object.
     ///
-    /// The function panics if `names` is not an vector object of the same length as the object.
-    ///
-    pub fn names_gets(self, names: Self) {
+    pub fn names_gets(self, names: Self) -> Result<(), String> {
         if !self.is_vector() {
-            panic!("Not a vector")
+            return Err("Not a vector".to_string());
         }
         if names.len() != self.len() {
-            panic!("'names' is not the same length as vector")
+            return Err("'names' is not the same length as vector".to_string());
         }
         unsafe { Rf_namesgets(self.0, names.0) };
+        Ok(())
     }
 
     /// Set the class attribute of an object.
     ///
-    /// # Panics
+    /// The function returns an error if `value` is not a character vector.
     ///
-    /// The function panics if `value` is not a character vector.
-    ///
-    pub fn class_gets(self, value: Self) {
+    pub fn class_gets(self, value: Self) -> Result<(), String> {
         if !value.is_character() {
-            panic!("'value' is not a character vector")
+            return Err("'value' is not a character vector".to_string());
         }
         unsafe { Rf_classgets(self.0, value.0) };
+        Ok(())
     }
 
     /// Get the length of the object.
@@ -736,39 +759,33 @@ impl Rval {
 
     /// Get the number of rows in a matrix.
     ///
-    /// # Panics
+    /// The function returns an error if the object is not a matrix.
     ///
-    /// The function panics if the object is not a matrix.
-    ///
-    pub fn nrow(self) -> usize {
+    pub fn nrow(self) -> Result<usize, String> {
         if !self.is_matrix() {
-            panic!("Not a matrix");
+            return Err("Not a matrix".to_string());
         }
-        unsafe { Rf_nrows(self.0).try_into().unwrap() }
+        Ok(unsafe { Rf_nrows(self.0).try_into().unwrap() })
     }
 
     /// Get the number of columns in a matrix.
     ///
-    /// # Panics
+    /// The function returns an error if the object is not a matrix.
     ///
-    /// The function panics if the object is not a matrix.
-    ///
-    pub fn ncol(self) -> usize {
+    pub fn ncol(self) -> Result<usize, String> {
         if !self.is_matrix() {
-            panic!("Not a matrix");
+            return Err("Not a matrix".to_string());
         }
-        unsafe { Rf_ncols(self.0).try_into().unwrap() }
+        Ok(unsafe { Rf_ncols(self.0).try_into().unwrap() })
     }
 
     /// Transpose a matrix.
     ///
-    /// # Panics
-    ///
-    /// The function panics if the object is not a matrix.
+    /// The function returns an error if the object is not a matrix.
     ///    
-    pub fn transpose(self, pc: &mut Pc) -> Self {
+    pub fn transpose(self, pc: &mut Pc) -> Result<Self, String> {
         if !self.is_matrix() {
-            panic!("Not a matrix");
+            return Err("Not a matrix".to_string());
         }
         unsafe {
             let sexp = pc.protect(Rf_allocMatrix(
@@ -777,7 +794,7 @@ impl Rval {
                 Rf_nrows(self.0),
             ));
             Rf_copyMatrix(sexp, self.0, 1);
-            Self(sexp)
+            Ok(Self(sexp))
         }
     }
 
@@ -831,7 +848,6 @@ impl Rval {
     pub fn slice_raw(self) -> Result<&'static [u8], &'static str> {
         Self::slice(self, RAWSXP, |x| unsafe { RAW(x) })
     }
-
 
     fn slice_mut<T>(
         rval: Self,
@@ -1447,24 +1463,24 @@ impl NewProtected<&[&str]> for Rval {
 }
 
 impl TryFrom<Rval> for &str {
-    type Error = &'static str;
-    fn try_from(x: Rval) -> Result<&'static str, &'static str> {
+    type Error = String;
+    fn try_from(x: Rval) -> Result<&'static str, String> {
         let sexp = if x.is_character() {
             if x.is_empty() {
-                return Err("Length must be at least one");
+                return Err("Length must be at least one".to_string());
             }
-            x.get_character_element(0).0
+            x.get_character_element(0)?.0
         } else {
             x.0
         };
         if unsafe { TYPEOF(sexp) != CHARSXP.try_into().unwrap() } {
-            return Err("Object is not of storage model `character`");
+            return Err("Object is not of storage model `character`".to_string());
         }
         let a = unsafe { R_CHAR(sexp) as *const c_char };
         let c_str = unsafe { CStr::from_ptr(a) };
         match c_str.to_str() {
             Ok(x) => Ok(x),
-            Err(_) => Err("Could not convert to UTF-8"),
+            Err(_) => Err("Could not convert to UTF-8".to_string()),
         }
     }
 }
@@ -1515,31 +1531,11 @@ impl Drop for Pc {
 #[doc(hidden)]
 #[no_mangle]
 pub extern "C" fn set_custom_panic_hook() -> SEXP {
-    std::panic::set_hook(Box::new(|panic_info| {
-        let (filename, line, column) = if let Some(location) = panic_info.location() {
-            (
-                location.file().to_string(),
-                location.line(),
-                location.column(),
-            )
-        } else {
-            ("".to_string(), 0, 0)
-        };
-        let message = if let Some(s) = panic_info.payload().downcast_ref::<&str>() {
-            s.to_string()
-        } else if let Some(s) = panic_info.payload().downcast_ref::<String>() {
-            s.to_string()
-        } else {
-            "".to_string()
-        };
-        use crate::r;
-        reprintln!(
-            "Error in file '{}' at line {}, column {} : {}",
-            filename,
-            line,
-            column,
-            message
-        );
+    let default_panic = std::panic::take_hook();
+    std::panic::set_hook(Box::new(move |panic_info| {
+        if panic_info.payload().downcast_ref::<RError>().is_none() {
+            default_panic(panic_info);
+        }
     }));
     unsafe { R_NilValue }
 }

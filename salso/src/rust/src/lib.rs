@@ -1,4 +1,6 @@
-mod registration;
+mod registration {
+    include!(concat!(env!("OUT_DIR"), "/registration.rs"));
+}
 
 use num_traits::cast::ToPrimitive;
 use rand::SeedableRng;
@@ -38,8 +40,8 @@ fn enumerate_partitions(n_items: Rval) -> Rval {
 
 #[roxido]
 fn expected_loss(partitions: Rval, draws: Rval, psm: Rval, loss: Rval, a: Rval) -> Rval {
-    let n_partitions = partitions.nrow();
-    let n_items = partitions.ncol();
+    let n_partitions = partitions.nrow().unwrap();
+    let n_items = partitions.ncol().unwrap();
     let (_, partitions_slice) = partitions.coerce_integer(pc).unwrap();
     let (_, draws_slice) = draws.coerce_integer(pc).unwrap();
     let (_, psm_slice) = psm.coerce_double(pc).unwrap();
@@ -55,7 +57,7 @@ fn expected_loss(partitions: Rval, draws: Rval, psm: Rval, loss: Rval, a: Rval) 
     let loss_function = dahl_salso::LossFunction::from_code(loss, a);
     match loss_function {
         Some(dahl_salso::LossFunction::BinderDraws(a)) => {
-            let n_draws = draws.nrow();
+            let n_draws = draws.nrow().unwrap();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws_slice,
                 n_draws,
@@ -74,7 +76,7 @@ fn expected_loss(partitions: Rval, draws: Rval, psm: Rval, loss: Rval, a: Rval) 
             dahl_salso::loss::binder_multiple(&partitions, &psm, results_slice)
         }
         Some(dahl_salso::LossFunction::OneMinusARI) => {
-            let n_draws = draws.nrow();
+            let n_draws = draws.nrow().unwrap();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws_slice,
                 n_draws,
@@ -93,7 +95,7 @@ fn expected_loss(partitions: Rval, draws: Rval, psm: Rval, loss: Rval, a: Rval) 
             dahl_salso::loss::omariapprox_multiple(&partitions, &psm, results_slice)
         }
         Some(dahl_salso::LossFunction::VI(a)) => {
-            let n_draws = draws.nrow();
+            let n_draws = draws.nrow().unwrap();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws_slice,
                 n_draws,
@@ -113,7 +115,7 @@ fn expected_loss(partitions: Rval, draws: Rval, psm: Rval, loss: Rval, a: Rval) 
             dahl_salso::loss::vilb_multiple(&partitions, &psm, results_slice)
         }
         Some(dahl_salso::LossFunction::NVI) => {
-            let n_draws = draws.nrow();
+            let n_draws = draws.nrow().unwrap();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws_slice,
                 n_draws,
@@ -135,7 +137,7 @@ fn expected_loss(partitions: Rval, draws: Rval, psm: Rval, loss: Rval, a: Rval) 
             )
         }
         Some(dahl_salso::LossFunction::ID) => {
-            let n_draws = draws.nrow();
+            let n_draws = draws.nrow().unwrap();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws_slice,
                 n_draws,
@@ -157,7 +159,7 @@ fn expected_loss(partitions: Rval, draws: Rval, psm: Rval, loss: Rval, a: Rval) 
             )
         }
         Some(dahl_salso::LossFunction::NID) => {
-            let n_draws = draws.nrow();
+            let n_draws = draws.nrow().unwrap();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws_slice,
                 n_draws,
@@ -185,8 +187,8 @@ fn expected_loss(partitions: Rval, draws: Rval, psm: Rval, loss: Rval, a: Rval) 
 
 #[roxido]
 fn psm(partitions: Rval, n_cores: Rval) -> Rval {
-    let n_partitions = partitions.nrow();
-    let n_items = partitions.ncol();
+    let n_partitions = partitions.nrow().unwrap();
+    let n_items = partitions.ncol().unwrap();
     let (_, partitions_slice) = partitions.coerce_integer(pc).unwrap();
     let n_cores = n_cores.as_usize() as u32;
     let (psm, psm_slice) = Rval::new_matrix_double(n_items, n_items, pc);
@@ -205,7 +207,7 @@ fn psm(partitions: Rval, n_cores: Rval) -> Rval {
 fn minimize_by_enumeration(psm: Rval, loss: Rval, a: Rval) -> Rval {
     let loss = loss.as_i32();
     let a = a.as_f64();
-    let n_items = psm.nrow();
+    let n_items = psm.nrow().unwrap();
     let (_, psm_slice) = psm.coerce_double(pc).unwrap();
     let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
     let f = match dahl_salso::LossFunction::from_code(loss, a) {
@@ -257,8 +259,8 @@ fn minimize_by_salso(
             | dahl_salso::LossFunction::NVI
             | dahl_salso::LossFunction::ID
             | dahl_salso::LossFunction::NID => {
-                n_items = draws.ncol();
-                let n_draws = draws.nrow();
+                n_items = draws.ncol().unwrap();
+                let n_draws = draws.nrow().unwrap();
                 let (_, draws_slice) = draws.coerce_integer(pc).unwrap();
                 draws2 = dahl_salso::clustering::Clusterings::from_i32_column_major_order(
                     dahl_partition::PartitionsHolderBorrower::from_slice(
@@ -278,7 +280,7 @@ fn minimize_by_salso(
             dahl_salso::LossFunction::BinderPSM
             | dahl_salso::LossFunction::OneMinusARIapprox
             | dahl_salso::LossFunction::VIlb => {
-                n_items = psm.ncol();
+                n_items = psm.ncol().unwrap();
                 let (_, psm_slice) = psm.coerce_double(pc).unwrap();
                 psm2 = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
                 (
@@ -307,7 +309,7 @@ fn minimize_by_salso(
     let prob_sequential_allocation = prob_sequential_allocation.as_f64();
     let prob_singletons_initialization = prob_singletons_initialization.as_f64();
     let n_cores = u32::try_from(n_cores.as_usize()).unwrap();
-    let mut rng = Pcg64Mcg::from_seed(r::random_bytes::<16>());
+    let mut rng = Pcg64Mcg::from_seed(R::random_bytes::<16>());
     let p = dahl_salso::optimize::SALSOParameters {
         n_items,
         max_size: max_n_clusters_u16,
@@ -327,54 +329,36 @@ fn minimize_by_salso(
         &mut rng,
     );
     let info_attr = Rval::new_list(10, pc);
-    info_attr.names_gets(rval!(
-        [
-            "loss",
-            "a",
-            "maxNClusters",
-            "expectedLoss",
-            "initMethod",
-            "nScans",
-            "nZAcc",
-            "nZAtt",
-            "nRuns",
-            "seconds",
-        ]
-    ));
-    info_attr.set_list_element(1, a);
-    info_attr.set_list_element(
-        2,
-        rval!(i32::try_from(results.max_size).unwrap()),
-    );
-    info_attr.set_list_element(3, rval!(results.expected_loss));
-    info_attr.set_list_element(
+    let _ = info_attr.names_gets(rval!([
+        "loss",
+        "a",
+        "maxNClusters",
+        "expectedLoss",
+        "initMethod",
+        "nScans",
+        "nZAcc",
+        "nZAtt",
+        "nRuns",
+        "seconds",
+    ]));
+    let _ = info_attr.set_list_element(1, a);
+    let _ = info_attr.set_list_element(2, rval!(i32::try_from(results.max_size).unwrap()));
+    let _ = info_attr.set_list_element(3, rval!(results.expected_loss));
+    let _ = info_attr.set_list_element(
         4,
-        rval!(
-            i32::try_from(results.initialization_method.to_code()).unwrap()
-        ),
+        rval!(i32::try_from(results.initialization_method.to_code()).unwrap()),
     );
-    info_attr.set_list_element(
-        5,
-        rval!(i32::try_from(results.n_scans).unwrap()),
-    );
-    info_attr.set_list_element(
-        6,
-        rval!(i32::try_from(results.n_zealous_accepts).unwrap()),
-    );
-    info_attr.set_list_element(
-        7,
-        rval!(i32::try_from(results.n_zealous_attempts).unwrap()),
-    );
-    info_attr.set_list_element(
-        8,
-        rval!(i32::try_from(results.n_runs).unwrap()),
-    );
-    info_attr.set_list_element(9, rval!(results.seconds));
+    let _ = info_attr.set_list_element(5, rval!(i32::try_from(results.n_scans).unwrap()));
+    let _ = info_attr.set_list_element(6, rval!(i32::try_from(results.n_zealous_accepts).unwrap()));
+    let _ =
+        info_attr.set_list_element(7, rval!(i32::try_from(results.n_zealous_attempts).unwrap()));
+    let _ = info_attr.set_list_element(8, rval!(i32::try_from(results.n_runs).unwrap()));
+    let _ = info_attr.set_list_element(9, rval!(results.seconds));
     let (r, r_slice) = Rval::new_vector_integer(n_items, pc);
     for (v, rr) in results.clustering.iter().zip(r_slice.iter_mut()) {
         *rr = i32::try_from(*v + 1).unwrap();
     }
-    r.class_gets(rval!("salso.estimate"));
+    let _ = r.class_gets(rval!("salso.estimate"));
     r.set_attribute("info", info_attr, pc);
     r
 }

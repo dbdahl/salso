@@ -8,7 +8,7 @@ isPSM <- function(x) {
   is.matrix(x) && isSymmetric(x) && all(0 <= x) && all(x <= 1) && all(diag(x)==1)
 }
 
-x2drawspsm <- function(x, loss, nCores=0) {
+x2drawspsm <- function(x, loss, nCores=0, forceNotPSM=TRUE) {
   draws <- NULL
   psm <- NULL
   a <- 1
@@ -17,7 +17,7 @@ x2drawspsm <- function(x, loss, nCores=0) {
     loss <- loss$loss
   }
   lossStr <- loss
-  if ( isPSM(x) ) {
+  if ( !forceNotPSM && isPSM(x) ) {
       psm <- x
       if ( lossStr == "binder" ) lossStr <- "binder.psm"
   } else {
