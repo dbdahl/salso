@@ -13,8 +13,8 @@ install.packages('salso')
 You can also install the latest development version from source.
 
 First install the development tools. On MacOS, install Xcode command line tools
-by running `sudo xcode-select --install`. On Windows, install [Rtools](https://
-cran.r- project.org/bin/windows/Rtools/).
+by running `sudo xcode-select --install`. On Windows, install
+[Rtools](https://cran.r-project.org/bin/windows/Rtools/).
 
 Then install the `remotes` and `cargo` packages:
 
