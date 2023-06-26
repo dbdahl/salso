@@ -180,7 +180,7 @@ fn expected_loss(partitions: Rval, draws: Rval, psm: Rval, loss: Rval, a: Rval) 
                 results_slice,
             )
         }
-        None => panic!("Unsupported loss method: {}", loss),
+        None => stop!("Unsupported loss method: {}", loss),
     };
     results
 }
@@ -212,17 +212,17 @@ fn minimize_by_enumeration(psm: Rval, loss: Rval, a: Rval) -> Rval {
     let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
     let f = match dahl_salso::LossFunction::from_code(loss, a) {
         Some(loss_function) => match loss_function {
-            dahl_salso::LossFunction::BinderDraws(_) => panic!("No implementation for binder."),
+            dahl_salso::LossFunction::BinderDraws(_) => stop!("No implementation for binder."),
             dahl_salso::LossFunction::BinderPSM => dahl_salso::loss::binder_single_kernel,
-            dahl_salso::LossFunction::OneMinusARI => panic!("No implementation for omARI."),
+            dahl_salso::LossFunction::OneMinusARI => stop!("No implementation for omARI."),
             dahl_salso::LossFunction::OneMinusARIapprox => dahl_salso::loss::omariapprox_single,
-            dahl_salso::LossFunction::VI(_) => panic!("No implementation for VI."),
+            dahl_salso::LossFunction::VI(_) => stop!("No implementation for VI."),
             dahl_salso::LossFunction::VIlb => dahl_salso::loss::vilb_single_kernel,
-            dahl_salso::LossFunction::NVI => panic!("No implementation for NVI."),
-            dahl_salso::LossFunction::ID => panic!("No implementation for ID."),
-            dahl_salso::LossFunction::NID => panic!("No implementation for NID."),
+            dahl_salso::LossFunction::NVI => stop!("No implementation for NVI."),
+            dahl_salso::LossFunction::ID => stop!("No implementation for ID."),
+            dahl_salso::LossFunction::NID => stop!("No implementation for NID."),
         },
-        None => panic!("Unsupported loss method: code = {}", loss),
+        None => stop!("Unsupported loss method: code = {}", loss),
     };
     let minimizer = dahl_salso::optimize::minimize_by_enumeration(f, &psm);
     let (results, results_slice) = Rval::new_vector_integer(n_items, pc);
@@ -289,7 +289,7 @@ fn minimize_by_salso(
                 )
             }
         },
-        None => panic!("Unsupported loss method: code = {}", loss.as_i32()),
+        None => stop!("Unsupported loss method: code = {}", loss.as_i32()),
     };
     let max_n_clusters_i32 = max_n_clusters.as_i32();
     let (max_n_clusters_u16, max_n_clusters_as_rf) = if max_n_clusters_i32 < 0 {
