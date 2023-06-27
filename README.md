@@ -6,7 +6,7 @@ The latest release is available on [CRAN](https://cran.r-project.org/):
 
 ```r
 install.packages('salso')
-````
+```
 
 ### Installation from Source
 
