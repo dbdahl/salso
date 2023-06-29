@@ -287,13 +287,13 @@ impl Rval {
     ///
     /// This does *not* throw an error.  To throw an R error, simply use `stop!`.
     ///
-    pub fn new_error(message: &str, pc: &mut Pc) -> Result<Self, String> {
+    pub fn new_error(message: &str, pc: &mut Pc) -> Self {
         let list = Self::new_list(2, pc);
-        list.set_list_element(0, Self::new(message, pc))?;
-        list.set_list_element(1, Self::nil())?;
-        list.names_gets(Self::new(["message", "calls"], pc))?;
-        list.class_gets(Self::new(["error", "condition"], pc))?;
-        Ok(list)
+        let _ = list.set_list_element(0, Self::new(message, pc));
+        let _ = list.set_list_element(1, Self::nil());
+        let _ = list.names_gets(Self::new(["message", "calls"], pc));
+        let _ = list.class_gets(Self::new(["error", "condition"], pc));
+        list
     }
 
     /// Define a new element for a character vector.
@@ -1445,7 +1445,7 @@ impl<const LENGTH: usize> NewProtected<[&str; LENGTH]> for Rval {
     fn new(x: [&str; LENGTH], pc: &mut Pc) -> Self {
         let y = Rval::new_vector_character(LENGTH, pc);
         for (i, x) in x.iter().enumerate() {
-            unsafe { SET_STRING_ELT(y.0, i.try_into().unwrap(), Self::new_character(*x, pc).0) };
+            unsafe { SET_STRING_ELT(y.0, i.try_into().unwrap(), Self::new_character(x, pc).0) };
         }
         y
     }
@@ -1456,7 +1456,7 @@ impl NewProtected<&[&str]> for Rval {
         let len = x.len();
         let y = Rval::new_vector_character(len, pc);
         for (i, x) in x.iter().enumerate() {
-            unsafe { SET_STRING_ELT(y.0, i.try_into().unwrap(), Self::new_character(*x, pc).0) };
+            unsafe { SET_STRING_ELT(y.0, i.try_into().unwrap(), Self::new_character(x, pc).0) };
         }
         y
     }
