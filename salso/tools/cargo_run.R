@@ -117,8 +117,9 @@ run <- function(..., minimum_version = ".", search_methods = c("cache", "convent
           version <- strsplit(output, " ", fixed = TRUE)[[1]][2]
           if (is.na(version)) {
             msg(sprintf(
-                "Problem parsing Cargo version string: '%s'.\nPlease try again after running 'cargo::install()' in an interactive session.\n",
-                paste(output, collapse = ",")))
+              "Problem parsing Cargo version string: '%s'.\nPlease try again after running 'cargo::install()' in an interactive session.\n",
+              paste(output, collapse = ",")
+            ))
             return(203)
           }
           if (utils::compareVersion(version, msrv) < 0) {
