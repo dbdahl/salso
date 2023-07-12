@@ -14,13 +14,13 @@ fn bell(n_items: RObject) -> RObject {
         Some(x) => x,
         None => f64::INFINITY,
     };
-    rvec!(x).into()
+    rvec!(x)
 }
 
 #[roxido]
 fn lbell(n_items: RObject) -> RObject {
     let x = dahl_bellnumber::lbell(n_items.as_usize());
-    rvec!(x).into()
+    rvec!(x)
 }
 
 #[roxido]
@@ -35,7 +35,7 @@ fn enumerate_partitions(n_items: RObject) -> RObject {
         p.iter_mut().for_each(|x| *x += 1);
         phv.push_slice(&p[..]);
     }
-    partitions.into()
+    partitions
 }
 
 #[roxido]
@@ -191,7 +191,7 @@ fn expected_loss(
         }
         None => stop!("Unsupported loss method: {}", loss),
     };
-    results.into()
+    results
 }
 
 #[roxido]
@@ -210,7 +210,7 @@ fn psm(partitions: RObject, n_cores: RObject) -> RObject {
     );
     let mut psm2 = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
     dahl_salso::psm::psm_engine(n_partitions, n_items, n_cores, &partitions, &mut psm2);
-    psm.into()
+    psm
 }
 
 #[roxido]
@@ -240,7 +240,7 @@ fn minimize_by_enumeration(psm: RObject, loss: RObject, a: RObject) -> RObject {
     for (i, v) in minimizer.iter().enumerate() {
         results_slice[i] = i32::try_from(*v + 1).unwrap();
     }
-    results.into()
+    results
 }
 
 #[roxido]
@@ -372,5 +372,5 @@ fn minimize_by_salso(
     }
     let _ = r.class_gets(rstr!("salso.estimate"));
     r.set_attribute("info", info_attr, pc);
-    r.into()
+    r
 }
