@@ -46,14 +46,21 @@ fn expected_loss(
     loss: RObject,
     a: RObject,
 ) -> RObject {
-    let partitions = partitions.as_matrix_or_stop("Expected a matrix");
+    let partitions = partitions.as_matrix_or_stop("Expected a matrix. 1");
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
     let (_, partitions_slice) = partitions.coerce_integer(pc);
     let (draws, draws_slice) = draws
-        .as_matrix_or_stop("Expected a matrix")
+        .as_matrix_or_stop("Expected a matrix. 2")
         .coerce_integer(pc);
-    let (_, psm_slice) = psm.as_matrix_or_stop("Expected a matrix").coerce_double(pc);
+    let psm_slice = if !psm.is_nil() {
+        let (_, psm_slice) = psm
+            .as_matrix_or_stop("Expected a matrix. 3")
+            .coerce_double(pc);
+        psm_slice
+    } else {
+        &mut []
+    };
     let (results, results_slice) = RVector::new_double(n_partitions, pc);
     let loss = loss.as_i32();
     let a = a.as_f64();
@@ -196,7 +203,7 @@ fn expected_loss(
 
 #[roxido]
 fn psm(partitions: RObject, n_cores: RObject) -> RObject {
-    let partitions = partitions.as_matrix_or_stop("Expected a matrix");
+    let partitions = partitions.as_matrix_or_stop("Expected a matrix. 4");
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
     let (_, partitions_slice) = partitions.coerce_integer(pc);
@@ -215,7 +222,7 @@ fn psm(partitions: RObject, n_cores: RObject) -> RObject {
 
 #[roxido]
 fn minimize_by_enumeration(psm: RObject, loss: RObject, a: RObject) -> RObject {
-    let psm = psm.as_matrix_or_stop("Expected a matrix.");
+    let psm = psm.as_matrix_or_stop("Expected a matrix. 5");
     let loss = loss.as_i32();
     let a = a.as_f64();
     let n_items = psm.nrow();
@@ -258,8 +265,7 @@ fn minimize_by_salso(
     prob_singletons_initialization: RObject,
     n_cores: RObject,
 ) -> RObject {
-    let draws = draws.as_matrix_or_stop("Expected a matrix.");
-    let psm = psm.as_matrix_or_stop("Expected a matrix.");
+    let draws = draws.as_matrix_or_stop("Expected a matrix. 6");
     let n_items;
     let draws2;
     let psm2;
@@ -293,6 +299,7 @@ fn minimize_by_salso(
             dahl_salso::LossFunction::BinderPSM
             | dahl_salso::LossFunction::OneMinusARIapprox
             | dahl_salso::LossFunction::VIlb => {
+                let psm = psm.as_matrix_or_stop("Expected a matrix. 7");
                 n_items = psm.ncol();
                 let (_, psm_slice) = psm.coerce_double(pc);
                 psm2 = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
