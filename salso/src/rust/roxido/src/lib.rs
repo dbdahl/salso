@@ -18,16 +18,21 @@
 //! This crate provides the Rust API for the cargo framework.  Of particular note
 //! is [R], [RObject], [RVector], [RMatrix], [RVectorCharacter], [RList], and [RFunction].
 
+pub mod pc;
+pub mod print;
 pub mod r;
 pub mod rbindings;
-
-pub use r::{
-    AllocateProtected, Pc, RFunction, RList, RMatrix, RObject, RVector, RVectorCharacter,
-    TryAllocateProtected, R,
-};
-
-#[doc(hidden)]
-pub use r::RStopHelper;
+pub mod stop;
 
 /// A procedural macro to facilitate calling a Rust function from R.
 pub use roxido_macro::roxido;
+
+/// A procedural macro to facilitate printing from Rust to R.
+pub use print::*;
+
+#[doc(hidden)]
+pub use stop::{RStopHelper, UnwrapOrStop};
+
+pub use pc::Pc;
+
+pub use r::{RObject, ToR1, ToR2, ToR3, ToR4, R};

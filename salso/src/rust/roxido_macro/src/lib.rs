@@ -120,7 +120,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                 let ty = &pat_type.ty;
                 let string = quote!(#ty).to_string();
                 if string != "RObject" {
-                    panic!("All arguments to a function with the 'roxido' attribute must be of type RObject, but found '{}'.", string)
+                    panic!("All arguments to a function with the 'roxido' attribute must be of type 'RObject', but found '{}'.", string)
                 }
             }
             _ => panic!(
@@ -135,7 +135,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
             let tipe_as_string = quote!(#tipe).to_string();
             if tipe_as_string != "RObject" {
                 panic!(
-                    "A function with the 'roxido' attribute must return RObject, but found '{}'.",
+                    "A function with the 'roxido' attribute must return 'RObject', but found '{}'.",
                     tipe_as_string
                 );
             }
@@ -196,20 +196,16 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
         TokenStream::from(quote! {
             #[no_mangle]
             extern "C" fn #name(#args) #output {
-                let result: Result<RObject, _> = std::panic::catch_unwind(|| {
+                let result = std::panic::catch_unwind(|| {
                     let pc = &mut Pc::new();
-                    #[allow(unused_macros)]
-                    macro_rules! rvec { ($val:expr) => { RVector::allocate($val, pc) } }
-                    #[allow(unused_macros)]
-                    macro_rules! rstr { ($val:expr) => { RVectorCharacter::allocate($val, pc) } }
                     let mut f = || { #body };
-                    f().into()
+                    f().to_r(pc).as_unknown()
                 });
                 match result {
                     Ok(obj) => obj,
                     Err(ref payload) => {
                         let mut scratch = String::new();
-                        let msg = match payload.downcast_ref::<crate::r::RStopHelper>() {
+                        let msg = match payload.downcast_ref::<crate::stop::RStopHelper>() {
                             Some(x) => x.0.as_str(),
                             None => {
                                 scratch = format!("Panic in Rust function '{}' with 'roxido' attribute.", stringify!(#name));
@@ -229,7 +225,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                         unsafe {
                             crate::rbindings::Rf_error(b"%.*s\0".as_ptr() as *const std::os::raw::c_char, len, crate::rbindings::R_CHAR(sexp));
                         }
-                        crate::RObject::nil() // We never get here.
+                        crate::R::null() // We never get here.
                     }
                 }
             }
@@ -240,18 +236,14 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
             extern "C" fn #name(#args) #output {
                 let result: Result<RObject,_> = std::panic::catch_unwind(|| {
                     let pc = &mut Pc::new();
-                    #[allow(unused_macros)]
-                    macro_rules! rvec { ($val:expr) => { RVector::allocate($val, pc) } }
-                    #[allow(unused_macros)]
-                    macro_rules! rstr { ($val:expr) => { RVectorCharacter::allocate($val, pc) } }
                     let mut f = || { #body };
-                    f().into()
+                    f().to_r(pc).as_unknown()
                 });
                 match result {
                     Ok(obj) => obj,
                     Err(_) => {
-                        let pc = &mut crate::r::Pc::new();
-                        crate::RObject::new_error(format!("Panic in Rust function '{}' with 'roxido' attribute.", stringify!(#name)).as_str(), pc)
+                        let pc = &mut crate::Pc::new();
+                        crate::R::new_error(format!("Panic in Rust function '{}' with 'roxido' attribute.", stringify!(#name)).as_str(), pc).as_unknown()
                     }
                 }
             }
