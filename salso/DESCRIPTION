@@ -41,7 +41,7 @@ License: MIT + file LICENSE | Apache License 2.0
 URL: https://github.com/dbdahl/salso
 BugReports: https://github.com/dbdahl/salso/issues
 Depends: R (>= 4.2.0)
-SystemRequirements: Cargo (Rust's package manager), rustc (>= 1.65)
+SystemRequirements: Cargo (Rust's package manager), rustc (>= 1.64)
 Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)
