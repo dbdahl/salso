@@ -73,6 +73,27 @@ impl<T, S: Display> UnwrapOrStop<T> for Result<T, S> {
     }
 }
 
+impl<T> UnwrapOrStop<T> for Option<T> {
+    fn stop(self) -> T {
+        match self {
+            Some(t) => t,
+            None => stop!(),
+        }
+    }
+    fn stop_str(self, msg: &str) -> T {
+        match self {
+            Some(t) => t,
+            None => stop!("{}", msg),
+        }
+    }
+    fn stop_closure<'a>(self, mut msg: impl FnMut() -> String) -> T {
+        match self {
+            Some(t) => t,
+            None => stop!("{}", msg()),
+        }
+    }
+}
+
 #[doc(hidden)]
 #[no_mangle]
 pub extern "C" fn set_custom_panic_hook() -> SEXP {

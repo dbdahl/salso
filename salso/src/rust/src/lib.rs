@@ -360,7 +360,7 @@ fn minimize_by_salso(
     let info_attr = R::new_list(10, pc);
     info_attr
         .set_names(
-            &[
+            [
                 "loss",
                 "a",
                 "maxNClusters",
@@ -375,43 +375,43 @@ fn minimize_by_salso(
             .to_r(pc),
         )
         .stop();
-    info_attr.set(1, &a).stop();
+    info_attr.set(1, a).stop();
     info_attr
-        .set(2, &i32::try_from(results.max_size).unwrap().to_r(pc))
+        .set(2, i32::try_from(results.max_size).unwrap().to_r(pc))
         .stop();
-    info_attr.set(3, &results.expected_loss.to_r(pc)).stop();
+    info_attr.set(3, results.expected_loss.to_r(pc)).stop();
     info_attr
         .set(
             4,
-            &i32::try_from(results.initialization_method.to_code())
+            i32::try_from(results.initialization_method.to_code())
                 .unwrap()
                 .to_r(pc),
         )
         .stop();
     info_attr
-        .set(5, &i32::try_from(results.n_scans).unwrap().to_r(pc))
+        .set(5, i32::try_from(results.n_scans).unwrap().to_r(pc))
         .stop();
     info_attr
         .set(
             6,
-            &i32::try_from(results.n_zealous_accepts).unwrap().to_r(pc),
+            i32::try_from(results.n_zealous_accepts).unwrap().to_r(pc),
         )
         .stop();
     info_attr
         .set(
             7,
-            &i32::try_from(results.n_zealous_attempts).unwrap().to_r(pc),
+            i32::try_from(results.n_zealous_attempts).unwrap().to_r(pc),
         )
         .stop();
     info_attr
-        .set(8, &i32::try_from(results.n_runs).unwrap().to_r(pc))
+        .set(8, i32::try_from(results.n_runs).unwrap().to_r(pc))
         .stop();
-    info_attr.set(9, &results.seconds.to_r(pc)).stop();
+    info_attr.set(9, results.seconds.to_r(pc)).stop();
     let r = R::new_vector_integer(n_items, pc);
     for (v, rr) in results.clustering.iter().zip(r.slice().iter_mut()) {
         *rr = i32::try_from(*v + 1).unwrap();
     }
-    r.set_class(&"salso.estimate".to_r(pc));
-    r.set_attribute(&R::new_symbol("info", pc), &info_attr);
+    r.set_class("salso.estimate".to_r(pc));
+    r.set_attribute(R::new_symbol("info", pc), info_attr);
     r
 }
