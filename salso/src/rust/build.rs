@@ -61,14 +61,14 @@ fn make_registration_code(src_path: &Path) -> Option<String> {
                 }
                 buffer.push_str(
                     r#"
-#' @docType package
+#' @keywords internal
 #' @usage NULL
 #' @useDynLib "#,
                 );
                 buffer.push_str(&package_name);
                 buffer.push_str(
                     r#", .registration = TRUE
-NULL
+"_PACKAGE"
 
 .Kall <- function(...) {
   x <- .Call(...)

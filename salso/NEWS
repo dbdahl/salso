@@ -1,3 +1,6 @@
+0.3.27 (20XX-XX-XX)
+  * Internal update to track latest roxido framework.
+
 0.3.35 (2023-07-17)
   * Adjust "SystemRequirements" as per
     [Using Rust in CRAN packages](https://cran.r-project.org/web/packages/using_rust.html)

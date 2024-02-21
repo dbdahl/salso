@@ -9,3 +9,4 @@ authors-scratch.txt
 ^src/rust/(.*/)*[.]idea
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^tools/rename_package.R$

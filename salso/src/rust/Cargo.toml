@@ -11,6 +11,7 @@ crate-type = ["staticlib"]
 # To convert stop!() to panic!(), set RUST_BACKTRACE=1 environment variable.
 [profile.release]
 debug = 1
+lto = "thin"
 
 [dependencies]
 roxido = { path="roxido" }
