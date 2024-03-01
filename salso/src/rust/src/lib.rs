@@ -53,8 +53,10 @@ fn expected_loss(
     let n_items = partitions.ncol();
     let partitions = partitions.to_mode_integer(pc);
     let draws = draws.as_matrix().map(|x| x.to_mode_integer(pc));
+    let psm2: RObject<roxido::r::Matrix, f64>;
     let psm_slice = if !psm.is_null() {
-        psm.as_matrix().stop().to_mode_double(pc).slice()
+        psm2 = psm.as_matrix().stop().to_mode_double(pc);
+        psm2.slice()
     } else {
         &mut []
     };
@@ -86,10 +88,7 @@ fn expected_loss(
             )
         }
         Some(dahl_salso::LossFunction::BinderPSM) => {
-            let psm = dahl_partition::SquareMatrixBorrower::from_slice(
-                psm.as_matrix().stop().as_mode_double().stop().slice(),
-                n_items,
-            );
+            let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
             dahl_salso::loss::binder_multiple(&partitions, &psm, results.slice())
         }
         Some(dahl_salso::LossFunction::OneMinusARI) => {
@@ -276,6 +275,7 @@ fn minimize_by_salso(
     let n_items;
     let draws2;
     let psm2;
+    let psm3;
     let (loss_function, pdi) =
         match dahl_salso::LossFunction::from_code(loss.as_i32().stop(), a.as_f64().stop()) {
             Some(loss_function) => match loss_function {
@@ -308,12 +308,12 @@ fn minimize_by_salso(
                 | dahl_salso::LossFunction::VIlb => {
                     let psm = psm.as_matrix().stop();
                     n_items = psm.ncol();
-                    let psm = psm.to_mode_double(pc);
-                    psm2 = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice(), n_items);
+                    psm2 = psm.to_mode_double(pc);
+                    psm3 = dahl_partition::SquareMatrixBorrower::from_slice(psm2.slice(), n_items);
                     (
                         loss_function,
                         dahl_salso::PartitionDistributionInformation::PairwiseSimilarityMatrix(
-                            &psm2,
+                            &psm3,
                         ),
                     )
                 }

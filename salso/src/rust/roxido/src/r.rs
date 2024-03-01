@@ -754,7 +754,7 @@ impl<S: HasLength, T> RObject<S, T> {
 }
 
 impl<S: HasLength, T: Atomic> RObject<S, T> {
-    fn slice_engine<U>(&self, data: *mut U) -> &'static mut [U] {
+    fn slice_engine<U>(&self, data: *mut U) -> &mut [U] {
         let len = self.len();
         unsafe { std::slice::from_raw_parts_mut(data, len) }
     }
@@ -857,28 +857,28 @@ impl<S: HasLength, T: Atomic> RObject<S, T> {
 
 impl<S: HasLength> RObject<S, f64> {
     /// Returns a slice of the data structure.
-    pub fn slice(&self) -> &'static mut [f64] {
+    pub fn slice(&self) -> &mut [f64] {
         self.slice_engine(unsafe { REAL(self.sexp) })
     }
 }
 
 impl<S: HasLength> RObject<S, i32> {
     /// Returns a slice of the data structure.
-    pub fn slice(&self) -> &'static mut [i32] {
+    pub fn slice(&self) -> &mut [i32] {
         self.slice_engine(unsafe { INTEGER(self.sexp) })
     }
 }
 
 impl<S: HasLength> RObject<S, u8> {
     /// Returns a slice of the data structure.
-    pub fn slice(&self) -> &'static mut [u8] {
+    pub fn slice(&self) -> &mut [u8] {
         self.slice_engine(unsafe { RAW(self.sexp) })
     }
 }
 
 impl<S: HasLength> RObject<S, bool> {
     /// Returns a slice of the data structure.
-    pub fn slice(&self) -> &'static mut [i32] {
+    pub fn slice(&self) -> &mut [i32] {
         self.slice_engine(unsafe { LOGICAL(self.sexp) })
     }
 }
