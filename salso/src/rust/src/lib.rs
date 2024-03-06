@@ -26,9 +26,9 @@ fn enumerate_partitions(n_items: RObject) -> RObject {
     let n_items = n_items.as_usize().stop();
     let bell_number = dahl_bellnumber::bell(n_items);
     let n_partitions = usize::try_from(bell_number).unwrap();
-    let partitions = R::new_matrix_integer(n_partitions, n_items, pc);
+    let mut partitions = R::new_matrix_integer(n_partitions, n_items, pc);
     let mut phv = dahl_partition::PartitionsHolderBorrower::from_slice(
-        partitions.slice(),
+        partitions.slice_mut(),
         n_partitions,
         n_items,
         true,
@@ -51,20 +51,24 @@ fn expected_loss(
     let partitions = partitions.as_matrix().stop();
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
-    let partitions = partitions.to_mode_integer(pc);
-    let draws = draws.as_matrix().map(|x| x.to_mode_integer(pc));
-    let psm2: RObject<roxido::r::Matrix, f64>;
+    let mut partitions = unsafe { partitions.to_mode_integer(pc).as_mutable() };
+    let draws = unsafe {
+        draws
+            .as_matrix()
+            .map(|x| x.to_mode_integer(pc).as_mutable())
+    };
+    let mut psm2: RObject<roxido::r::Matrix, f64, roxido::r::Mutable>;
     let psm_slice = if !psm.is_null() {
-        psm2 = psm.as_matrix().stop().to_mode_double(pc);
-        psm2.slice()
+        psm2 = unsafe { psm.as_matrix().stop().to_mode_double(pc).as_mutable() };
+        psm2.slice_mut()
     } else {
         &mut []
     };
-    let results = R::new_vector_double(n_partitions, pc);
+    let mut results = R::new_vector_double(n_partitions, pc);
     let loss = loss.as_i32().stop();
     let a = a.as_f64().stop();
     let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
-        partitions.slice(),
+        partitions.slice_mut(),
         n_partitions,
         n_items,
         true,
@@ -72,10 +76,10 @@ fn expected_loss(
     let loss_function = dahl_salso::LossFunction::from_code(loss, a);
     match loss_function {
         Some(dahl_salso::LossFunction::BinderDraws(a)) => {
-            let draws = draws.stop();
+            let mut draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice(),
+                draws.slice_mut(),
                 n_draws,
                 n_items,
                 true,
@@ -84,18 +88,18 @@ fn expected_loss(
                 Box::new(|| dahl_salso::optimize::BinderCMLossComputer::new(a)),
                 &partitions,
                 &draws,
-                results.slice(),
+                results.slice_mut(),
             )
         }
         Some(dahl_salso::LossFunction::BinderPSM) => {
             let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
-            dahl_salso::loss::binder_multiple(&partitions, &psm, results.slice())
+            dahl_salso::loss::binder_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::OneMinusARI) => {
-            let draws = draws.stop();
+            let mut draws = unsafe { draws.stop().as_mutable() };
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice(),
+                draws.slice_mut(),
                 n_draws,
                 n_items,
                 true,
@@ -104,18 +108,18 @@ fn expected_loss(
                 Box::new(|| dahl_salso::optimize::OMARICMLossComputer::new(n_draws)),
                 &partitions,
                 &draws,
-                results.slice(),
+                results.slice_mut(),
             )
         }
         Some(dahl_salso::LossFunction::OneMinusARIapprox) => {
             let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
-            dahl_salso::loss::omariapprox_multiple(&partitions, &psm, results.slice())
+            dahl_salso::loss::omariapprox_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::VI(a)) => {
-            let draws = draws.stop();
+            let mut draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice(),
+                draws.slice_mut(),
                 n_draws,
                 n_items,
                 true,
@@ -125,18 +129,18 @@ fn expected_loss(
                 Box::new(|| dahl_salso::optimize::VICMLossComputer::new(a, &cache)),
                 &partitions,
                 &draws,
-                results.slice(),
+                results.slice_mut(),
             )
         }
         Some(dahl_salso::LossFunction::VIlb) => {
             let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
-            dahl_salso::loss::vilb_multiple(&partitions, &psm, results.slice())
+            dahl_salso::loss::vilb_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::NVI) => {
-            let draws = draws.stop();
+            let mut draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice(),
+                draws.slice_mut(),
                 n_draws,
                 n_items,
                 true,
@@ -152,14 +156,14 @@ fn expected_loss(
                 }),
                 &partitions,
                 &draws,
-                results.slice(),
+                results.slice_mut(),
             )
         }
         Some(dahl_salso::LossFunction::ID) => {
-            let draws = draws.stop();
+            let mut draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice(),
+                draws.slice_mut(),
                 n_draws,
                 n_items,
                 true,
@@ -175,14 +179,14 @@ fn expected_loss(
                 }),
                 &partitions,
                 &draws,
-                results.slice(),
+                results.slice_mut(),
             )
         }
         Some(dahl_salso::LossFunction::NID) => {
-            let draws = draws.stop();
+            let mut draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice(),
+                draws.slice_mut(),
                 n_draws,
                 n_items,
                 true,
@@ -198,7 +202,7 @@ fn expected_loss(
                 }),
                 &partitions,
                 &draws,
-                results.slice(),
+                results.slice_mut(),
             )
         }
         None => stop!("Unsupported loss method: {}", loss),
@@ -211,28 +215,28 @@ fn psm(partitions: RObject, n_cores: RObject) -> RObject {
     let partitions = partitions.as_matrix().stop();
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
-    let partitions = partitions.to_mode_integer(pc);
+    let mut partitions = unsafe { partitions.to_mode_integer(pc).as_mutable() };
     let n_cores = n_cores.as_usize().stop() as u32;
-    let psm = R::new_matrix_double(n_items, n_items, pc);
+    let mut psm = R::new_matrix_double(n_items, n_items, pc);
     let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
-        partitions.slice(),
+        partitions.slice_mut(),
         n_partitions,
         n_items,
         true,
     );
-    let mut psm2 = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice(), n_items);
+    let mut psm2 = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice_mut(), n_items);
     dahl_salso::psm::psm_engine(n_partitions, n_items, n_cores, &partitions, &mut psm2);
     psm
 }
 
 #[roxido]
 fn minimize_by_enumeration(psm: RObject, loss: RObject, a: RObject) -> RObject {
-    let psm = psm.as_matrix().stop();
+    let psm = unsafe { psm.as_matrix().stop().as_mutable() };
     let loss = loss.as_i32().stop();
     let a = a.as_f64().stop();
     let n_items = psm.nrow();
-    let psm = psm.to_mode_double(pc);
-    let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice(), n_items);
+    let mut psm = psm.to_mode_double(pc);
+    let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice_mut(), n_items);
     let f = match dahl_salso::LossFunction::from_code(loss, a) {
         Some(loss_function) => match loss_function {
             dahl_salso::LossFunction::BinderDraws(_) => stop!("No implementation for binder."),
@@ -248,8 +252,8 @@ fn minimize_by_enumeration(psm: RObject, loss: RObject, a: RObject) -> RObject {
         None => stop!("Unsupported loss method: code = {}", loss),
     };
     let minimizer = dahl_salso::optimize::minimize_by_enumeration(f, &psm);
-    let results = R::new_vector_integer(n_items, pc);
-    let results_slice = results.slice();
+    let mut results = R::new_vector_integer(n_items, pc);
+    let results_slice = results.slice_mut();
     for (i, v) in minimizer.iter().enumerate() {
         results_slice[i] = i32::try_from(*v + 1).unwrap();
     }
@@ -274,7 +278,7 @@ fn minimize_by_salso(
     let draws = draws.as_matrix().map(|x| x.to_mode_integer(pc));
     let n_items;
     let draws2;
-    let psm2;
+    let mut psm2;
     let psm3;
     let (loss_function, pdi) =
         match dahl_salso::LossFunction::from_code(loss.as_i32().stop(), a.as_f64().stop()) {
@@ -285,12 +289,12 @@ fn minimize_by_salso(
                 | dahl_salso::LossFunction::NVI
                 | dahl_salso::LossFunction::ID
                 | dahl_salso::LossFunction::NID => {
-                    let draws = draws.stop();
+                    let mut draws = unsafe { draws.stop().as_mutable() };
                     n_items = draws.ncol();
                     let n_draws = draws.nrow();
                     draws2 = dahl_salso::clustering::Clusterings::from_i32_column_major_order(
                         dahl_partition::PartitionsHolderBorrower::from_slice(
-                            draws.slice(),
+                            draws.slice_mut(),
                             n_draws,
                             n_items,
                             true,
@@ -308,8 +312,9 @@ fn minimize_by_salso(
                 | dahl_salso::LossFunction::VIlb => {
                     let psm = psm.as_matrix().stop();
                     n_items = psm.ncol();
-                    psm2 = psm.to_mode_double(pc);
-                    psm3 = dahl_partition::SquareMatrixBorrower::from_slice(psm2.slice(), n_items);
+                    psm2 = unsafe { psm.to_mode_double(pc).as_mutable() };
+                    psm3 =
+                        dahl_partition::SquareMatrixBorrower::from_slice(psm2.slice_mut(), n_items);
                     (
                         loss_function,
                         dahl_salso::PartitionDistributionInformation::PairwiseSimilarityMatrix(
@@ -357,7 +362,7 @@ fn minimize_by_salso(
         n_cores,
         &mut rng,
     );
-    let info_attr = R::new_list(10, pc);
+    let mut info_attr = R::new_list(10, pc);
     info_attr
         .set_names(
             [
@@ -377,7 +382,7 @@ fn minimize_by_salso(
         .stop();
     info_attr.set(1, a).stop();
     info_attr
-        .set(2, i32::try_from(results.max_size).unwrap().to_r(pc))
+        .set(2, i32::from(results.max_size).to_r(pc))
         .stop();
     info_attr.set(3, results.expected_loss.to_r(pc)).stop();
     info_attr
@@ -407,8 +412,8 @@ fn minimize_by_salso(
         .set(8, i32::try_from(results.n_runs).unwrap().to_r(pc))
         .stop();
     info_attr.set(9, results.seconds.to_r(pc)).stop();
-    let r = R::new_vector_integer(n_items, pc);
-    for (v, rr) in results.clustering.iter().zip(r.slice().iter_mut()) {
+    let mut r = R::new_vector_integer(n_items, pc);
+    for (v, rr) in results.clustering.iter().zip(r.slice_mut().iter_mut()) {
         *rr = i32::try_from(*v + 1).unwrap();
     }
     r.set_class("salso.estimate".to_r(pc));
