@@ -70,4 +70,4 @@ pub use stop::{RStopHelper, UnwrapOrStop};
 
 pub use pc::Pc;
 
-pub use r::{FromR, RObject, ToR1, ToR2, ToR3, ToR4, R};
+pub use r::{FromR, MapErrMsg, RObject, ToR1, ToR2, ToR3, ToR4, R};
