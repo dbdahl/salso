@@ -199,7 +199,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                 let result = std::panic::catch_unwind(|| {
                     let pc = &mut Pc::new();
                     let mut f = || { #body };
-                    f().to_r(pc).as_unknown()
+                    f().to_r(pc).unknown()
                 });
                 match result {
                     Ok(obj) => obj,
@@ -237,13 +237,13 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                 let result: Result<RObject,_> = std::panic::catch_unwind(|| {
                     let pc = &mut Pc::new();
                     let mut f = || { #body };
-                    f().to_r(pc).as_unknown()
+                    f().to_r(pc).unknown()
                 });
                 match result {
                     Ok(obj) => obj,
                     Err(_) => {
                         let pc = &mut crate::Pc::new();
-                        crate::R::new_error(format!("Panic in Rust function '{}' with 'roxido' attribute.", stringify!(#name)).as_str(), pc).as_unknown()
+                        crate::R::new_error(format!("Panic in Rust function '{}' with 'roxido' attribute.", stringify!(#name)).as_str(), pc).unknown()
                     }
                 }
             }

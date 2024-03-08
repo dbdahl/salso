@@ -1,4 +1,5 @@
 use crate::rbindings::*;
+use crate::RObject;
 use std::fmt::Display;
 
 #[doc(hidden)]
@@ -57,6 +58,27 @@ impl<T, S: Display> UnwrapOrStop<T> for Result<T, S> {
         match self {
             Ok(t) => t,
             Err(e) => stop!("{}", e),
+        }
+    }
+    fn stop_str(self, msg: &str) -> T {
+        match self {
+            Ok(t) => t,
+            Err(_) => stop!("{}", msg),
+        }
+    }
+    fn stop_closure<'a>(self, mut msg: impl FnMut() -> String) -> T {
+        match self {
+            Ok(t) => t,
+            Err(_) => stop!("{}", msg()),
+        }
+    }
+}
+
+impl<T, RType, RMode> UnwrapOrStop<T> for Result<T, RObject<RType, RMode>> {
+    fn stop(self) -> T {
+        match self {
+            Ok(t) => t,
+            Err(_) => stop!("Not of asserted type or mode"),
         }
     }
     fn stop_str(self, msg: &str) -> T {
