@@ -110,7 +110,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
     if !vis_as_string.is_empty() {
         panic!("A function with the 'roxido' attribute must not have a visibility modifier, but found '{}'.", vis_as_string);
     }
-    // Check that all arguments are of type RObject.
+    // Check that all arguments are of type '&RObject'.
     let mut arg_names = Vec::with_capacity(args.len());
     for arg in &args {
         match arg {
@@ -119,23 +119,23 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                 arg_names.push(quote!(#name).to_string());
                 let ty = &pat_type.ty;
                 let string = quote!(#ty).to_string();
-                if string != "RObject" {
-                    panic!("All arguments to a function with the 'roxido' attribute must be of type 'RObject', but found '{}'.", string)
+                if !( string.starts_with("& ") && string.ends_with(" RObject")) {
+                    panic!("All arguments to a function with the 'roxido' attribute must be of type '&RObject', but found '{}'.", string)
                 }
             }
             _ => panic!(
-                "All arguments to a function with the 'roxido' attribute must be of type RObject."
+                "All arguments to a function with the 'roxido' attribute must be of type '&RObject'."
             ),
         }
     }
-    // Check that return is of type RObject.
+    // Check that return is of type '&RObject'.
     match &output {
-        syn::ReturnType::Default => panic!(),
+        syn::ReturnType::Default => {}
         syn::ReturnType::Type(_, tipe) => {
             let tipe_as_string = quote!(#tipe).to_string();
-            if tipe_as_string != "RObject" {
+            if tipe_as_string != "& RObject" {
                 panic!(
-                    "A function with the 'roxido' attribute must return 'RObject', but found '{}'.",
+                    "A function with the 'roxido' attribute always implicitly returns '&RObject', but found '{}'.",
                     tipe_as_string
                 );
             }
@@ -194,13 +194,17 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
         // frame and we've cleaned up all of our heap memory.  Light testing indicated no memory
         // leaks.  See https://docs.rs/crate/setjmp for background information.
         TokenStream::from(quote! {
+            #[allow(clippy::useless_transmute)]
             #[no_mangle]
-            extern "C" fn #name(#args) #output {
-                let result = std::panic::catch_unwind(|| {
+            extern "C" fn #name(#args) -> crate::rbindings::SEXP {
+                fn to_sexp<RType, RMode>(x: &RObject<RType, RMode>) -> crate::rbindings::SEXP {
+                    unsafe { std::mem::transmute::<&RObject<RType, RMode>, crate::rbindings::SEXP>(x) }
+                }
+                let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                     let pc = &mut Pc::new();
                     let mut f = || { #body };
-                    f().to_r(pc).unknown()
-                });
+                    to_sexp(f().to_r(pc))
+                }));
                 match result {
                     Ok(obj) => obj,
                     Err(ref payload) => {
@@ -225,25 +229,29 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                         unsafe {
                             crate::rbindings::Rf_error(b"%.*s\0".as_ptr() as *const std::os::raw::c_char, len, crate::rbindings::R_CHAR(sexp));
                         }
-                        crate::R::null() // We never get here.
+                        to_sexp(crate::Pc::null()) // We never get here.
                     }
                 }
             }
         })
     } else {
         TokenStream::from(quote! {
+            #[allow(clippy::useless_transmute)]
             #[no_mangle]
-            extern "C" fn #name(#args) #output {
-                let result: Result<RObject,_> = std::panic::catch_unwind(|| {
+            extern "C" fn #name(#args) -> crate::rbindings::SEXP {
+                fn to_sexp<RType, RMode>(x: &RObject<RType, RMode>) -> crate::rbindings::SEXP {
+                    unsafe { std::mem::transmute::<&RObject<RType, RMode>, crate::rbindings::SEXP>(x) }
+                }
+                let result: Result<crate::rbindings::SEXP, _> = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
                     let pc = &mut Pc::new();
                     let mut f = || { #body };
-                    f().to_r(pc).unknown()
-                });
+                    to_sexp(f().to_r(pc))
+                }));
                 match result {
                     Ok(obj) => obj,
                     Err(_) => {
                         let pc = &mut crate::Pc::new();
-                        crate::R::new_error(format!("Panic in Rust function '{}' with 'roxido' attribute.", stringify!(#name)).as_str(), pc).unknown()
+                        to_sexp(pc.new_error(format!("Panic in Rust function '{}' with 'roxido' attribute.", stringify!(#name)).as_str()))
                     }
                 }
             }
