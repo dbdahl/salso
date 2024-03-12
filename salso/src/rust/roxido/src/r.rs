@@ -1591,8 +1591,8 @@ impl RObject<Vector, List> {
     /// Convert a List to a DataFrame.
     pub fn to_data_frame<'a>(
         &'a mut self,
-        names: RObject<Vector, Character>,
-        rownames: RObject<Vector, Character>,
+        names: &RObject<Vector, Character>,
+        rownames: &RObject<Vector, Character>,
         pc: &Pc,
     ) -> Result<&'a mut RObject<Vector, DataFrame>, &'static str> {
         if names.len() != self.len() {
