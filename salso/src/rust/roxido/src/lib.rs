@@ -65,6 +65,6 @@ pub use roxido_macro::roxido;
 pub use print::*;
 
 #[doc(hidden)]
-pub use stop::{RStopHelper, UnwrapOrStop};
+pub use stop::*;
 
-pub use r::{FromR, Pc, RObject, ToR1, ToR2, ToR3, ToR4};
+pub use r::*;
