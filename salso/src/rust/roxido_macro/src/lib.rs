@@ -243,6 +243,17 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                                         });
                                                     }
                                                 }
+                                                "RList" => {
+                                                    if mutable {
+                                                        generated_statements.push(parse_quote! {
+                                                            let #name = #name.list_mut().stop_closure(|| format!("'{}' is expected to be a list", stringify!(#name)));
+                                                        });
+                                                    } else {
+                                                        generated_statements.push(parse_quote! {
+                                                            let #name = #name.list().stop_closure(|| format!("'{}' is expected to be a list", stringify!(#name)));
+                                                        });
+                                                    }
+                                                }
                                                 "RFunction" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
@@ -277,7 +288,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                                     }
                                                 }
                                                 e => {
-                                                    panic!("'{}' has '{}' as the first type parameter, but one of the following was expected: RScalar, RVector, RMatrix, RArray, RFunction, RExternalPtr, RSymbol", name_as_string, e);
+                                                    panic!("'{}' has '{}' as the first type parameter, but one of the following was expected: RScalar, RVector, RMatrix, RArray, RList, RFunction, RExternalPtr, RSymbol", name_as_string, e);
                                                 }
                                             }
                                         }
@@ -338,19 +349,19 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                                         });
                                                     }
                                                 }
-                                                "RList" => {
+                                                "RDataFrame" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.list_mut().stop_closure(|| format!("'{}' is expected to a list", "#name"));
+                                                            let #name = #name.data_frame_mut().stop_closure(|| format!("'{}' is expected to a data frame", "#name"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.list().stop_closure(|| format!("'{}' is expected to a list", "#name"));
+                                                            let #name = #name.data_frame().stop_closure(|| format!("'{}' is expected to a data frame", "#name"));
                                                         });
                                                     }
                                                 }
                                                 e => {
-                                                    panic!("'{}' has '{}' as the second type parameter, but one of the following was expected: f64, i32, u8, bool, Character", name_as_string, e);
+                                                    panic!("'{}' has '{}' as the second type parameter, but one of the following was expected: f64, i32, u8, bool, Character, RDataFrame", name_as_string, e);
                                                 }
                                             }
                                         }

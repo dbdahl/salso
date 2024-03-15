@@ -36,6 +36,8 @@ impl Drop for Pc {
 
 pub struct RAnyType;
 
+pub struct RUnknown;
+
 pub struct RScalar;
 
 pub struct RVector;
@@ -44,33 +46,34 @@ pub struct RMatrix;
 
 pub struct RArray;
 
-pub struct RFunction;
-
-pub struct RExternalPtr;
-
-pub struct RSymbol;
-
-pub struct RUnknown;
-
 pub struct RCharacter;
 
 pub struct RList;
 
 pub struct RDataFrame;
 
-pub trait HasLength {}
-impl HasLength for RScalar {}
-impl HasLength for RVector {}
-impl HasLength for RMatrix {}
-impl HasLength for RArray {}
+pub struct RFunction;
 
-pub trait Atomic {}
-impl Atomic for f64 {}
-impl Atomic for i32 {}
-impl Atomic for u8 {}
-impl Atomic for bool {}
-impl Atomic for RCharacter {}
-impl Atomic for RUnknown {}
+pub struct RExternalPtr;
+
+pub struct RSymbol;
+
+pub trait RHasLength {}
+impl RHasLength for RScalar {}
+impl RHasLength for RVector {}
+impl RHasLength for RMatrix {}
+impl RHasLength for RArray {}
+impl RHasLength for RList {}
+
+pub trait RAtomic {}
+impl RAtomic for RScalar {}
+impl RAtomic for RVector {}
+impl RAtomic for RMatrix {}
+impl RAtomic for RArray {}
+
+pub trait ROneDimensional {}
+impl ROneDimensional for RVector {}
+impl ROneDimensional for RList {}
 
 impl Pc {
     /// Allocate a new protection counter.
@@ -251,8 +254,9 @@ impl Pc {
     }
 
     /// Create a new list.
-    pub fn new_list(&self, length: usize) -> &mut RObject<RVector, RList> {
-        self.new_vector(VECSXP, length)
+    pub fn new_list(&self, length: usize) -> &mut RObject<RList> {
+        let sexp = self.protect(unsafe { Rf_allocVector(VECSXP, length.try_into().unwrap()) });
+        self.transmute_sexp_mut(sexp)
     }
 
     /// Define a new error.
@@ -562,7 +566,7 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RVector, RList>.
     /// Checks using R's `Rf_isVectorList` function.
-    pub fn list(&self) -> Result<&RObject<RVector, RList>, &'static str> {
+    pub fn list(&self) -> Result<&RObject<RList>, &'static str> {
         if self.is_list() {
             Ok(self.transmute())
         } else {
@@ -572,7 +576,7 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RVector, RList>.
     /// Checks using R's `Rf_isVectorList` function.
-    pub fn list_mut(&mut self) -> Result<&mut RObject<RVector, RList>, &'static str> {
+    pub fn list_mut(&mut self) -> Result<&mut RObject<RList>, &'static str> {
         if self.is_list() {
             Ok(self.transmute_mut())
         } else {
@@ -582,7 +586,7 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RVector, RDataFrame>.
     /// Checks using R's `Rf_isFrame` function.
-    pub fn data_frame(&self) -> Result<&RObject<RVector, RDataFrame>, &'static str> {
+    pub fn data_frame(&self) -> Result<&RObject<RList, RDataFrame>, &'static str> {
         if self.is_data_frame() {
             Ok(self.transmute())
         } else {
@@ -592,7 +596,7 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RVector, RDataFrame>.
     /// Checks using R's `Rf_isFrame` function.
-    pub fn data_frame_mut(&mut self) -> Result<&mut RObject<RVector, RDataFrame>, &'static str> {
+    pub fn data_frame_mut(&mut self) -> Result<&mut RObject<RList, RDataFrame>, &'static str> {
         if self.is_data_frame() {
             Ok(self.transmute_mut())
         } else {
@@ -764,7 +768,7 @@ impl<RType, RMode> RObject<RType, RMode> {
     }
 }
 
-impl<RType: HasLength, RMode> RObject<RType, RMode> {
+impl<RType: RHasLength, RMode> RObject<RType, RMode> {
     /// Returns the length of the RObject.
     pub fn len(&self) -> usize {
         let len = unsafe { Rf_xlength(self.sexp()) };
@@ -782,7 +786,7 @@ impl<RType: HasLength, RMode> RObject<RType, RMode> {
     }
 }
 
-impl<RType: HasLength, RMode: Atomic> RObject<RType, RMode> {
+impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     fn slice_engine<U>(&self, data: *mut U) -> &[U] {
         unsafe { std::slice::from_raw_parts_mut(data, self.len()) }
     }
@@ -1007,7 +1011,7 @@ impl<RType: HasLength, RMode: Atomic> RObject<RType, RMode> {
     }
 }
 
-impl<RType: HasLength> RObject<RType, f64> {
+impl<RType: RAtomic + RHasLength> RObject<RType, f64> {
     /// Returns a slice of the data structure.
     pub fn slice(&self) -> &[f64] {
         self.slice_engine(unsafe { REAL(self.sexp()) })
@@ -1019,7 +1023,7 @@ impl<RType: HasLength> RObject<RType, f64> {
     }
 }
 
-impl<RType: HasLength> RObject<RType, i32> {
+impl<RType: RAtomic + RHasLength> RObject<RType, i32> {
     /// Returns a slice of the data structure.
     pub fn slice(&self) -> &[i32] {
         self.slice_engine(unsafe { INTEGER(self.sexp()) })
@@ -1031,7 +1035,7 @@ impl<RType: HasLength> RObject<RType, i32> {
     }
 }
 
-impl<RType: HasLength> RObject<RType, u8> {
+impl<RType: RAtomic + RHasLength> RObject<RType, u8> {
     /// Returns a slice of the data structure.
     pub fn slice(&self) -> &[u8] {
         self.slice_engine(unsafe { RAW(self.sexp()) })
@@ -1043,7 +1047,7 @@ impl<RType: HasLength> RObject<RType, u8> {
     }
 }
 
-impl<RType: HasLength> RObject<RType, bool> {
+impl<RType: RAtomic + RHasLength> RObject<RType, bool> {
     /// Returns a slice of the data structure.
     pub fn slice(&self) -> &[i32] {
         self.slice_engine(unsafe { LOGICAL(self.sexp()) })
@@ -1206,7 +1210,7 @@ impl RObject<RFunction> {
     }
 }
 
-impl<RMode: Atomic> RObject<RScalar, RMode> {
+impl<RMode> RObject<RScalar, RMode> {
     /// Check if appropriate to characterize as an f64.
     pub fn f64(&self) -> f64 {
         unsafe { Rf_asReal(self.sexp()) }
@@ -1362,7 +1366,7 @@ impl<RMode: Atomic> RObject<RScalar, RMode> {
     }
 }
 
-impl<RMode> RObject<RVector, RMode> {
+impl<RType: ROneDimensional + RHasLength, RMode> RObject<RType, RMode> {
     fn get_engine<T>(
         &self,
         index: usize,
@@ -1518,14 +1522,14 @@ impl RObject<RVector, RCharacter> {
     }
 }
 
-pub struct RListMap<'a> {
+pub struct RListMap<'a, RMode> {
     unused_counter: usize,
     used: Vec<bool>,
-    robj: &'a RObject<RVector, RList>,
+    robj: &'a RObject<RList, RMode>,
     map: HashMap<&'a str, usize>,
 }
 
-impl RListMap<'_> {
+impl<RMode> RListMap<'_, RMode> {
     /// Find an RObject in the list based on its name.
     pub fn get(&mut self, name: &str) -> Result<&RObject, String> {
         let Some(index) = self.map.get(name) else {
@@ -1566,7 +1570,7 @@ impl RListMap<'_> {
     }
 }
 
-impl RObject<RVector, RList> {
+impl<RMode> RObject<RList, RMode> {
     /// Get the value at a certain index in a RList.
     pub fn get(&self, index: usize) -> Result<&RObject, &'static str> {
         self.get_engine(index, VECTOR_ELT)
@@ -1606,7 +1610,7 @@ impl RObject<RVector, RList> {
     /// This allows Rust HashMap methods to be used on the contents
     /// of the list, while still retaining the original list within
     /// the RListMap struct in the robj field.
-    pub fn make_map(&self) -> RListMap {
+    pub fn make_map(&self) -> RListMap<RMode> {
         let mut map = HashMap::new();
         let names = self.get_names();
         let len = names.len();
@@ -1622,10 +1626,10 @@ impl RObject<RVector, RList> {
     }
 
     /// Set the value at a certain index in an RList.
-    pub fn set<RType, RMode>(
+    pub fn set<RTypeValue, RModeValue>(
         &mut self,
         index: usize,
-        value: &RObject<RType, RMode>,
+        value: &RObject<RTypeValue, RModeValue>,
     ) -> Result<(), &'static str> {
         if index < self.len() {
             unsafe { SET_VECTOR_ELT(self.sexp(), index.try_into().unwrap(), value.sexp()) };
@@ -1641,7 +1645,7 @@ impl RObject<RVector, RList> {
         names: &RObject<RVector, RCharacter>,
         rownames: &RObject<RVector, RCharacter>,
         pc: &Pc,
-    ) -> Result<&'a mut RObject<RVector, RDataFrame>, &'static str> {
+    ) -> Result<&'a mut RObject<RList, RDataFrame>, &'static str> {
         if names.len() != self.len() {
             return Err("Length of names is not correct");
         }
@@ -1668,24 +1672,10 @@ impl RObject<RVector, RList> {
     }
 }
 
-impl RObject<RVector, RDataFrame> {
-    /// Get the value at a certain index in an RDataFrame.
-    pub fn get(&self, index: usize) -> Result<&RObject, &'static str> {
-        self.transmute::<RVector, RList>().get(index)
-    }
-
+impl RObject<RList, RDataFrame> {
     /// Get the row names of a RDataFrame.
     pub fn get_rownames(&self) -> &RObject<RVector, RCharacter> {
         self.transmute_sexp(unsafe { Rf_getAttrib(self.sexp(), R_RowNamesSymbol) })
-    }
-
-    /// Set the value at a certain index in an RDataFrame.
-    pub fn set<RType, RMode>(
-        &mut self,
-        index: usize,
-        value: &RObject<RType, RMode>,
-    ) -> Result<(), &'static str> {
-        self.transmute_mut::<RVector, RList>().set(index, value)
     }
 
     /// Set the row names of a RDataFrame.
@@ -1714,7 +1704,7 @@ impl<RMode> RObject<RMatrix, RMode> {
     }
 
     /// Set the dimnames of a matrix.
-    pub fn set_dimnames(&mut self, dimnames: &RObject<RVector, RList>) -> Result<(), &'static str> {
+    pub fn set_dimnames(&mut self, dimnames: &RObject<RList>) -> Result<(), &'static str> {
         match dimnames.get(0) {
             Ok(rownames) => match rownames.vector() {
                 Ok(rownames) => {
