@@ -10,10 +10,13 @@
 //   https://github.com/wch/r-source
 
 use crate::rbindings::*;
+use crate::stop::UnwrapOrStop;
 
 use std::collections::HashMap;
 use std::ffi::{c_char, c_void, CStr};
 use std::marker::PhantomData;
+
+static TOO_LONG: &'static str = "Too long to be represented by R";
 
 pub struct Pc {
     counter: std::cell::RefCell<i32>,
@@ -144,7 +147,7 @@ impl Pc {
         let sexp = unsafe {
             Rf_ScalarString(Rf_mkCharLenCE(
                 x.as_ptr() as *const c_char,
-                x.len().try_into().unwrap(),
+                x.len().try_into().stop_str(TOO_LONG),
                 cetype_t_CE_UTF8,
             ))
         };
@@ -152,7 +155,8 @@ impl Pc {
     }
 
     fn new_vector<'a, RMode>(&self, code: u32, length: usize) -> &'a mut RObject<RVector, RMode> {
-        let sexp = self.protect(unsafe { Rf_allocVector(code, length.try_into().unwrap()) });
+        let sexp =
+            self.protect(unsafe { Rf_allocVector(code, length.try_into().stop_str(TOO_LONG)) });
         self.transmute_sexp_mut(sexp)
     }
 
@@ -188,7 +192,11 @@ impl Pc {
         ncol: usize,
     ) -> &'a mut RObject<RMatrix, RMode> {
         let sexp = self.protect(unsafe {
-            Rf_allocMatrix(code, nrow.try_into().unwrap(), ncol.try_into().unwrap())
+            Rf_allocMatrix(
+                code,
+                nrow.try_into().stop_str(TOO_LONG),
+                ncol.try_into().stop_str(TOO_LONG),
+            )
         });
         self.transmute_sexp_mut(sexp)
     }
@@ -224,7 +232,10 @@ impl Pc {
 
     #[allow(clippy::mut_from_ref)]
     fn new_array<T>(&self, code: u32, dim: &[usize]) -> &mut RObject<RArray, T> {
-        let d = dim.iter().map(|x| i32::try_from(*x).unwrap()).to_r(self);
+        let d = dim
+            .iter()
+            .map(|x| i32::try_from(*x).stop_str(TOO_LONG))
+            .to_r(self);
         self.transmute_sexp_mut(self.protect(unsafe { Rf_allocArray(code, d.sexp()) }))
     }
 
@@ -255,7 +266,8 @@ impl Pc {
 
     /// Create a new list.
     pub fn new_list(&self, length: usize) -> &mut RObject<RList> {
-        let sexp = self.protect(unsafe { Rf_allocVector(VECSXP, length.try_into().unwrap()) });
+        let sexp =
+            self.protect(unsafe { Rf_allocVector(VECSXP, length.try_into().stop_str(TOO_LONG)) });
         self.transmute_sexp_mut(sexp)
     }
 
@@ -278,7 +290,7 @@ impl Pc {
         let sexp = self.protect(unsafe {
             Rf_mkCharLenCE(
                 x.as_ptr() as *const c_char,
-                x.len().try_into().unwrap(),
+                x.len().try_into().stop_str(TOO_LONG),
                 cetype_t_CE_UTF8,
             )
         });
@@ -449,10 +461,10 @@ impl<RType, RMode> RObject<RType, RMode> {
         unsafe { &*sexp.cast::<RObject<RTypeTo, RModeTo>>() }
     }
 
-    fn transmute_sexp_mut<RTypeTo, RModeTo>(
-        &mut self,
+    fn transmute_sexp_mut<'a, 'b, RTypeTo, RModeTo>(
+        &'a mut self,
         sexp: SEXP,
-    ) -> &mut RObject<RTypeTo, RModeTo> {
+    ) -> &'b mut RObject<RTypeTo, RModeTo> {
         unsafe { &mut *sexp.cast::<RObject<RTypeTo, RModeTo>>() }
     }
 
@@ -460,8 +472,8 @@ impl<RType, RMode> RObject<RType, RMode> {
         unsafe { std::mem::transmute::<&Self, &RObject<RTypeTo, RModeTo>>(self) }
     }
 
-    fn transmute_mut<RTypeTo, RModeTo>(&mut self) -> &mut RObject<RTypeTo, RModeTo> {
-        unsafe { std::mem::transmute::<&mut Self, &mut RObject<RTypeTo, RModeTo>>(self) }
+    fn transmute_mut<'a, 'b, RTypeTo, RModeTo>(&'a mut self) -> &'b mut RObject<RTypeTo, RModeTo> {
+        unsafe { std::mem::transmute::<&'a mut Self, &'b mut RObject<RTypeTo, RModeTo>>(self) }
     }
 
     /// Duplicate an object.
@@ -499,7 +511,7 @@ impl<RType, RMode> RObject<RType, RMode> {
         }
     }
 
-    pub fn scalar_mut(&mut self) -> Result<&mut RObject<RScalar>, &'static str> {
+    pub fn scalar_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RScalar>, &'static str> {
         let s = self.vector()?;
         if s.is_scalar() {
             Ok(self.transmute_mut())
@@ -516,7 +528,7 @@ impl<RType, RMode> RObject<RType, RMode> {
         }
     }
 
-    pub fn vector_mut(&mut self) -> Result<&mut RObject<RVector>, &'static str> {
+    pub fn vector_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RVector>, &'static str> {
         if self.is_vector() {
             Ok(self.transmute_mut())
         } else {
@@ -536,7 +548,7 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RMatrix>.
     /// Checks using R's `Rf_isMatrix` function.
-    pub fn matrix_mut(&mut self) -> Result<&mut RObject<RMatrix>, &'static str> {
+    pub fn matrix_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RMatrix>, &'static str> {
         if self.is_matrix() {
             Ok(self.transmute_mut())
         } else {
@@ -556,7 +568,7 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RArray>.
     /// Checks using R's `Rf_isArray` function.
-    pub fn array_mut(&mut self) -> Result<&mut RObject<RArray>, &'static str> {
+    pub fn array_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RArray>, &'static str> {
         if self.is_array() {
             Ok(self.transmute_mut())
         } else {
@@ -576,7 +588,7 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RVector, RList>.
     /// Checks using R's `Rf_isVectorList` function.
-    pub fn list_mut(&mut self) -> Result<&mut RObject<RList>, &'static str> {
+    pub fn list_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RList>, &'static str> {
         if self.is_list() {
             Ok(self.transmute_mut())
         } else {
@@ -596,7 +608,9 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RVector, RDataFrame>.
     /// Checks using R's `Rf_isFrame` function.
-    pub fn data_frame_mut(&mut self) -> Result<&mut RObject<RList, RDataFrame>, &'static str> {
+    pub fn data_frame_mut<'a, 'b>(
+        &'a mut self,
+    ) -> Result<&'b mut RObject<RList, RDataFrame>, &'static str> {
         if self.is_data_frame() {
             Ok(self.transmute_mut())
         } else {
@@ -616,7 +630,7 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RFunction>.
     /// Checks using R's `Rf_isFunction` function.
-    pub fn function_mut(&mut self) -> Result<&mut RObject<RFunction>, &'static str> {
+    pub fn function_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RFunction>, &'static str> {
         if self.is_function() {
             Ok(self.transmute_mut())
         } else {
@@ -636,7 +650,9 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RExternalPtr>.
     /// Uses the SEXP type to determine if this is possible.
-    pub fn external_ptr_mut(&mut self) -> Result<&mut RObject<RExternalPtr>, &'static str> {
+    pub fn external_ptr_mut<'a, 'b>(
+        &'a mut self,
+    ) -> Result<&'b mut RObject<RExternalPtr>, &'static str> {
         if self.is_external_ptr() {
             Ok(self.transmute_mut())
         } else {
@@ -656,7 +672,7 @@ impl<RType, RMode> RObject<RType, RMode> {
 
     /// Check if appropriate to characterize as an RObject<RExternalPtr>.
     /// Uses the SEXP type to determine if this is possible.
-    pub fn symbol_mut(&mut self) -> Result<&mut RObject<RSymbol>, &'static str> {
+    pub fn symbol_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RSymbol>, &'static str> {
         if self.is_symbol() {
             Ok(self.transmute_mut())
         } else {
@@ -805,7 +821,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     }
 
     /// Check if appropriate to characterize storage mode as "double".
-    pub fn double_mut(&mut self) -> Result<&mut RObject<RType, f64>, &'static str> {
+    pub fn double_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RType, f64>, &'static str> {
         if self.is_double() {
             Ok(self.transmute_mut())
         } else {
@@ -829,7 +845,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     }
 
     /// Attempts to coerce storage mode to "double".
-    pub fn to_double_mut<'a>(&'a mut self, pc: &'a Pc) -> &'a mut RObject<RType, f64> {
+    pub fn to_double_mut<'a, 'b>(&'a mut self, pc: &Pc) -> &'b mut RObject<RType, f64> {
         if self.is_double() {
             self.transmute_mut()
         } else {
@@ -848,7 +864,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     }
 
     /// Check if appropriate to characterize storage mode as "double".
-    pub fn integer_mut(&mut self) -> Result<&mut RObject<RType, i32>, &'static str> {
+    pub fn integer_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RType, i32>, &'static str> {
         if self.is_integer() {
             Ok(self.transmute_mut())
         } else {
@@ -872,7 +888,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     }
 
     /// Attempts to coerce storage mode to "double".
-    pub fn to_integer_mut<'a>(&'a mut self, pc: &'a Pc) -> &'a mut RObject<RType, i32> {
+    pub fn to_integer_mut<'a, 'b>(&'a mut self, pc: &Pc) -> &'b mut RObject<RType, i32> {
         if self.is_integer() {
             self.transmute_mut()
         } else {
@@ -891,7 +907,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     }
 
     /// Check if appropriate to characterize storage mode as "double".
-    pub fn raw_mut(&mut self) -> Result<&mut RObject<RType, u8>, &'static str> {
+    pub fn raw_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RType, u8>, &'static str> {
         if self.is_raw() {
             Ok(self.transmute_mut())
         } else {
@@ -915,7 +931,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     }
 
     /// Attempts to coerce storage mode to "double".
-    pub fn to_raw_mut<'a>(&'a mut self, pc: &'a Pc) -> &'a mut RObject<RType, u8> {
+    pub fn to_raw_mut<'a, 'b>(&'a mut self, pc: &Pc) -> &'b mut RObject<RType, u8> {
         if self.is_raw() {
             self.transmute_mut()
         } else {
@@ -934,7 +950,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     }
 
     /// Check if appropriate to characterize storage mode as "double".
-    pub fn logical_mut(&mut self) -> Result<&mut RObject<RType, bool>, &'static str> {
+    pub fn logical_mut<'a, 'b>(&'a mut self) -> Result<&'b mut RObject<RType, bool>, &'static str> {
         if self.is_logical() {
             Ok(self.transmute_mut())
         } else {
@@ -958,7 +974,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     }
 
     /// Attempts to coerce storage mode to "double".
-    pub fn to_logical_mut<'a>(&'a mut self, pc: &'a Pc) -> &'a mut RObject<RType, bool> {
+    pub fn to_logical_mut<'a, 'b>(&'a mut self, pc: &Pc) -> &'b mut RObject<RType, bool> {
         if self.is_logical() {
             self.transmute_mut()
         } else {
@@ -977,7 +993,9 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     }
 
     /// Check if appropriate to characterize storage mode as "double".
-    pub fn character_mut(&mut self) -> Result<&mut RObject<RType, RCharacter>, &'static str> {
+    pub fn character_mut<'a, 'b>(
+        &'a mut self,
+    ) -> Result<&'b mut RObject<RType, RCharacter>, &'static str> {
         if self.is_character() {
             Ok(self.transmute_mut())
         } else {
@@ -1001,7 +1019,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
     }
 
     /// Attempts to coerce storage mode to "double".
-    pub fn to_character_mut<'a>(&'a mut self, pc: &'a Pc) -> &'a mut RObject<RType, RCharacter> {
+    pub fn to_character_mut<'a, 'b>(&'a mut self, pc: &Pc) -> &'b mut RObject<RType, RCharacter> {
         if self.is_character() {
             self.transmute_mut()
         } else {
@@ -1091,7 +1109,7 @@ impl<RMode> RObject<RMatrix, RMode> {
     }
 
     /// Manipulates the matrix in place to be a vector by dropping the `dim` attribute.
-    pub fn as_vector(&mut self) -> &mut RObject<RVector, RMode> {
+    pub fn as_vector<'a, 'b>(&'a mut self) -> &'b mut RObject<RVector, RMode> {
         unsafe { Rf_setAttrib(self.sexp(), R_DimSymbol, R_NilValue) };
         self.transmute_mut()
     }
@@ -1107,7 +1125,7 @@ impl<RType> RObject<RArray, RType> {
 
     // Create a new vector from a matrix.
     /// Convert an RArray to a Vector.
-    pub fn as_vector(&mut self) -> &mut RObject<RVector, RType> {
+    pub fn as_vector<'a, 'b>(&'a mut self) -> &'b mut RObject<RVector, RType> {
         unsafe { Rf_setAttrib(self.sexp(), R_DimSymbol, R_NilValue) };
         self.transmute_mut()
     }
@@ -1504,21 +1522,15 @@ impl RObject<RVector, RCharacter> {
 
     /// Set the value at a certain index in a character RVector.
     pub fn set(&mut self, index: usize, value: &str) -> Result<(), &'static str> {
-        unsafe {
-            let value = Rf_mkCharLenCE(
-                value.as_ptr() as *const c_char,
-                value.len().try_into().unwrap(),
-                cetype_t_CE_UTF8,
-            );
-            self.set_engine(index, value, SET_STRING_ELT)
-        }
+        let len = value.len().try_into().map_err(|_| TOO_LONG)?;
+        let value =
+            unsafe { Rf_mkCharLenCE(value.as_ptr() as *const c_char, len, cetype_t_CE_UTF8) };
+        self.set_engine(index, value, SET_STRING_ELT)
     }
 
     /// Set the value at a certain index in a character RVector to NA.
-    pub fn set_na(&mut self, index: usize) {
-        unsafe {
-            SET_STRING_ELT(self.sexp(), index.try_into().unwrap(), R_NaString);
-        }
+    pub fn set_na(&mut self, index: usize) -> Result<(), &'static str> {
+        self.set_engine(index, unsafe { R_NaString }, SET_STRING_ELT)
     }
 }
 
@@ -1640,19 +1652,19 @@ impl<RMode> RObject<RList, RMode> {
     }
 
     /// Convert an RList to an RDataFrame.
-    pub fn to_data_frame<'a>(
+    pub fn to_data_frame<'a, 'b>(
         &'a mut self,
         names: &RObject<RVector, RCharacter>,
         rownames: &RObject<RVector, RCharacter>,
         pc: &Pc,
-    ) -> Result<&'a mut RObject<RList, RDataFrame>, &'static str> {
+    ) -> Result<&'b mut RObject<RList, RDataFrame>, &'static str> {
         if names.len() != self.len() {
             return Err("Length of names is not correct");
         }
         let mut nrow = -1;
         for i in 0..self.len() {
             let x = self.get(i).unwrap();
-            if x.is_vector() {
+            if !x.is_vector() {
                 return Err("Expected an atomic vector... Have you set the list elements yet?");
             }
             let len = unsafe { Rf_xlength(x.sexp()) };
@@ -2095,7 +2107,9 @@ impl<T: IntoIterator<Item = i32> + ExactSizeIterator> ToR4<RVector, i32> for T {
 
 impl<'a> ToR1<'a, RVector, i32> for usize {
     fn to_r(&self, pc: &'a Pc) -> &'a mut RObject<RVector, i32> {
-        pc.transmute_sexp_mut(pc.protect(unsafe { Rf_ScalarInteger((*self).try_into().unwrap()) }))
+        pc.transmute_sexp_mut(pc.protect(unsafe {
+            Rf_ScalarInteger((*self).try_into().stop_str("Could not fit usize into i32"))
+        }))
     }
 }
 
@@ -2110,7 +2124,7 @@ impl<'a> ToR1<'a, RVector, i32> for &[usize] {
         let result = pc.new_vector_integer(self.len());
         let slice = result.slice_mut();
         for (i, j) in slice.iter_mut().zip(self.iter()) {
-            *i = (*j).try_into().unwrap();
+            *i = (*j).try_into().stop_str("Could not fit usize into i32");
         }
         result
     }
@@ -2121,7 +2135,7 @@ impl<'a> ToR1<'a, RVector, i32> for &mut [usize] {
         let result = pc.new_vector_integer(self.len());
         let slice = result.slice_mut();
         for (i, j) in slice.iter_mut().zip(self.iter()) {
-            *i = (*j).try_into().unwrap();
+            *i = (*j).try_into().stop_str("Could not fit usize into i32");
         }
         result
     }
@@ -2286,7 +2300,7 @@ impl<'a> ToR1<'a, RVector, RCharacter> for &str {
         let sexp = unsafe {
             Rf_ScalarString(Rf_mkCharLenCE(
                 self.as_ptr() as *const c_char,
-                self.len().try_into().unwrap(),
+                self.len().try_into().stop_str(TOO_LONG),
                 cetype_t_CE_UTF8,
             ))
         };

@@ -202,88 +202,88 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                                 "RScalar" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.scalar_mut().stop_closure(|| format!("'{}' is expected to be a scalar", stringify!(#name)));
+                                                            let #name = #name.scalar_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.scalar().stop_closure(|| format!("'{}' is expected to be a scalar", stringify!(#name)));
+                                                            let #name = #name.scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar"));
                                                         });
                                                     }
                                                 }
                                                 "RVector" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.vector_mut().stop_closure(|| format!("'{}' is expected to be a vector", stringify!(#name)));
+                                                            let #name = #name.vector_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a vector"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.vector().stop_closure(|| format!("'{}' is expected to be a vector", stringify!(#name)));
+                                                            let #name = #name.vector().stop_str(concat!("'", stringify!(#name),"' is expected to be a vector"));
                                                         });
                                                     }
                                                 }
                                                 "RMatrix" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.matrix_mut().stop_closure(|| format!("'{}' is expected to be a matrix", stringify!(#name)));
+                                                            let #name = #name.matrix_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a matrix"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.matrix().stop_closure(|| format!("'{}' is expected to be a matrix", stringify!(#name)));
+                                                            let #name = #name.matrix().stop_str(concat!("'", stringify!(#name),"' is expected to be a matrix"));
                                                         });
                                                     }
                                                 }
                                                 "RArray" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.array_mut().stop_closure(|| format!("'{}' is expected to be an array.", stringify!(#name)));
+                                                            let #name = #name.array_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be an array"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.array().stop_closure(|| format!("'{}' is expected to be an array.", stringify!(#name)));
+                                                            let #name = #name.array().stop_str(concat!("'", stringify!(#name),"' is expected to be an array"));
                                                         });
                                                     }
                                                 }
                                                 "RList" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.list_mut().stop_closure(|| format!("'{}' is expected to be a list", stringify!(#name)));
+                                                            let #name = #name.list_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a list"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.list().stop_closure(|| format!("'{}' is expected to be a list", stringify!(#name)));
+                                                            let #name = #name.list().stop_str(concat!("'", stringify!(#name),"' is expected to be a list"));
                                                         });
                                                     }
                                                 }
                                                 "RFunction" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.function_mut().stop_closure(|| format!("'{}' is expected to be a function", stringify!(#name)));
+                                                            let #name = #name.function_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a function"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.function().stop_closure(|| format!("'{}' is expected to be a function", stringify!(#name)));
+                                                            let #name = #name.function().stop_str(concat!("'", stringify!(#name),"' is expected to be a function"));
                                                         });
                                                     }
                                                 }
                                                 "RExternalPtr" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.external_ptr_mut().stop_closure(|| format!("'{}' is expected to be an external pointer", stringify!(#name)));
+                                                            let #name = #name.external_ptr_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be an external pointer"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.external_ptr().stop_closure(|| format!("'{}' is expected to be an external pointer", stringify!(#name)));
+                                                            let #name = #name.external_ptr().stop_str(concat!("'", stringify!(#name),"' is expected to be an external pointer"));
                                                         });
                                                     }
                                                 }
                                                 "RSymbol" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.symbol_mut().stop_closure(|| format!("'{}' is expected to be a symbol", stringify!(#name)));
+                                                            let #name = #name.symbol_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a symbol"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.symbol().stop_closure(|| format!("'{}' is expected to be a symbol", stringify!(#name)));
+                                                            let #name = #name.symbol().stop_str(concat!("'", stringify!(#name),"' is expected to be a symbol"));
                                                         });
                                                     }
                                                 }
@@ -297,71 +297,71 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                                 "f64" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.double_mut().stop_closure(|| format!("'{}' is expected to have storage mode 'double'", "#name"));
+                                                            let #name = #name.double_mut().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode double"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.double().stop_closure(|| format!("'{}' is expected to have storage mode 'double'", "#name"));
+                                                            let #name = #name.double().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode double"));
                                                         });
                                                     }
                                                 }
                                                 "i32" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.integer_mut().stop_closure(|| format!("'{}' is expected to have storage mode 'integer'", "#name"));
+                                                            let #name = #name.integer_mut().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode integer"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.integer().stop_closure(|| format!("'{}' is expected to have storage mode 'integer'", "#name"));
+                                                            let #name = #name.integer().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode integer"));
                                                         });
                                                     }
                                                 }
                                                 "u8" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.raw_mut().stop_closure(|| format!("'{}' is expected to have storage mode 'raw'", "#name"));
+                                                            let #name = #name.raw_mut().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode raw"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.raw().stop_closure(|| format!("'{}' is expected to have storage mode 'raw'", "#name"));
+                                                            let #name = #name.raw().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode raw"));
                                                         });
                                                     }
                                                 }
                                                 "bool" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.logical_mut().stop_closure(|| format!("'{}' is expected to have storage mode 'logical'", "#name"));
+                                                            let #name = #name.logical_mut().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode logical"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.logical().stop_closure(|| format!("'{}' is expected to have storage mode 'logical'", "#name"));
+                                                            let #name = #name.logical().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode logical"));
                                                         });
                                                     }
                                                 }
                                                 "RCharacter" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.character_mut().stop_closure(|| format!("'{}' is expected to have storage mode 'character'", "#name"));
+                                                            let #name = #name.character_mut().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode character"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.character().stop_closure(|| format!("'{}' is expected to have storage mode 'character'", "#name"));
+                                                            let #name = #name.character().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode character"));
                                                         });
                                                     }
                                                 }
                                                 "RDataFrame" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.data_frame_mut().stop_closure(|| format!("'{}' is expected to a data frame", "#name"));
+                                                            let #name = #name.data_frame_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a data frame"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.data_frame().stop_closure(|| format!("'{}' is expected to a data frame", "#name"));
+                                                            let #name = #name.data_frame().stop_str(concat!("'", stringify!(#name),"' is expected to be a data frame"));
                                                         });
                                                     }
                                                 }
                                                 e => {
-                                                    panic!("'{}' has '{}' as the second type parameter, but one of the following was expected: f64, i32, u8, bool, Character, RDataFrame", name_as_string, e);
+                                                    panic!("'{}' has '{}' as the second type parameter, but one of the following was expected: f64, i32, u8, bool, RCharacter, RDataFrame", name_as_string, e);
                                                 }
                                             }
                                         }
