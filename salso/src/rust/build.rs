@@ -22,7 +22,7 @@ fn main() {
         }
     };
     let out_dir = env::var_os("OUT_DIR").expect(
-        "Environment variable 'OUT_DIR' is not set.  Are you run as part of 'cargo build'?",
+        "Environment variable 'OUT_DIR' is not set.  Are you running as part of 'cargo build'?",
     );
     let dest_path = Path::new(&out_dir).join("registration.rs");
     let snippet = snippet.unwrap_or_else(|| {
@@ -128,7 +128,7 @@ extern "C" fn R_init_{}_rust(info: *mut rbindings::DllInfo) {{
         rbindings::R_useDynamicSymbols(info, 0);
         rbindings::R_forceSymbols(info, 1);
     }
-    roxido::stop::set_custom_panic_hook();
+    roxido::set_custom_panic_hook();
 }"#,
                 );
                 Some(snippet)

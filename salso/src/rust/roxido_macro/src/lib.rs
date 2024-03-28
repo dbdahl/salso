@@ -139,19 +139,19 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                         match path.as_ref() {
                             "SEXP" => {}
                             "f64" => {
-                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).f64(); });
+                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).f64(); });
                             }
                             "i32" => {
-                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).i32().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be an integer: {}"), x)).stop(); });
+                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).i32().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be an integer: {}"), x)).stop(); });
                             }
                             "usize" => {
-                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).usize().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a usize: {}"), x)).stop(); });
+                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).usize().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a usize: {}"), x)).stop(); });
                             }
                             "u8" => {
-                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).u8().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a raw: {}"), x)).stop(); });
+                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).u8().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a raw: {}"), x)).stop(); });
                             }
                             "bool" => {
-                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).bool().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a logical: {}"), x)).stop(); });
+                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).bool().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a logical: {}"), x)).stop(); });
                             }
                             _ => {
                                 error_msg();
@@ -165,7 +165,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                 let path = quote!(#ty).to_string();
                                 if !path.starts_with("RObject") {
                                     if path == "str" {
-                                        generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).str(pc); });
+                                        generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).str(pc); });
                                     } else {
                                         error_msg();
                                     }
@@ -202,88 +202,88 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                                 "RScalar" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.scalar_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar"));
+                                                            let #name = #name.as_scalar_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar"));
+                                                            let #name = #name.as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar"));
                                                         });
                                                     }
                                                 }
                                                 "RVector" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.vector_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a vector"));
+                                                            let #name = #name.as_vector_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a vector"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.vector().stop_str(concat!("'", stringify!(#name),"' is expected to be a vector"));
+                                                            let #name = #name.as_vector().stop_str(concat!("'", stringify!(#name),"' is expected to be a vector"));
                                                         });
                                                     }
                                                 }
                                                 "RMatrix" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.matrix_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a matrix"));
+                                                            let #name = #name.as_matrix_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a matrix"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.matrix().stop_str(concat!("'", stringify!(#name),"' is expected to be a matrix"));
+                                                            let #name = #name.as_matrix().stop_str(concat!("'", stringify!(#name),"' is expected to be a matrix"));
                                                         });
                                                     }
                                                 }
                                                 "RArray" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.array_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be an array"));
+                                                            let #name = #name.as_array_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be an array"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.array().stop_str(concat!("'", stringify!(#name),"' is expected to be an array"));
+                                                            let #name = #name.as_array().stop_str(concat!("'", stringify!(#name),"' is expected to be an array"));
                                                         });
                                                     }
                                                 }
                                                 "RList" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.list_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a list"));
+                                                            let #name = #name.as_list_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a list"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.list().stop_str(concat!("'", stringify!(#name),"' is expected to be a list"));
+                                                            let #name = #name.as_list().stop_str(concat!("'", stringify!(#name),"' is expected to be a list"));
                                                         });
                                                     }
                                                 }
                                                 "RFunction" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.function_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a function"));
+                                                            let #name = #name.as_function_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a function"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.function().stop_str(concat!("'", stringify!(#name),"' is expected to be a function"));
+                                                            let #name = #name.as_function().stop_str(concat!("'", stringify!(#name),"' is expected to be a function"));
                                                         });
                                                     }
                                                 }
                                                 "RExternalPtr" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.external_ptr_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be an external pointer"));
+                                                            let #name = #name.as_external_ptr_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be an external pointer"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.external_ptr().stop_str(concat!("'", stringify!(#name),"' is expected to be an external pointer"));
+                                                            let #name = #name.as_external_ptr().stop_str(concat!("'", stringify!(#name),"' is expected to be an external pointer"));
                                                         });
                                                     }
                                                 }
                                                 "RSymbol" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.symbol_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a symbol"));
+                                                            let #name = #name.as_symbol_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a symbol"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.symbol().stop_str(concat!("'", stringify!(#name),"' is expected to be a symbol"));
+                                                            let #name = #name.as_symbol().stop_str(concat!("'", stringify!(#name),"' is expected to be a symbol"));
                                                         });
                                                     }
                                                 }
@@ -341,22 +341,22 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                                 "RCharacter" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.character_mut().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode character"));
+                                                            let #name = #name.as_character_mut().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode character"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.character().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode character"));
+                                                            let #name = #name.as_character().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode character"));
                                                         });
                                                     }
                                                 }
                                                 "RDataFrame" => {
                                                     if mutable {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.data_frame_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a data frame"));
+                                                            let #name = #name.as_data_frame_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a data frame"));
                                                         });
                                                     } else {
                                                         generated_statements.push(parse_quote! {
-                                                            let #name = #name.data_frame().stop_str(concat!("'", stringify!(#name),"' is expected to be a data frame"));
+                                                            let #name = #name.as_data_frame().stop_str(concat!("'", stringify!(#name),"' is expected to be a data frame"));
                                                         });
                                                     }
                                                 }
@@ -383,7 +383,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
         syn::ReturnType::Default => {}
         _ => {
             panic!(
-                "A 'roxido' function should not have an explicit return type and it implicitly returns any value whose type implements one of the ToR1, ToR2, etc. traits"
+                "A 'roxido' function should not have an explicit return type and it implicitly returns any value whose type implements one of the ToR trait"
             );
         }
     }

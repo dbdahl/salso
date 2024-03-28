@@ -41,20 +41,19 @@ fn enumerate_partitions(n_items: usize) {
 
 #[roxido]
 fn expected_loss(
-    partitions: &mut RObject,
-    draws: &mut RObject,
-    psm: &mut RObject,
+    partitions: &mut RObject<RMatrix>,
+    draws: &mut RObject<RMatrix>,
+    psm: &mut RObject<RMatrix>,
     loss: i32,
     a: f64,
 ) {
-    let partitions = partitions.matrix_mut().stop();
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
     let partitions = partitions.to_i32_mut(pc);
-    let draws = draws.matrix_mut().map(|x| x.to_i32_mut(pc));
+    let draws = draws.to_i32_mut(pc);
     let psm2: &mut RObject<RMatrix, f64>;
     let psm_slice = if !psm.is_null() {
-        psm2 = psm.matrix_mut().stop().to_f64_mut(pc);
+        psm2 = psm.to_f64_mut(pc);
         psm2.slice_mut()
     } else {
         &mut []
@@ -69,7 +68,6 @@ fn expected_loss(
     let loss_function = dahl_salso::LossFunction::from_code(loss, a);
     match loss_function {
         Some(dahl_salso::LossFunction::BinderDraws(a)) => {
-            let draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -89,7 +87,6 @@ fn expected_loss(
             dahl_salso::loss::binder_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::OneMinusARI) => {
-            let draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -109,7 +106,6 @@ fn expected_loss(
             dahl_salso::loss::omariapprox_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::VI(a)) => {
-            let draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -130,7 +126,6 @@ fn expected_loss(
             dahl_salso::loss::vilb_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::NVI) => {
-            let draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -153,7 +148,6 @@ fn expected_loss(
             )
         }
         Some(dahl_salso::LossFunction::ID) => {
-            let draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -176,7 +170,6 @@ fn expected_loss(
             )
         }
         Some(dahl_salso::LossFunction::NID) => {
-            let draws = draws.stop();
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -204,8 +197,7 @@ fn expected_loss(
 }
 
 #[roxido]
-fn psm(partitions: &mut RObject, n_cores: usize) {
-    let partitions = partitions.matrix_mut().stop();
+fn psm(partitions: &mut RObject<RMatrix>, n_cores: usize) {
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
     let partitions = partitions.to_i32_mut(pc);
@@ -223,8 +215,7 @@ fn psm(partitions: &mut RObject, n_cores: usize) {
 }
 
 #[roxido]
-fn minimize_by_enumeration(psm: &mut RObject, loss: i32, a: f64) {
-    let psm = psm.matrix_mut().stop();
+fn minimize_by_enumeration(psm: &mut RObject<RMatrix>, loss: i32, a: f64) {
     let n_items = psm.nrow();
     let psm = psm.to_f64_mut(pc);
     let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice_mut(), n_items);
@@ -299,7 +290,6 @@ fn minimize_by_salso(
             dahl_salso::LossFunction::BinderPSM
             | dahl_salso::LossFunction::OneMinusARIapprox
             | dahl_salso::LossFunction::VIlb => {
-                let psm = psm.matrix_mut().stop();
                 n_items = psm.ncol();
                 psm2 = psm.to_f64_mut(pc);
                 psm3 = dahl_partition::SquareMatrixBorrower::from_slice(psm2.slice_mut(), n_items);
