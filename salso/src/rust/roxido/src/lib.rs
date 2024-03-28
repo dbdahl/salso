@@ -28,28 +28,15 @@
 //! use roxido::*;
 //!
 //! #[roxido]
-//! fn convolve2(a: RObject, b: RObject) -> RObject {
-//!     let a = a
-//!         .as_vector()
-//!         .stop_str("'a' not a vector.")
-//!         .to_mode_double(pc)
-//!         .slice();
-//!     let b = b
-//!         .as_vector()
-//!         .stop_str("'b' not a vector.")
-//!         .to_mode_double(pc)
-//!         .slice();
-//!     let r = R::new_vector_double(a.len() + b.len() - 1, pc);
-//!     let ab = r.slice();
-//!     for abi in ab.iter_mut() {
-//!         *abi = 0.0;
-//!     }
-//!     for (i, ai) in a.iter().enumerate() {
-//!         for (j, bj) in b.iter().enumerate() {
-//!             ab[i + j] += ai + bj;
+//! fn convolve2(a: &RObject<RVector>, b: &RObject<RVector>) {
+//!     let vec = RObject::<RVector, f64>::from_value(0.0, a.len() + b.len() - 1, pc);
+//!     let ab = vec.slice_mut();
+//!     for (i, ai) in a.to_double(pc).slice().iter().enumerate() {
+//!         for (j, bj) in b.to_double(pc).slice().iter().enumerate() {
+//!             ab[i + j] += ai * bj;
 //!         }
 //!     }
-//!     r
+//!     vec
 //! }
 //! ```
 
@@ -64,7 +51,8 @@ pub use roxido_macro::roxido;
 /// A procedural macro to facilitate printing from Rust to R.
 pub use print::*;
 
+pub use r::*;
+pub use rbindings::SEXP;
+
 #[doc(hidden)]
 pub use stop::*;
-
-pub use r::*;

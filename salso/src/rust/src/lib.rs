@@ -9,7 +9,7 @@ use roxido::*;
 use std::convert::TryFrom;
 
 #[roxido]
-fn bell(n_items: usize) -> &RObject {
+fn bell(n_items: usize) {
     match dahl_bellnumber::bell(n_items).to_f64() {
         Some(x) => x,
         None => f64::INFINITY,
@@ -17,15 +17,15 @@ fn bell(n_items: usize) -> &RObject {
 }
 
 #[roxido]
-fn lbell(n_items: usize) -> &RObject {
+fn lbell(n_items: usize) {
     dahl_bellnumber::lbell(n_items)
 }
 
 #[roxido]
-fn enumerate_partitions(n_items: usize) -> &RObject {
+fn enumerate_partitions(n_items: usize) {
     let bell_number = dahl_bellnumber::bell(n_items);
     let n_partitions = usize::try_from(bell_number).unwrap();
-    let partitions = pc.new_matrix_integer(n_partitions, n_items);
+    let partitions = RObject::<RMatrix, i32>::new(n_partitions, n_items, pc);
     let mut phv = dahl_partition::PartitionsHolderBorrower::from_slice(
         partitions.slice_mut(),
         n_partitions,
@@ -46,20 +46,20 @@ fn expected_loss(
     psm: &mut RObject,
     loss: i32,
     a: f64,
-) -> &RObject {
+) {
     let partitions = partitions.matrix_mut().stop();
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
-    let partitions = partitions.to_integer_mut(pc);
-    let draws = draws.matrix_mut().map(|x| x.to_integer_mut(pc));
+    let partitions = partitions.to_i32_mut(pc);
+    let draws = draws.matrix_mut().map(|x| x.to_i32_mut(pc));
     let psm2: &mut RObject<RMatrix, f64>;
     let psm_slice = if !psm.is_null() {
-        psm2 = psm.matrix_mut().stop().to_double_mut(pc);
+        psm2 = psm.matrix_mut().stop().to_f64_mut(pc);
         psm2.slice_mut()
     } else {
         &mut []
     };
-    let results = pc.new_vector_double(n_partitions);
+    let results = RObject::<RVector, f64>::new(n_partitions, pc);
     let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
         partitions.slice_mut(),
         n_partitions,
@@ -204,13 +204,13 @@ fn expected_loss(
 }
 
 #[roxido]
-fn psm(partitions: &mut RObject, n_cores: usize) -> &RObject {
+fn psm(partitions: &mut RObject, n_cores: usize) {
     let partitions = partitions.matrix_mut().stop();
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
-    let partitions = partitions.to_integer_mut(pc);
+    let partitions = partitions.to_i32_mut(pc);
     let n_cores = u32::try_from(n_cores).stop();
-    let psm = pc.new_matrix_double(n_items, n_items);
+    let psm = RObject::<RMatrix, f64>::new(n_items, n_items, pc);
     let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
         partitions.slice_mut(),
         n_partitions,
@@ -223,10 +223,10 @@ fn psm(partitions: &mut RObject, n_cores: usize) -> &RObject {
 }
 
 #[roxido]
-fn minimize_by_enumeration(psm: &mut RObject, loss: i32, a: f64) -> &RObject {
+fn minimize_by_enumeration(psm: &mut RObject, loss: i32, a: f64) {
     let psm = psm.matrix_mut().stop();
     let n_items = psm.nrow();
-    let psm = psm.to_double_mut(pc);
+    let psm = psm.to_f64_mut(pc);
     let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice_mut(), n_items);
     let f = match dahl_salso::LossFunction::from_code(loss, a) {
         Some(loss_function) => match loss_function {
@@ -243,7 +243,7 @@ fn minimize_by_enumeration(psm: &mut RObject, loss: i32, a: f64) -> &RObject {
         None => stop!("Unsupported loss method: code = {}", loss),
     };
     let minimizer = dahl_salso::optimize::minimize_by_enumeration(f, &psm);
-    let results = pc.new_vector_integer(n_items);
+    let results = RObject::<RVector, i32>::new(n_items, pc);
     let results_slice = results.slice_mut();
     for (i, v) in minimizer.iter().enumerate() {
         results_slice[i] = i32::try_from(*v + 1).unwrap();
@@ -253,8 +253,8 @@ fn minimize_by_enumeration(psm: &mut RObject, loss: i32, a: f64) -> &RObject {
 
 #[roxido]
 fn minimize_by_salso(
-    draws: &mut RObject,
-    psm: &mut RObject,
+    draws: &mut RObject<RMatrix>,
+    psm: &mut RObject<RMatrix>,
     loss: i32,
     a: f64,
     max_n_clusters: i32,
@@ -265,8 +265,8 @@ fn minimize_by_salso(
     prob_sequential_allocation: f64,
     prob_singletons_initialization: f64,
     n_cores: usize,
-) -> &RObject {
-    let draws = draws.matrix_mut().map(|x| x.to_integer_mut(pc));
+) {
+    let draws = draws.to_i32_mut(pc);
     let n_items;
     let draws2;
     let psm2;
@@ -279,7 +279,6 @@ fn minimize_by_salso(
             | dahl_salso::LossFunction::NVI
             | dahl_salso::LossFunction::ID
             | dahl_salso::LossFunction::NID => {
-                let draws = draws.stop();
                 n_items = draws.ncol();
                 let n_draws = draws.nrow();
                 draws2 = dahl_salso::clustering::Clusterings::from_i32_column_major_order(
@@ -302,7 +301,7 @@ fn minimize_by_salso(
             | dahl_salso::LossFunction::VIlb => {
                 let psm = psm.matrix_mut().stop();
                 n_items = psm.ncol();
-                psm2 = psm.to_double_mut(pc);
+                psm2 = psm.to_f64_mut(pc);
                 psm3 = dahl_partition::SquareMatrixBorrower::from_slice(psm2.slice_mut(), n_items);
                 (
                     loss_function,
@@ -327,7 +326,7 @@ fn minimize_by_salso(
     let max_scans = u32::try_from(max_scans).unwrap();
     let max_zealous_updates = u32::try_from(max_zealous_attempts).unwrap();
     let n_cores = u32::try_from(n_cores).unwrap();
-    let mut rng = Pcg64Mcg::from_seed(Pc::random_bytes::<16>());
+    let mut rng = Pcg64Mcg::from_seed(R::random_bytes::<16>());
     let p = dahl_salso::optimize::SALSOParameters {
         n_items,
         max_size: max_n_clusters_u16,
@@ -340,24 +339,21 @@ fn minimize_by_salso(
     };
     let results =
         dahl_salso::optimize::minimize_by_salso(pdi, loss_function, &p, seconds, n_cores, &mut rng);
-    let info_attr = pc.new_list(10);
-    info_attr
-        .set_names(
-            [
-                "loss",
-                "a",
-                "maxNClusters",
-                "expectedLoss",
-                "initMethod",
-                "nScans",
-                "nZAcc",
-                "nZAtt",
-                "nRuns",
-                "seconds",
-            ]
-            .to_r(pc),
-        )
-        .stop();
+    let info_attr = RObject::<RList>::with_names(
+        [
+            "loss",
+            "a",
+            "maxNClusters",
+            "expectedLoss",
+            "initMethod",
+            "nScans",
+            "nZAcc",
+            "nZAtt",
+            "nRuns",
+            "seconds",
+        ],
+        pc,
+    );
     info_attr.set(1, a.to_r(pc)).stop();
     info_attr
         .set(2, i32::from(results.max_size).to_r(pc))
@@ -390,11 +386,11 @@ fn minimize_by_salso(
         .set(8, i32::try_from(results.n_runs).unwrap().to_r(pc))
         .stop();
     info_attr.set(9, results.seconds.to_r(pc)).stop();
-    let r = pc.new_vector_integer(n_items);
+    let r = RObject::<RVector, i32>::new(n_items, pc);
     for (v, rr) in results.clustering.iter().zip(r.slice_mut().iter_mut()) {
         *rr = i32::try_from(*v + 1).unwrap();
     }
-    r.set_class("salso.estimate".to_r(pc));
-    r.set_attribute(pc.new_symbol("info"), info_attr);
+    r.set_class(["salso.estimate"].to_r(pc));
+    r.set_attribute(RObject::<RSymbol>::new("info", pc), info_attr);
     r
 }
