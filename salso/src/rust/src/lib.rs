@@ -43,7 +43,7 @@ fn enumerate_partitions(n_items: usize) {
 fn expected_loss(
     partitions: &mut RObject<RMatrix>,
     draws: &mut RObject<RMatrix>,
-    psm: &mut RObject<RMatrix>,
+    psm: &mut RObject,
     loss: i32,
     a: f64,
 ) {
@@ -53,7 +53,7 @@ fn expected_loss(
     let draws = draws.to_i32_mut(pc);
     let psm2: &mut RObject<RMatrix, f64>;
     let psm_slice = if !psm.is_null() {
-        psm2 = psm.to_f64_mut(pc);
+        psm2 = psm.as_matrix_mut().stop().to_f64_mut(pc);
         psm2.slice_mut()
     } else {
         &mut []
