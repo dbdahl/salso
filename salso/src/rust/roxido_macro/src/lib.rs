@@ -139,19 +139,19 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                         match path.as_ref() {
                             "SEXP" => {}
                             "f64" => {
-                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).f64(); });
+                                generated_statements.push(parse_quote! { let #name = pc.__private_transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).f64(); });
                             }
                             "i32" => {
-                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).i32().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be an integer: {}"), x)).stop(); });
+                                generated_statements.push(parse_quote! { let #name = pc.__private_transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).i32().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be an integer: {}"), x)).stop(); });
                             }
                             "usize" => {
-                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).usize().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a usize: {}"), x)).stop(); });
+                                generated_statements.push(parse_quote! { let #name = pc.__private_transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).usize().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a usize: {}"), x)).stop(); });
                             }
                             "u8" => {
-                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).u8().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a raw: {}"), x)).stop(); });
+                                generated_statements.push(parse_quote! { let #name = pc.__private_transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).u8().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a raw: {}"), x)).stop(); });
                             }
                             "bool" => {
-                                generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).bool().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a logical: {}"), x)).stop(); });
+                                generated_statements.push(parse_quote! { let #name = pc.__private_transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).bool().map_err(|x| format!(concat!("'", stringify!(#name), "' cannot be a logical: {}"), x)).stop(); });
                             }
                             _ => {
                                 error_msg();
@@ -165,7 +165,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                 let path = quote!(#ty).to_string();
                                 if !path.starts_with("RObject") {
                                     if path == "str" {
-                                        generated_statements.push(parse_quote! { let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).str(pc); });
+                                        generated_statements.push(parse_quote! { let #name = pc.__private_transmute_sexp::<RAnyType, RUnknown>(#name).as_scalar().stop_str(concat!("'", stringify!(#name),"' is expected to be a scalar")).str(pc); });
                                     } else {
                                         error_msg();
                                     }
@@ -176,11 +176,11 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                     let mutable = reference.mutability.is_some();
                                     if mutable {
                                         generated_statements.push(parse_quote! {
-                                            let #name = pc.transmute_sexp_mut::<RAnyType, RUnknown>(#name);
+                                            let #name = pc.__private_transmute_sexp_mut::<RAnyType, RUnknown>(#name);
                                         });
                                     } else {
                                         generated_statements.push(parse_quote! {
-                                            let #name = pc.transmute_sexp::<RAnyType, RUnknown>(#name);
+                                            let #name = pc.__private_transmute_sexp::<RAnyType, RUnknown>(#name);
                                         });
                                     }
                                     if path.ends_with('>') {
@@ -444,7 +444,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
             #[no_mangle]
             extern "C" fn #name(#new_args) -> SEXP {
                 let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                    let pc = &mut Pc::new();
+                    let pc = &mut Pc::__private_new();
                     #( #generated_statements )*
                     let mut f = || { #body };
                     f().to_r(pc).sexp()
@@ -483,7 +483,7 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
             #[no_mangle]
             extern "C" fn #name(#new_args) -> SEXP {
                 let result: Result<SEXP, _> = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                    let pc = &mut Pc::new();
+                    let pc = &mut Pc::__private_new();
                     #( #generated_statements )*
                     let mut f = || { #body };
                     f().to_r(pc).sexp()
@@ -491,8 +491,8 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                 match result {
                     Ok(obj) => obj,
                     Err(_) => {
-                        let pc = &mut Pc::new();
-                        pc.new_error(concat!("Panic in Rust function '",stringify!(#name),"' with 'roxido' attribute")).sexp()
+                        let pc = &mut Pc::__private_new();
+                        RObject::<RError>::new(concat!("Panic in Rust function '",stringify!(#name),"' with 'roxido' attribute"), pc).sexp()
                     }
                 }
             }

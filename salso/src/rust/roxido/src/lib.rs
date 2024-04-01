@@ -118,7 +118,7 @@ impl ROneDimensional for RList {}
 
 impl Default for Pc {
     fn default() -> Self {
-        Self::new()
+        Self::__private_new()
     }
 }
 
@@ -134,10 +134,12 @@ impl Drop for Pc {
 impl Pc {
     /// Allocate a new protection counter.
     ///
+    /// This is an implementation detail and *should not* be called directly!
     /// Functions defined with the `roxido` macro already have an instance of this structure named
     /// `pc`, so this function is generally not needed.
     ///
-    pub fn new() -> Self {
+    #[doc(hidden)]
+    pub fn __private_new() -> Self {
         Self { counter: 0.into() }
     }
 
@@ -151,24 +153,23 @@ impl Pc {
 
     /// This is an implementation detail and *should not* be called directly!
     #[doc(hidden)]
-    pub fn transmute_sexp<RTypeTo, RModeTo>(&self, sexp: SEXP) -> &RObject<RTypeTo, RModeTo> {
+    pub fn __private_transmute_sexp<RTypeTo, RModeTo>(
+        &self,
+        sexp: SEXP,
+    ) -> &RObject<RTypeTo, RModeTo> {
         unsafe { &*sexp.cast::<RObject<RTypeTo, RModeTo>>() }
     }
 
     /// This is an implementation detail and *should not* be called directly!
     #[doc(hidden)]
-    pub fn transmute_sexp_mut<'a, RTypeTo, RModeTo>(
+    pub fn __private_transmute_sexp_mut<'a, RTypeTo, RModeTo>(
         &self,
         sexp: SEXP,
     ) -> &'a mut RObject<RTypeTo, RModeTo> {
         unsafe { &mut *sexp.cast::<RObject<RTypeTo, RModeTo>>() }
     }
 
-    /// This is an implementation detail and *should not* be called directly!
-    #[doc(hidden)]
-    pub fn transmute_sexp_static<RTypeTo, RModeTo>(
-        sexp: SEXP,
-    ) -> &'static RObject<RTypeTo, RModeTo> {
+    fn transmute_sexp_static<RTypeTo, RModeTo>(sexp: SEXP) -> &'static RObject<RTypeTo, RModeTo> {
         unsafe { &*sexp.cast::<RObject<RTypeTo, RModeTo>>() }
     }
 }
@@ -305,7 +306,7 @@ impl<RType, RMode> RObject<RType, RMode> {
     #[allow(clippy::mut_from_ref)]
     pub fn clone<'a>(&self, pc: &'a Pc) -> &'a mut RObject<RType, RMode> {
         let sexp = pc.protect(unsafe { Rf_duplicate(self.sexp()) });
-        pc.transmute_sexp_mut(sexp)
+        pc.__private_transmute_sexp_mut(sexp)
     }
 
     /// Recharacterize an RObject<RType, RMode> as an RObject (i.e., an RObject<RAnyType, RUnknown>).
@@ -591,7 +592,7 @@ impl RObject<RSymbol> {
             )
         });
         let sexp = pc.protect(unsafe { Rf_installChar(sexp) });
-        pc.transmute_sexp_mut(sexp)
+        pc.__private_transmute_sexp_mut(sexp)
     }
 
     /// Get R's "dim" symbol.
@@ -676,7 +677,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
             self.transmute()
         } else {
             let sexp = pc.protect(unsafe { Rf_coerceVector(self.sexp(), REALSXP) });
-            pc.transmute_sexp(sexp)
+            pc.__private_transmute_sexp(sexp)
         }
     }
 
@@ -686,7 +687,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
             self.transmute_mut()
         } else {
             let sexp = pc.protect(unsafe { Rf_coerceVector(self.sexp(), REALSXP) });
-            pc.transmute_sexp_mut(sexp)
+            pc.__private_transmute_sexp_mut(sexp)
         }
     }
 
@@ -719,7 +720,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
             self.transmute()
         } else {
             let sexp = pc.protect(unsafe { Rf_coerceVector(self.sexp(), INTSXP) });
-            pc.transmute_sexp(sexp)
+            pc.__private_transmute_sexp(sexp)
         }
     }
 
@@ -729,7 +730,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
             self.transmute_mut()
         } else {
             let sexp = pc.protect(unsafe { Rf_coerceVector(self.sexp(), INTSXP) });
-            pc.transmute_sexp_mut(sexp)
+            pc.__private_transmute_sexp_mut(sexp)
         }
     }
 
@@ -762,7 +763,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
             self.transmute()
         } else {
             let sexp = pc.protect(unsafe { Rf_coerceVector(self.sexp(), RAWSXP) });
-            pc.transmute_sexp(sexp)
+            pc.__private_transmute_sexp(sexp)
         }
     }
 
@@ -772,7 +773,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
             self.transmute_mut()
         } else {
             let sexp = pc.protect(unsafe { Rf_coerceVector(self.sexp(), RAWSXP) });
-            pc.transmute_sexp_mut(sexp)
+            pc.__private_transmute_sexp_mut(sexp)
         }
     }
 
@@ -805,7 +806,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
             self.transmute()
         } else {
             let sexp = pc.protect(unsafe { Rf_coerceVector(self.sexp(), LGLSXP) });
-            pc.transmute_sexp(sexp)
+            pc.__private_transmute_sexp(sexp)
         }
     }
 
@@ -815,7 +816,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
             self.transmute_mut()
         } else {
             let sexp = pc.protect(unsafe { Rf_coerceVector(self.sexp(), LGLSXP) });
-            pc.transmute_sexp_mut(sexp)
+            pc.__private_transmute_sexp_mut(sexp)
         }
     }
 
@@ -848,7 +849,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
             self.transmute()
         } else {
             let sexp = pc.protect(unsafe { Rf_coerceVector(self.sexp(), STRSXP) });
-            pc.transmute_sexp(sexp)
+            pc.__private_transmute_sexp(sexp)
         }
     }
 
@@ -858,7 +859,7 @@ impl<RType: RAtomic + RHasLength, RMode> RObject<RType, RMode> {
             self.transmute_mut()
         } else {
             let sexp = pc.protect(unsafe { Rf_coerceVector(self.sexp(), STRSXP) });
-            pc.transmute_sexp_mut(sexp)
+            pc.__private_transmute_sexp_mut(sexp)
         }
     }
 }
@@ -868,7 +869,7 @@ impl<RMode> RObject<RVector, RMode> {
     fn new_engine(code: u32, length: usize, pc: &Pc) -> &mut Self {
         let sexp =
             pc.protect(unsafe { Rf_allocVector(code, length.try_into().stop_str(TOO_LONG)) });
-        pc.transmute_sexp_mut(sexp)
+        pc.__private_transmute_sexp_mut(sexp)
     }
 }
 
@@ -897,7 +898,7 @@ impl<RType> RObject<RArray, RType> {
     #[allow(clippy::mut_from_ref)]
     fn new_engine<'a>(code: u32, dim: &[usize], pc: &'a Pc) -> &'a mut RObject<RArray, RType> {
         let d = dim.to_r(pc);
-        pc.transmute_sexp_mut(pc.protect(unsafe { Rf_allocArray(code, d.sexp()) }))
+        pc.__private_transmute_sexp_mut(pc.protect(unsafe { Rf_allocArray(code, d.sexp()) }))
     }
 
     /// Returns the dimensions of the RArray.
@@ -939,7 +940,7 @@ impl RObject<RFunction> {
             R_tryEval(expression, R_GetCurrentEnv(), &mut p_out_error as *mut i32)
         });
         match p_out_error {
-            0 => Ok(pc.transmute_sexp(sexp)),
+            0 => Ok(pc.__private_transmute_sexp(sexp)),
             e => Err(e),
         }
     }
@@ -1232,7 +1233,7 @@ macro_rules! rscalar {
         impl RObject<RScalar, $tipe> {
             #[allow(clippy::mut_from_ref)]
             pub fn from_value(value: $tipe2, pc: &Pc) -> &mut Self {
-                pc.transmute_sexp_mut(pc.protect(unsafe { $code(value) }))
+                pc.__private_transmute_sexp_mut(pc.protect(unsafe { $code(value) }))
             }
 
             /// Get the value at a certain index in an $tipe RVector.
@@ -1285,7 +1286,7 @@ impl RObject<RScalar, RCharacter> {
                 cetype_t_CE_UTF8,
             ))
         };
-        pc.transmute_sexp_mut(pc.protect(sexp))
+        pc.__private_transmute_sexp_mut(pc.protect(sexp))
     }
 
     /// Get the value at a certain index in an $tipe RVector.
@@ -1482,7 +1483,7 @@ impl<RMode> RObject<RMatrix, RMode> {
                 ncol.try_into().stop_str(TOO_LONG),
             )
         });
-        pc.transmute_sexp_mut(sexp)
+        pc.__private_transmute_sexp_mut(sexp)
     }
 
     /// Returns the number of rows in the RMatrix.
@@ -1772,7 +1773,7 @@ impl RObject<RList> {
     pub fn new(length: usize, pc: &Pc) -> &mut Self {
         let sexp =
             pc.protect(unsafe { Rf_allocVector(VECSXP, length.try_into().stop_str(TOO_LONG)) });
-        pc.transmute_sexp_mut(sexp)
+        pc.__private_transmute_sexp_mut(sexp)
     }
 
     #[allow(clippy::mut_from_ref)]
@@ -1948,7 +1949,7 @@ impl RObject<RExternalPtr> {
                 Rf_setAttrib(sexp, R_AtsignSymbol, R_AtsignSymbol);
                 R_RegisterCFinalizerEx(sexp, Some(free::<T>), 0);
             }
-            pc.transmute_sexp_mut(sexp)
+            pc.__private_transmute_sexp_mut(sexp)
         }
     }
 
@@ -2230,19 +2231,19 @@ r_from_iter3!(u8, u8);
 // &RObject and SEXP
 impl<'a, RType, RMode> ToR<'a, RAnyType, RUnknown> for RObject<RType, RMode> {
     fn to_r(&self, pc: &'a Pc) -> &'a mut RObject {
-        pc.transmute_sexp_mut(self.sexp())
+        pc.__private_transmute_sexp_mut(self.sexp())
     }
 }
 
 impl<'a> ToR<'a, RAnyType, RUnknown> for SEXP {
     fn to_r(&self, pc: &'a Pc) -> &'a mut RObject<RAnyType, RUnknown> {
-        pc.transmute_sexp_mut(*self)
+        pc.__private_transmute_sexp_mut(*self)
     }
 }
 
 impl<'a> ToR<'a, RAnyType, RUnknown> for () {
     fn to_r(&self, pc: &'a Pc) -> &'a mut RObject<RAnyType, RUnknown> {
-        pc.transmute_sexp_mut(unsafe { R_NilValue })
+        pc.__private_transmute_sexp_mut(unsafe { R_NilValue })
     }
 }
 
@@ -2254,7 +2255,7 @@ impl<'a> ToR<'a, RAnyType, RUnknown> for () {
 /// See the `Rvprintf` function in `printutils.c` of R's source.
 ///
 #[doc(hidden)]
-pub fn _print(x: &str, use_stdout: bool) -> bool {
+pub fn __private_print(x: &str, use_stdout: bool) -> bool {
     #[repr(C)]
     struct DummyFat {
         len: usize,
@@ -2292,10 +2293,10 @@ pub fn _print(x: &str, use_stdout: bool) -> bool {
 #[macro_export]
 macro_rules! rprint {
     ($fmt_string:expr) => {
-        _print(format!($fmt_string).as_str(), true)
+        __private_print(format!($fmt_string).as_str(), true)
     };
     ($fmt_string:expr, $( $arg:expr ),* ) => {
-        _print(format!($fmt_string, $($arg),*).as_str(), true)
+        __private_print(format!($fmt_string, $($arg),*).as_str(), true)
     }
 }
 
@@ -2303,13 +2304,13 @@ macro_rules! rprint {
 #[macro_export]
 macro_rules! rprintln {
     () => {
-        _print("\n", true)
+        __private_print("\n", true)
     };
     ($fmt_string:expr) => {
-        _print(format!(concat!($fmt_string,"\n")).as_str(), true)
+        __private_print(format!(concat!($fmt_string,"\n")).as_str(), true)
     };
     ($fmt_string:expr, $( $arg:expr ),* ) => {
-        _print(format!(concat!($fmt_string,"\n"), $($arg),*).as_str(), true)
+        __private_print(format!(concat!($fmt_string,"\n"), $($arg),*).as_str(), true)
     }
 }
 
@@ -2317,10 +2318,10 @@ macro_rules! rprintln {
 #[macro_export]
 macro_rules! reprint {
     ($fmt_string:expr) => {
-        _print(format!($fmt_string).as_str(), false)
+        __private_print(format!($fmt_string).as_str(), false)
     };
     ($fmt_string:expr, $( $arg:expr ),* ) => {
-        _print(format!($fmt_string, $($arg),*).as_str(), false)
+        __private_print(format!($fmt_string, $($arg),*).as_str(), false)
     }
 }
 
@@ -2328,13 +2329,13 @@ macro_rules! reprint {
 #[macro_export]
 macro_rules! reprintln {
     () => {
-        _print("\n", false)
+        __private_print("\n", false)
     };
     ($fmt_string:expr) => {
-        _print(format!(concat!($fmt_string,"\n")).as_str(), false)
+        __private_print(format!(concat!($fmt_string,"\n")).as_str(), false)
     };
     ($fmt_string:expr, $( $arg:expr ),* ) => {
-        _print(format!(concat!($fmt_string,"\n"), $($arg),*).as_str(), false)
+        __private_print(format!(concat!($fmt_string,"\n"), $($arg),*).as_str(), false)
     }
 }
 
@@ -2435,7 +2436,7 @@ impl<T> UnwrapOrStop<T> for Option<T> {
 
 #[doc(hidden)]
 #[no_mangle]
-pub extern "C" fn set_custom_panic_hook() -> SEXP {
+pub extern "C" fn __private_set_custom_panic_hook() -> SEXP {
     let default_panic = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |panic_info| {
         if panic_info.payload().downcast_ref::<RStopHelper>().is_none() {
