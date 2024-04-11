@@ -1,11 +1,9 @@
-mod registration {
-    include!(concat!(env!("OUT_DIR"), "/registration.rs"));
-}
+roxido_registration!();
+use roxido::*;
 
 use num_traits::cast::ToPrimitive;
 use rand::SeedableRng;
 use rand_pcg::Pcg64Mcg;
-use roxido::*;
 use std::convert::TryFrom;
 
 #[roxido]
