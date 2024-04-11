@@ -25,7 +25,7 @@ fn lbell(n_items: usize) {
 fn enumerate_partitions(n_items: usize) {
     let bell_number = dahl_bellnumber::bell(n_items);
     let n_partitions = usize::try_from(bell_number).unwrap();
-    let partitions = RObject::<RMatrix, i32>::new(n_partitions, n_items, pc);
+    let partitions = RMatrix::<i32>::new(n_partitions, n_items, pc);
     let mut phv = dahl_partition::PartitionsHolderBorrower::from_slice(
         partitions.slice_mut(),
         n_partitions,
@@ -41,8 +41,8 @@ fn enumerate_partitions(n_items: usize) {
 
 #[roxido]
 fn expected_loss(
-    partitions: &mut RObject<RMatrix>,
-    draws: &mut RObject<RMatrix>,
+    partitions: &mut RMatrix,
+    draws: &mut RMatrix,
     psm: &mut RObject,
     loss: i32,
     a: f64,
@@ -51,14 +51,14 @@ fn expected_loss(
     let n_items = partitions.ncol();
     let partitions = partitions.to_i32_mut(pc);
     let draws = draws.to_i32_mut(pc);
-    let psm2: &mut RObject<RMatrix, f64>;
+    let psm2: &mut RMatrix<f64>;
     let psm_slice = if !psm.is_null() {
         psm2 = psm.as_matrix_mut().stop().to_f64_mut(pc);
         psm2.slice_mut()
     } else {
         &mut []
     };
-    let results = RObject::<RVector, f64>::new(n_partitions, pc);
+    let results = RVector::<f64>::new(n_partitions, pc);
     let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
         partitions.slice_mut(),
         n_partitions,
@@ -197,12 +197,12 @@ fn expected_loss(
 }
 
 #[roxido]
-fn psm(partitions: &mut RObject<RMatrix>, n_cores: usize) {
+fn psm(partitions: &mut RMatrix, n_cores: usize) {
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
     let partitions = partitions.to_i32_mut(pc);
     let n_cores = u32::try_from(n_cores).stop();
-    let psm = RObject::<RMatrix, f64>::new(n_items, n_items, pc);
+    let psm = RMatrix::<f64>::new(n_items, n_items, pc);
     let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
         partitions.slice_mut(),
         n_partitions,
@@ -215,7 +215,7 @@ fn psm(partitions: &mut RObject<RMatrix>, n_cores: usize) {
 }
 
 #[roxido]
-fn minimize_by_enumeration(psm: &mut RObject<RMatrix>, loss: i32, a: f64) {
+fn minimize_by_enumeration(psm: &mut RMatrix, loss: i32, a: f64) {
     let n_items = psm.nrow();
     let psm = psm.to_f64_mut(pc);
     let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice_mut(), n_items);
@@ -234,7 +234,7 @@ fn minimize_by_enumeration(psm: &mut RObject<RMatrix>, loss: i32, a: f64) {
         None => stop!("Unsupported loss method: code = {}", loss),
     };
     let minimizer = dahl_salso::optimize::minimize_by_enumeration(f, &psm);
-    let results = RObject::<RVector, i32>::new(n_items, pc);
+    let results = RVector::<i32>::new(n_items, pc);
     let results_slice = results.slice_mut();
     for (i, v) in minimizer.iter().enumerate() {
         results_slice[i] = i32::try_from(*v + 1).unwrap();
@@ -244,8 +244,8 @@ fn minimize_by_enumeration(psm: &mut RObject<RMatrix>, loss: i32, a: f64) {
 
 #[roxido]
 fn minimize_by_salso(
-    draws: &mut RObject<RMatrix>,
-    psm: &mut RObject<RMatrix>,
+    draws: &mut RMatrix,
+    psm: &mut RMatrix,
     loss: i32,
     a: f64,
     max_n_clusters: i32,
@@ -329,8 +329,8 @@ fn minimize_by_salso(
     };
     let results =
         dahl_salso::optimize::minimize_by_salso(pdi, loss_function, &p, seconds, n_cores, &mut rng);
-    let info_attr = RObject::<RList>::with_names(
-        [
+    let info_attr = RList::with_names(
+        &[
             "loss",
             "a",
             "maxNClusters",
@@ -376,11 +376,11 @@ fn minimize_by_salso(
         .set(8, i32::try_from(results.n_runs).unwrap().to_r(pc))
         .stop();
     info_attr.set(9, results.seconds.to_r(pc)).stop();
-    let r = RObject::<RVector, i32>::new(n_items, pc);
+    let r = RVector::<i32>::new(n_items, pc);
     for (v, rr) in results.clustering.iter().zip(r.slice_mut().iter_mut()) {
         *rr = i32::try_from(*v + 1).unwrap();
     }
     r.set_class(["salso.estimate"].to_r(pc));
-    r.set_attribute(RObject::<RSymbol>::new("info", pc), info_attr);
+    r.set_attribute(RSymbol::new("info", pc), info_attr);
     r
 }
