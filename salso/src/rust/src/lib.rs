@@ -379,6 +379,9 @@ fn minimize_by_salso(
         *rr = i32::try_from(*v + 1).unwrap();
     }
     r.set_class(["salso.estimate"].to_r(pc));
-    r.set_attribute(RSymbol::new("info", pc), info_attr);
+    r.set_attribute(
+        RSymbol::new(std::ffi::CStr::from_bytes_with_nul(b"info\0").unwrap()),
+        info_attr,
+    );
     r
 }
