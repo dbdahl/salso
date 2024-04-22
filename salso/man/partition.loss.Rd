@@ -176,9 +176,6 @@ functions. Note that:
 data(iris.clusterings)
 partitions <- iris.clusterings[1:5,]
 
-# R_CARGO \dontrun{
-# R_CARGO # Example disabled since Cargo was not found when installing from source package.
-# R_CARGO # You can still run the example if you install Cargo. Hint: cargo::install().
 all.equal(partition.loss(partitions, partitions, loss=binder(a=1.4)),
           binder(partitions, partitions, a=1.4))
 all.equal(partition.loss(partitions, partitions, loss=omARI()),
@@ -193,7 +190,6 @@ VI(truth, estimate, a=1.0)
 n <- length(truth)
 all.equal(binder(truth, estimate), ( 1 - RI(truth, estimate) ) * (n-1) / n)
 all.equal(omARI(truth, estimate), 1 - ARI(truth, estimate))
-# R_CARGO }
 
 }
 \references{

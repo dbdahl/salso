@@ -243,7 +243,7 @@ fn minimize_by_enumeration(psm: &mut RMatrix, loss: i32, a: f64) {
 #[roxido]
 fn minimize_by_salso(
     draws: &mut RMatrix,
-    psm: &mut RMatrix,
+    psm: &mut RObject,
     loss: i32,
     a: f64,
     max_n_clusters: i32,
@@ -288,6 +288,7 @@ fn minimize_by_salso(
             dahl_salso::LossFunction::BinderPSM
             | dahl_salso::LossFunction::OneMinusARIapprox
             | dahl_salso::LossFunction::VIlb => {
+                let psm = psm.as_matrix_mut().stop_str("'psm' is expected to be a matrix.");
                 n_items = psm.ncol();
                 psm2 = psm.to_f64_mut(pc);
                 psm3 = dahl_partition::SquareMatrixBorrower::from_slice(psm2.slice_mut(), n_items);
