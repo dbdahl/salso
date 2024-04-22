@@ -30,16 +30,12 @@
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' data(iris.clusterings)
 #' draws <- iris.clusterings
-#' # R_CARGO \dontrun{
-#' # R_CARGO # Example disabled since Cargo was not found when installing from source package.
-#' # R_CARGO # You can still run the example if you install Cargo. Hint: cargo::install().
 #' est <- salso(draws, nCores=1)
 #' summ <- summary(est)
 #' plot(summ, type="heatmap")
 #' plot(summ, type="mds")
 #' plot(summ, type="pairs", data=iris)
 #' plot(summ, type="dendrogram")
-#' # R_CARGO }
 #'
 #' @seealso \code{\link{salso}}, \code{\link{summary.salso.estimate}},
 #'   \code{\link[stats]{cmdscale}}.

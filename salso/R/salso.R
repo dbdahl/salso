@@ -77,15 +77,11 @@
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' data(iris.clusterings)
 #' draws <- iris.clusterings
-#' # R_CARGO \dontrun{
-#' # R_CARGO # Example disabled since Cargo was not found when installing from source package.
-#' # R_CARGO # You can still run the example if you install Cargo. Hint: cargo::install().
 #' salso(draws, loss=VI(), nRuns=1, nCores=1)
 #' salso(draws, loss=VI(a=0.7), nRuns=1, nCores=1)
 #' salso(draws, loss=binder(), nRuns=1, nCores=1)
 #' salso(iris.clusterings, binder(a=NULL), nRuns=4, nCores=1)
 #' salso(iris.clusterings, binder(a=list(nClusters=3)), nRuns=4, nCores=1)
-#' # R_CARGO }
 #'
 salso <- function(x, loss=VI(), maxNClusters=0, nRuns=16, maxZealousAttempts=10, probSequentialAllocation=0.5, nCores=0, ...) {
   z <- x2drawspsm(x, loss, nCores)
