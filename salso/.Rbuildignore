@@ -1,6 +1,6 @@
 justfile
 authors-scratch.txt
-^.*[.]tar[.]gz
+^[^/]*[.]tar[.]gz
 ^src/shim.c
 ^src/librust.a
 ^src/rust/(.*/)*target
@@ -8,5 +8,5 @@ authors-scratch.txt
 ^src/rust/[.]cargo
 ^src/rust/(.*/)*[.]idea
 ^.*\.Rproj$
-^\.Rproj\.user$
+^[.]Rproj[.]user$
 ^tools/rename_package.R$
