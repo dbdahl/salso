@@ -400,8 +400,7 @@ fn minimize_by_salso(
 pub struct Partitions {
     n_items: usize,
     n_partitions: usize,
-    active: Vec<usize>,
-    mapper: Vec<Vec<u8>>,
+    n_clusters: Vec<u8>,
     raw: Vec<u8>,
 }
 
@@ -427,58 +426,22 @@ impl Partitions {
             }
             n_clusters.push(next_key);
         }
-        let active = (0..n_partitions).collect();
-        let mapper = n_clusters
-            .iter()
-            .map(|n_clusters| vec![u8::MAX; usize::from(*n_clusters)])
-            .collect();
         Self {
             n_items,
             n_partitions,
-            active,
-            mapper,
+            n_clusters,
             raw,
         }
     }
 
-    pub fn tabulate(&self, item_index: usize, next_label: u8) -> Vec<(u8, u32)> {
-        let mut counter = Vec::with_capacity(usize::from(next_label + 1));
-        for label in 0..=next_label {
-            counter.push((label, 0));
-        }
-        for &sample_index in self.active.iter() {
-            let original_label = self.at(sample_index)[item_index];
-            let new_label = self.mapper[sample_index][usize::from(original_label)];
-            if new_label == u8::MAX {
-                counter[usize::from(next_label)].1 += 1;
-            } else {
-                counter[usize::from(new_label)].1 += 1;
-            }
-        }
-        counter
-    }
-
-    pub fn house_keeping(&mut self, item_index: usize, label: u8, next_label: u8) {
-        let mut deactivate_queue = Vec::new();
-        for &sample_index in self.active.iter() {
-            let original_label = self.at(sample_index)[item_index];
-            let new_label = self.mapper[sample_index][usize::from(original_label)];
-            let new_label = if new_label == u8::MAX {
-                self.mapper[sample_index][usize::from(original_label)] = next_label;
-                next_label
-            } else {
-                new_label
-            };
-            if new_label != label {
-                deactivate_queue.push(sample_index);
-            }
-        }
-        for sample_index in deactivate_queue {
-            // DBD: It seems this could be more efficient
-            if let Some(position) = self.active.iter().position(|x| *x == sample_index) {
-                self.active.swap_remove(position);
-            }
-        }
+    pub fn alloc_state(&self) -> State {
+        let active = (0..self.n_partitions).collect();
+        let mapper = self
+            .n_clusters
+            .iter()
+            .map(|n_clusters| vec![u8::MAX; usize::from(*n_clusters)])
+            .collect();
+        State { active, mapper }
     }
 
     pub fn at(&self, sample_index: usize) -> &[u8] {
@@ -508,6 +471,64 @@ impl Partitions {
             slice[self.n_items * i + i] += 1.0;
         }
         psm
+    }
+}
+
+pub struct State {
+    active: Vec<usize>,
+    mapper: Vec<Vec<u8>>,
+}
+
+impl State {
+    pub fn tabulate(
+        &self,
+        partitions: &Partitions,
+        item_index: usize,
+        next_label: u8,
+    ) -> Vec<(u8, u32)> {
+        let mut counter = Vec::with_capacity(usize::from(next_label + 1));
+        for label in 0..=next_label {
+            counter.push((label, 0));
+        }
+        for &sample_index in self.active.iter() {
+            let original_label = partitions.at(sample_index)[item_index];
+            let new_label = self.mapper[sample_index][usize::from(original_label)];
+            if new_label == u8::MAX {
+                counter[usize::from(next_label)].1 += 1;
+            } else {
+                counter[usize::from(new_label)].1 += 1;
+            }
+        }
+        counter
+    }
+
+    pub fn house_keeping(
+        &mut self,
+        partitions: &Partitions,
+        item_index: usize,
+        label: u8,
+        next_label: u8,
+    ) {
+        let mut deactivate_queue = Vec::new();
+        for &sample_index in self.active.iter() {
+            let original_label = partitions.at(sample_index)[item_index];
+            let new_label = self.mapper[sample_index][usize::from(original_label)];
+            let new_label = if new_label == u8::MAX {
+                self.mapper[sample_index][usize::from(original_label)] = next_label;
+                next_label
+            } else {
+                new_label
+            };
+            if new_label != label {
+                deactivate_queue.push(sample_index);
+            }
+        }
+        for sample_index in deactivate_queue {
+            // DBD: It seems this could be more efficient
+            if let Some(position) = self.active.iter().position(|x| *x == sample_index) {
+                self.active.swap_remove(position);
+            }
+        }
     }
 }
 
@@ -600,8 +621,9 @@ fn chips(
     if !(0.0..=1.0).contains(&threshold) {
         stop!("'threshold' should be a probability in [0.0, 1.0].");
     }
+    let partitions = Partitions::from_r(partitions.to_i32(pc));
     let mut rng = Pcg64Mcg::from_seed(R::random_bytes::<16>());
-    let mut partitions = Partitions::from_r(partitions.to_i32(pc));
+    let mut state = partitions.alloc_state();
     let mut partition = PartialPartition::empty(partitions.n_items);
     let mut next_label = 0;
     let mut dormant: Vec<_> = (0..partitions.n_items).collect();
@@ -612,7 +634,7 @@ fn chips(
         let mut best_of = dormant
             .iter()
             .map(|&item_index| {
-                let mut counts = partitions.tabulate(item_index, next_label);
+                let mut counts = state.tabulate(&partitions, item_index, next_label);
                 counts.sort_unstable_by(|(_, a), (_, b)| b.cmp(a));
                 let max_count = counts.first().unwrap().1;
                 let number_of_ties = counts.iter().take_while(|x| x.1 == max_count).count();
@@ -633,7 +655,7 @@ fn chips(
         if intermediate_results {
             storage.push(&partition, probability);
         }
-        partitions.house_keeping(*item_index, *label, next_label);
+        state.house_keeping(&partitions, *item_index, *label, next_label);
         if *label == next_label {
             next_label += 1;
         }
