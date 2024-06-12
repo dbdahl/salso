@@ -2,6 +2,7 @@ roxido_registration!();
 use roxido::*;
 
 use num_traits::cast::ToPrimitive;
+use rand::prelude::SliceRandom;
 use rand::SeedableRng;
 use rand_pcg::Pcg64Mcg;
 use std::convert::TryFrom;
@@ -196,20 +197,25 @@ fn expected_loss(
 
 #[roxido]
 fn psm(partitions: &mut RMatrix, n_cores: usize) {
-    let n_partitions = partitions.nrow();
-    let n_items = partitions.ncol();
-    let partitions = partitions.to_i32_mut(pc);
-    let n_cores = u32::try_from(n_cores).stop();
-    let psm = RMatrix::<f64>::new(n_items, n_items, pc);
-    let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
-        partitions.slice_mut(),
-        n_partitions,
-        n_items,
-        true,
-    );
-    let mut psm2 = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice_mut(), n_items);
-    dahl_salso::psm::psm_engine(n_partitions, n_items, n_cores, &partitions, &mut psm2);
-    psm
+    if n_cores == 1 {
+        let partitions = Partitions::from_r(partitions.to_i32(pc));
+        partitions.pairwise_similarity_matrix(pc)
+    } else {
+        let n_partitions = partitions.nrow();
+        let n_items = partitions.ncol();
+        let partitions = partitions.to_i32_mut(pc);
+        let n_cores = u32::try_from(n_cores).stop();
+        let psm = RMatrix::<f64>::new(n_items, n_items, pc);
+        let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
+            partitions.slice_mut(),
+            n_partitions,
+            n_items,
+            true,
+        );
+        let mut psm2 = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice_mut(), n_items);
+        dahl_salso::psm::psm_engine(n_partitions, n_items, n_cores, &partitions, &mut psm2);
+        psm
+    }
 }
 
 #[roxido]
@@ -288,7 +294,9 @@ fn minimize_by_salso(
             dahl_salso::LossFunction::BinderPSM
             | dahl_salso::LossFunction::OneMinusARIapprox
             | dahl_salso::LossFunction::VIlb => {
-                let psm = psm.as_matrix_mut().stop_str("'psm' is expected to be a matrix.");
+                let psm = psm
+                    .as_matrix_mut()
+                    .stop_str("'psm' is expected to be a matrix.");
                 n_items = psm.ncol();
                 psm2 = psm.to_f64_mut(pc);
                 psm3 = dahl_partition::SquareMatrixBorrower::from_slice(psm2.slice_mut(), n_items);
@@ -385,4 +393,256 @@ fn minimize_by_salso(
         info_attr,
     );
     r
+}
+
+// Conditionally-allocated High Probability Subset (CHiPS) Partition
+
+pub struct Partitions {
+    n_items: usize,
+    n_partitions: usize,
+    active: Vec<usize>,
+    mapper: Vec<Vec<u8>>,
+    raw: Vec<u8>,
+}
+
+impl Partitions {
+    pub fn from_r(partitions: &RMatrix<i32>) -> Self {
+        let slice = partitions.slice();
+        let mut raw = Vec::with_capacity(slice.len());
+        let n_items = partitions.ncol();
+        let n_partitions = partitions.nrow();
+        let mut n_clusters = Vec::with_capacity(n_partitions);
+        let mut map = std::collections::HashMap::new();
+        for sample_index in 0..n_partitions {
+            map.clear();
+            let mut next_key = 0;
+            for item_index in 0..partitions.ncol() {
+                let label = slice[n_partitions * item_index + sample_index];
+                let relabel = map.entry(label).or_insert_with(|| {
+                    let temp = next_key;
+                    next_key += 1;
+                    temp
+                });
+                raw.push(*relabel);
+            }
+            n_clusters.push(next_key);
+        }
+        let active = (0..n_partitions).collect();
+        let mapper = n_clusters
+            .iter()
+            .map(|n_clusters| vec![u8::MAX; usize::from(*n_clusters)])
+            .collect();
+        Self {
+            n_items,
+            n_partitions,
+            active,
+            mapper,
+            raw,
+        }
+    }
+
+    pub fn tabulate(&self, item_index: usize, next_label: u8) -> Vec<(u8, u32)> {
+        let mut counter = Vec::with_capacity(usize::from(next_label + 1));
+        for label in 0..=next_label {
+            counter.push((label, 0));
+        }
+        for &sample_index in self.active.iter() {
+            let original_label = self.at(sample_index)[item_index];
+            let new_label = self.mapper[sample_index][usize::from(original_label)];
+            if new_label == u8::MAX {
+                counter[usize::from(next_label)].1 += 1;
+            } else {
+                counter[usize::from(new_label)].1 += 1;
+            }
+        }
+        counter
+    }
+
+    pub fn house_keeping(&mut self, item_index: usize, label: u8, next_label: u8) {
+        let mut deactivate_queue = Vec::new();
+        for &sample_index in self.active.iter() {
+            let original_label = self.at(sample_index)[item_index];
+            let new_label = self.mapper[sample_index][usize::from(original_label)];
+            let new_label = if new_label == u8::MAX {
+                self.mapper[sample_index][usize::from(original_label)] = next_label;
+                next_label
+            } else {
+                new_label
+            };
+            if new_label != label {
+                deactivate_queue.push(sample_index);
+            }
+        }
+        for sample_index in deactivate_queue {
+            // DBD: It seems this could be more efficient
+            if let Some(position) = self.active.iter().position(|x| *x == sample_index) {
+                self.active.swap_remove(position);
+            }
+        }
+    }
+
+    pub fn at(&self, sample_index: usize) -> &[u8] {
+        &self.raw[self.n_items * sample_index..self.n_items * (sample_index + 1)]
+    }
+
+    pub fn pairwise_similarity_matrix<'a>(&self, pc: &'a Pc) -> &'a RMatrix<f64> {
+        let psm = RMatrix::<f64>::new(self.n_items, self.n_items, pc);
+        let slice = psm.slice_mut();
+        for labels in self.raw.chunks_exact(self.n_items) {
+            for (i, &label_i) in labels.iter().enumerate() {
+                for (j, &label_j) in labels[..i].iter().enumerate() {
+                    if label_i == label_j {
+                        slice[self.n_items * i + j] += 1.0;
+                        slice[self.n_items * j + i] += 1.0;
+                    }
+                }
+            }
+        }
+        let n_partitions_f64 = self.n_partitions as f64;
+        for x in slice.iter_mut() {
+            // Compute relative frequency.
+            *x /= n_partitions_f64;
+        }
+        for i in 0..self.n_items {
+            // Set diagonal elements to 1.0.
+            slice[self.n_items * i + i] += 1.0;
+        }
+        psm
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct PartialPartition {
+    active: Vec<usize>,
+    labels: Vec<u8>,
+}
+
+impl PartialPartition {
+    pub fn empty(n_items: usize) -> Self {
+        Self {
+            active: Vec::new(),
+            labels: vec![0; n_items],
+        }
+    }
+
+    pub fn allocate(&mut self, index: usize, label: u8) {
+        self.active.push(index);
+        self.labels[index] = label;
+    }
+}
+
+impl ToRRef<RVector<i32>> for PartialPartition {
+    fn to_r<'a>(&self, pc: &'a Pc) -> &'a mut RVector<i32> {
+        let result = RVector::from_value(-1, self.labels.len(), pc);
+        let slice = result.slice_mut();
+        for &item_index in self.active.iter() {
+            slice[item_index] = i32::from(self.labels[item_index] + 1);
+        }
+        result
+    }
+}
+
+struct PartialPartitionStorage(Vec<(PartialPartition, f64)>);
+
+impl PartialPartitionStorage {
+    pub fn new() -> Self {
+        Self(Vec::new())
+    }
+
+    pub fn push(&mut self, x: &PartialPartition, probability: f64) {
+        self.0.push((x.clone(), probability));
+    }
+}
+
+impl ToRRef<RList> for PartialPartitionStorage {
+    fn to_r<'a>(&self, pc: &'a Pc) -> &'a mut RList {
+        if self.0.is_empty() {
+            stop!("The vector is empty.")
+        }
+        let n_partitions = self.0.len();
+        let n_items = self.0[0].0.labels.len();
+        let partitions = RMatrix::from_value(-1, n_partitions, n_items, pc);
+        let slice_partitions = partitions.slice_mut();
+        let probabilities = RVector::<f64>::new(n_partitions, pc);
+        let slice_probabilities = probabilities.slice_mut();
+        for (partition_index, (partition, probability)) in self.0.iter().rev().enumerate() {
+            slice_probabilities[partition_index] = *probability;
+            for &item_index in partition.active.iter() {
+                slice_partitions[n_partitions * item_index + partition_index] =
+                    i32::from(partition.labels[item_index] + 1);
+            }
+        }
+        let result = RList::with_names(&["subset_partition", "probability"], pc);
+        if n_partitions == 1 {
+            let _ = result.set(0, partitions.to_vector_mut());
+        } else {
+            let _ = result.set(0, partitions);
+        }
+        let _ = result.set(1, probabilities);
+        result
+    }
+}
+
+#[roxido]
+fn chips(
+    partitions: &RMatrix,
+    threshold: f64,
+    n_runs: usize,
+    intermediate_results: bool,
+    _n_cores: usize,
+) {
+    if n_runs == 0 {
+        stop!("'nRuns' must be at least '0'.")
+    }
+    if n_runs > 1 && intermediate_results {
+        stop!("'nRuns' must be '1' when 'intermediateResults' is 'TRUE'.")
+    }
+    if !(0.0..=1.0).contains(&threshold) {
+        stop!("'threshold' should be a probability in [0.0, 1.0].");
+    }
+    let mut rng = Pcg64Mcg::from_seed(R::random_bytes::<16>());
+    let mut partitions = Partitions::from_r(partitions.to_i32(pc));
+    let mut partition = PartialPartition::empty(partitions.n_items);
+    let mut next_label = 0;
+    let mut dormant: Vec<_> = (0..partitions.n_items).collect();
+    let mut storage = PartialPartitionStorage::new();
+    let mut probability = 1.0;
+    let n_partitions_f64 = partitions.n_partitions as f64;
+    while !dormant.is_empty() {
+        let mut best_of = dormant
+            .iter()
+            .map(|&item_index| {
+                let mut counts = partitions.tabulate(item_index, next_label);
+                counts.sort_unstable_by(|(_, a), (_, b)| b.cmp(a));
+                let max_count = counts.first().unwrap().1;
+                let number_of_ties = counts.iter().take_while(|x| x.1 == max_count).count();
+                let label = counts[..number_of_ties].choose(&mut rng).unwrap().0;
+                (item_index, label, max_count)
+            })
+            .collect::<Vec<_>>();
+        best_of.sort_unstable_by(|(_, _, a), (_, _, b)| b.cmp(a));
+        let max_count = best_of.first().unwrap().2;
+        let number_of_ties = best_of.iter().take_while(|x| x.2 == max_count).count();
+        let (item_index, label, _) = best_of[..number_of_ties].choose(&mut rng).unwrap();
+        let candidate_probability = max_count as f64 / n_partitions_f64;
+        if candidate_probability < threshold {
+            break;
+        }
+        partition.allocate(*item_index, *label);
+        probability = candidate_probability;
+        if intermediate_results {
+            storage.push(&partition, probability);
+        }
+        partitions.house_keeping(*item_index, *label, next_label);
+        if *label == next_label {
+            next_label += 1;
+        }
+        if let Some(position) = dormant.iter().position(|x| *x == *item_index) {
+            dormant.swap_remove(position);
+        }
+    }
+    if probability >= threshold && !intermediate_results {
+        storage.push(&partition, probability);
+    }
+    storage.to_r(pc)
 }
