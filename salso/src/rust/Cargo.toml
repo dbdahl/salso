@@ -21,4 +21,5 @@ num-traits = "0.2.15"
 dahl-partition = "0.5.3"
 dahl-bellnumber = "0.1.1"
 dahl-salso = "0.6.6"
+rayon = "1.10.0"
 

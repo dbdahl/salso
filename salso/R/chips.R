@@ -11,8 +11,10 @@
 #' @param threshold The minimum marginal probability for the partial partition.
 #'   Values closer to 1.0 will yield a partition of fewer items and values
 #'   closer to 0.0 will yield a partition of more items.
-#' @param intermediateResults Should intermediate subset partitions be returned?
 #' @param nRuns The number of runs to try, where the best result is returned.
+#' @param intermediateResults Should intermediate subset partitions be returned?
+#' @param allCandidates Should all the final subset partitions from multiple runs
+#'   be returned?
 #' @param nCores The number of CPU cores to use, i.e., the number of
 #'   simultaneous runs at any given time. A value of zero indicates to use all
 #'   cores on the system.
@@ -29,7 +31,7 @@
 #' draws <- iris.clusterings
 #' chips(draws, threshold = 0, nRuns = 1)
 #' chips(draws, nCores = 1)
-chips <- function(x, threshold = 0.50, nRuns = 16, intermediateResults = (nRuns == 1), nCores = 0) {
-  .Call(.chips, x, threshold, nRuns, intermediateResults, nCores)
+chips <- function(x, threshold = 0.50, nRuns = 16, intermediateResults = (nRuns == 1), allCandidates = FALSE, nCores = 0) {
+  .Call(.chips, x, threshold, nRuns, intermediateResults, allCandidates, nCores)
 }
 

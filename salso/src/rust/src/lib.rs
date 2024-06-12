@@ -5,6 +5,7 @@ use num_traits::cast::ToPrimitive;
 use rand::prelude::SliceRandom;
 use rand::SeedableRng;
 use rand_pcg::Pcg64Mcg;
+use rayon::prelude::*;
 use std::convert::TryFrom;
 
 #[roxido]
@@ -563,15 +564,15 @@ impl ToRRef<RVector<i32>> for PartialPartition {
     }
 }
 
-struct PartialPartitionStorage(Vec<(PartialPartition, f64)>);
+struct PartialPartitionStorage(Vec<(PartialPartition, f64, usize)>);
 
 impl PartialPartitionStorage {
     pub fn new() -> Self {
         Self(Vec::new())
     }
 
-    pub fn push(&mut self, x: &PartialPartition, probability: f64) {
-        self.0.push((x.clone(), probability));
+    pub fn push(&mut self, x: &PartialPartition, probability: f64, n_items_in_subset: usize) {
+        self.0.push((x.clone(), probability, n_items_in_subset));
     }
 }
 
@@ -586,20 +587,27 @@ impl ToRRef<RList> for PartialPartitionStorage {
         let slice_partitions = partitions.slice_mut();
         let probabilities = RVector::<f64>::new(n_partitions, pc);
         let slice_probabilities = probabilities.slice_mut();
-        for (partition_index, (partition, probability)) in self.0.iter().rev().enumerate() {
+        let n_items_in_subset = RVector::<i32>::new(n_partitions, pc);
+        let slice_n_items_in_subset = n_items_in_subset.slice_mut();
+        for (partition_index, (partition, probability, n_dormant_items)) in
+            self.0.iter().rev().enumerate()
+        {
             slice_probabilities[partition_index] = *probability;
+            slice_n_items_in_subset[partition_index] =
+                i32::try_from(n_items - *n_dormant_items).unwrap();
             for &item_index in partition.active.iter() {
                 slice_partitions[n_partitions * item_index + partition_index] =
                     i32::from(partition.labels[item_index] + 1);
             }
         }
-        let result = RList::with_names(&["subset_partition", "probability"], pc);
+        let result = RList::with_names(&["subset_partition", "n_items", "probability"], pc);
         if n_partitions == 1 {
             let _ = result.set(0, partitions.to_vector_mut());
         } else {
             let _ = result.set(0, partitions);
         }
-        let _ = result.set(1, probabilities);
+        let _ = result.set(1, n_items_in_subset);
+        let _ = result.set(2, probabilities);
         result
     }
 }
@@ -610,6 +618,7 @@ fn chips(
     threshold: f64,
     n_runs: usize,
     intermediate_results: bool,
+    all_candidates: bool,
     _n_cores: usize,
 ) {
     if n_runs == 0 {
@@ -622,49 +631,74 @@ fn chips(
         stop!("'threshold' should be a probability in [0.0, 1.0].");
     }
     let partitions = Partitions::from_r(partitions.to_i32(pc));
-    let mut rng = Pcg64Mcg::from_seed(R::random_bytes::<16>());
-    let mut state = partitions.alloc_state();
-    let mut partition = PartialPartition::empty(partitions.n_items);
-    let mut next_label = 0;
-    let mut dormant: Vec<_> = (0..partitions.n_items).collect();
-    let mut storage = PartialPartitionStorage::new();
-    let mut probability = 1.0;
     let n_partitions_f64 = partitions.n_partitions as f64;
-    while !dormant.is_empty() {
-        let mut best_of = dormant
-            .iter()
-            .map(|&item_index| {
-                let mut counts = state.tabulate(&partitions, item_index, next_label);
-                counts.sort_unstable_by(|(_, a), (_, b)| b.cmp(a));
-                let max_count = counts.first().unwrap().1;
-                let number_of_ties = counts.iter().take_while(|x| x.1 == max_count).count();
-                let label = counts[..number_of_ties].choose(&mut rng).unwrap().0;
-                (item_index, label, max_count)
-            })
-            .collect::<Vec<_>>();
-        best_of.sort_unstable_by(|(_, _, a), (_, _, b)| b.cmp(a));
-        let max_count = best_of.first().unwrap().2;
-        let number_of_ties = best_of.iter().take_while(|x| x.2 == max_count).count();
-        let (item_index, label, _) = best_of[..number_of_ties].choose(&mut rng).unwrap();
-        let candidate_probability = max_count as f64 / n_partitions_f64;
-        if candidate_probability < threshold {
-            break;
-        }
-        partition.allocate(*item_index, *label);
-        probability = candidate_probability;
-        if intermediate_results {
-            storage.push(&partition, probability);
-        }
-        state.house_keeping(&partitions, *item_index, *label, next_label);
-        if *label == next_label {
-            next_label += 1;
-        }
-        if let Some(position) = dormant.iter().position(|x| *x == *item_index) {
-            dormant.swap_remove(position);
+    let mut rng = Pcg64Mcg::from_seed(R::random_bytes::<16>());
+    let mut rngs = (0..n_runs)
+        .map(|_| Pcg64Mcg::from_rng(&mut rng).unwrap())
+        .collect::<Vec<_>>();
+    let mut candidates: Vec<_> = rngs
+        .par_iter_mut()
+        .map(|rng| {
+            let mut state = partitions.alloc_state();
+            let mut partition = PartialPartition::empty(partitions.n_items);
+            let mut next_label = 0;
+            let mut dormant: Vec<_> = (0..partitions.n_items).collect();
+            let mut storage = PartialPartitionStorage::new();
+            let mut probability = 1.0;
+            while !dormant.is_empty() {
+                let mut best_of = dormant
+                    .iter()
+                    .map(|&item_index| {
+                        let mut counts = state.tabulate(&partitions, item_index, next_label);
+                        counts.sort_unstable_by(|(_, a), (_, b)| b.cmp(a));
+                        let max_count = counts.first().unwrap().1;
+                        let number_of_ties = counts.iter().take_while(|x| x.1 == max_count).count();
+                        let label = counts[..number_of_ties].choose(rng).unwrap().0;
+                        (item_index, label, max_count)
+                    })
+                    .collect::<Vec<_>>();
+                best_of.sort_unstable_by(|(_, _, a), (_, _, b)| b.cmp(a));
+                let max_count = best_of.first().unwrap().2;
+                let number_of_ties = best_of.iter().take_while(|x| x.2 == max_count).count();
+                let (item_index, label, _) = best_of[..number_of_ties].choose(rng).unwrap();
+                let candidate_probability = max_count as f64 / n_partitions_f64;
+                if candidate_probability < threshold {
+                    break;
+                }
+                partition.allocate(*item_index, *label);
+                probability = candidate_probability;
+                state.house_keeping(&partitions, *item_index, *label, next_label);
+                if *label == next_label {
+                    next_label += 1;
+                }
+                if let Some(position) = dormant.iter().position(|x| *x == *item_index) {
+                    dormant.swap_remove(position);
+                }
+                if intermediate_results {
+                    storage.push(&partition, probability, dormant.len());
+                }
+            }
+            if probability >= threshold && !intermediate_results {
+                storage.push(&partition, probability, dormant.len());
+            }
+            storage
+        })
+        .collect();
+    if n_runs == 1 {
+        let storage = candidates.pop().unwrap();
+        return storage.to_r(pc);
+    } else {
+        if all_candidates {
+            let mut storage = PartialPartitionStorage::new();
+            candidates.iter_mut().for_each(|candidate| {
+                let x = candidate.0.pop().unwrap();
+                storage.push(&x.0, x.1, x.2)
+            });
+            return storage.to_r(pc);
+        } else {
+            candidates.sort_unstable_by(|x, y| y.0.last().unwrap().2.cmp(&x.0.last().unwrap().2));
+            let storage = candidates.pop().unwrap();
+            return storage.to_r(pc);
         }
     }
-    if probability >= threshold && !intermediate_results {
-        storage.push(&partition, probability);
-    }
-    storage.to_r(pc)
 }

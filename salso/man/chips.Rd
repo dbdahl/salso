@@ -9,6 +9,7 @@ chips(
   threshold = 0.5,
   nRuns = 16,
   intermediateResults = (nRuns == 1),
+  allCandidates = FALSE,
   nCores = 0
 )
 }
@@ -25,6 +26,9 @@ closer to 0.0 will yield a partition of more items.}
 \item{nRuns}{The number of runs to try, where the best result is returned.}
 
 \item{intermediateResults}{Should intermediate subset partitions be returned?}
+
+\item{allCandidates}{Should all the final subset partitions from multiple runs
+be returned?}
 
 \item{nCores}{The number of CPU cores to use, i.e., the number of
 simultaneous runs at any given time. A value of zero indicates to use all
