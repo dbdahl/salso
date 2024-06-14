@@ -6,9 +6,9 @@
 \usage{
 chips(
   x,
-  threshold = 0.5,
-  nRuns = 16,
-  intermediateResults = (nRuns == 1),
+  threshold = 0,
+  nRuns = 64,
+  intermediateResults = TRUE,
   allCandidates = FALSE,
   nCores = 0
 )

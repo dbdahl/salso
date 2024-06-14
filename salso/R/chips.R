@@ -31,7 +31,7 @@
 #' draws <- iris.clusterings
 #' chips(draws, threshold = 0, nRuns = 1)
 #' chips(draws, nCores = 1)
-chips <- function(x, threshold = 0.50, nRuns = 16, intermediateResults = (nRuns == 1), allCandidates = FALSE, nCores = 0) {
+chips <- function(x, threshold = 0.0, nRuns = 64, intermediateResults = TRUE, allCandidates = FALSE, nCores = 0) {
   .Call(.chips, x, threshold, nRuns, intermediateResults, allCandidates, nCores)
 }
 
