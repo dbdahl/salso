@@ -622,16 +622,22 @@ fn chips(
     all_candidates: bool,
     n_cores: usize,
 ) {
-    if n_runs == 0 {
-        stop!("'nRuns' must be at least '0'.")
-    }
-    if n_runs > 1 && intermediate_results {
-        stop!("'nRuns' must be '1' when 'intermediateResults' is 'TRUE'.")
-    }
     if !(0.0..=1.0).contains(&threshold) {
         stop!("'threshold' should be a probability in [0.0, 1.0].");
     }
+    if n_runs == 0 {
+        stop!("'nRuns' must be at least '0'.")
+    }
+    if intermediate_results && all_candidates {
+        stop!("One of 'intermediate_results' and 'all_candidates' must be FALSE.");
+    }
     let partitions = Partitions::from_r(partitions.to_i32(pc));
+    if partitions.n_partitions == 0 {
+        stop!("'partitions' must have a least one partition (i.e., row).");
+    }
+    if partitions.n_items == 0 {
+        stop!("'partitions' must have a least one item (i.e., column).");
+    }
     let n_partitions_f64 = partitions.n_partitions as f64;
     let mut rng = Pcg64Mcg::from_seed(R::random_bytes::<16>());
     let mut rngs = (0..n_runs)
@@ -691,16 +697,40 @@ fn chips(
             })
             .collect()
     });
-    if n_runs == 1 {
-        let storage = candidates.pop().unwrap();
+    if all_candidates {
+        let mut storage = PartialPartitionStorage::new();
+        candidates.sort_unstable_by(|x, y| y.0.last().unwrap().2.cmp(&x.0.last().unwrap().2));
+        candidates.iter_mut().for_each(|candidate| {
+            let x = candidate.0.pop().unwrap();
+            storage.push(&x.0, x.1, x.2)
+        });
         return storage.to_r(pc);
     } else {
-        if all_candidates {
+        if intermediate_results {
             let mut storage = PartialPartitionStorage::new();
-            candidates.iter_mut().for_each(|candidate| {
-                let x = candidate.0.pop().unwrap();
-                storage.push(&x.0, x.1, x.2)
-            });
+            let mut n_items_in_subset = 0;
+            while n_items_in_subset < partitions.n_items {
+                let probabilities: Vec<_> = candidates
+                    .iter()
+                    .map(|candidate| match candidate.0.get(n_items_in_subset) {
+                        Some(x) => x.1,
+                        None => 0.0,
+                    })
+                    .collect();
+                let index_of_max = probabilities
+                    .iter()
+                    .enumerate()
+                    .max_by(|(_, a), (_, b)| a.total_cmp(b))
+                    .map(|(index, _)| index)
+                    .unwrap();
+                match candidates[index_of_max].0.get(n_items_in_subset) {
+                    Some(x) => storage.push(&x.0, x.1, x.2),
+                    None => {
+                        break;
+                    }
+                };
+                n_items_in_subset += 1;
+            }
             return storage.to_r(pc);
         } else {
             candidates.sort_unstable_by(|x, y| y.0.last().unwrap().2.cmp(&x.0.last().unwrap().2));
