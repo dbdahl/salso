@@ -575,10 +575,8 @@ impl PartialPartitionStorage {
     pub fn push(&mut self, x: &PartialPartition, probability: f64, n_items_in_subset: usize) {
         self.0.push((x.clone(), probability, n_items_in_subset));
     }
-}
 
-impl ToRRef<RList> for PartialPartitionStorage {
-    fn to_r<'a>(&self, pc: &'a Pc) -> &'a mut RList {
+    pub fn to_r<'a>(&self, compute_auc: bool, pc: &'a Pc) -> &'a mut RList {
         if self.0.is_empty() {
             stop!("The vector is empty.")
         }
@@ -601,7 +599,16 @@ impl ToRRef<RList> for PartialPartitionStorage {
                     i32::from(partition.labels[item_index] + 1);
             }
         }
-        let result = RList::with_names(&["subset_partition", "n_items", "probability"], pc);
+        let result = if compute_auc {
+            let n_items_f64 = n_items as f64;
+            let auc: f64 = self.0.iter().map(|x| x.1 / n_items_f64).sum();
+            let result =
+                RList::with_names(&["subset_partition", "n_items", "probability", "auc"], pc);
+            let _ = result.set(3, auc.to_r(pc));
+            result
+        } else {
+            RList::with_names(&["subset_partition", "n_items", "probability"], pc)
+        };
         if n_partitions == 1 {
             let _ = result.set(0, partitions.to_vector_mut());
         } else {
@@ -704,7 +711,7 @@ fn chips(
             let x = candidate.0.pop().unwrap();
             storage.push(&x.0, x.1, x.2)
         });
-        return storage.to_r(pc);
+        storage.to_r(false, pc)
     } else {
         if intermediate_results {
             let mut storage = PartialPartitionStorage::new();
@@ -731,11 +738,10 @@ fn chips(
                 };
                 n_items_in_subset += 1;
             }
-            return storage.to_r(pc);
+            storage.to_r(true, pc)
         } else {
             candidates.sort_unstable_by(|x, y| y.0.last().unwrap().2.cmp(&x.0.last().unwrap().2));
-            let storage = candidates.pop().unwrap();
-            return storage.to_r(pc);
+            candidates.pop().unwrap().to_r(false, pc)
         }
     }
 }
