@@ -11,6 +11,7 @@ Partition Estimation}
   data = NULL,
   showLabels = TRUE,
   showIDs = length(x$estimate) <= 50,
+  cexAdjustment = 0.7,
   ...
 )
 }
@@ -28,6 +29,8 @@ is required when \code{type='pairs'} and ignored otherwise.}
 \code{type="heatmap"}?}
 
 \item{showIDs}{Should the ID of the items be shown in the plot?}
+
+\item{cexAdjustment}{Scalar multiplier for adjust text size.}
 
 \item{...}{Arguments to be passed to methods, such as graphical parameters
 (see \code{\link{par}}).}

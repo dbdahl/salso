@@ -1,5 +1,6 @@
-0.3.27 (20XX-XX-XX)
-  * Internal update to track latest roxido framework.
+0.3.38 (20XX-XX-XX)
+  * Added cexAdjustment argument to plot() function for a partition estimate.
+  * Update to track latest roxido framework.
 
 0.3.35 (2023-07-17)
   * Adjust "SystemRequirements" as per
