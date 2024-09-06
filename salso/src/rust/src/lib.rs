@@ -250,7 +250,7 @@ fn minimize_by_enumeration(psm: &mut RMatrix, loss: i32, a: f64) {
 
 #[roxido]
 fn minimize_by_salso(
-    draws: &mut RMatrix,
+    draws: &mut RObject,
     psm: &mut RObject,
     loss: i32,
     a: f64,
@@ -263,7 +263,6 @@ fn minimize_by_salso(
     prob_singletons_initialization: f64,
     n_cores: usize,
 ) {
-    let draws = draws.to_i32_mut(pc);
     let n_items;
     let draws2;
     let psm2;
@@ -276,6 +275,10 @@ fn minimize_by_salso(
             | dahl_salso::LossFunction::NVI
             | dahl_salso::LossFunction::ID
             | dahl_salso::LossFunction::NID => {
+                let Ok(draws) = draws.as_matrix_mut() else {
+                    stop!("'draws' should be a matrix.");
+                };
+                let draws = draws.to_i32_mut(pc);
                 n_items = draws.ncol();
                 let n_draws = draws.nrow();
                 draws2 = dahl_salso::clustering::Clusterings::from_i32_column_major_order(
