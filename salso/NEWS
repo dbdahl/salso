@@ -1,4 +1,4 @@
-0.3.39 (2024-09-06)
+0.3.40 (2024-09-06)
   * Added cexAdjustment argument to plot() function for a partition estimate.
   * Update to track latest roxido framework.
   * Update for CRAN compliance in reporting rustc version during installation.
