@@ -18,8 +18,10 @@ roxido = { path="roxido" }
 rand = "0.8.5"
 rand_pcg = "0.3.1"
 num-traits = "0.2.15"
-dahl-partition = "0.5.3"
+# dahl-partition = "0.5.3"
+# dahl-partition = { path="../../../../rust-dahl-partition" }
+dahl-partition = { git="https://github.com/dbdahl/rust-dahl-partition.git", rev="ae99dfd12e4" }
 dahl-bellnumber = "0.1.1"
-dahl-salso = "0.6.6"
+dahl-salso = { git="https://github.com/dbdahl/rust-dahl-salso.git", rev="816577346c" }
 rayon = "1.10.0"
 

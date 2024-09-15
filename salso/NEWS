@@ -1,3 +1,7 @@
+0.3.42 (2024-09-14)
+  * Address memory issue found by CRAN using valgrind.
+  * Made example for 'psm' function not display a large matrix.
+
 0.3.41 (2024-09-06)
   * Added cexAdjustment argument to plot() function for a partition estimate.
   * Update to track latest roxido framework.

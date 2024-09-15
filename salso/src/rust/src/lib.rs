@@ -454,7 +454,8 @@ impl Partitions {
     }
 
     pub fn pairwise_similarity_matrix<'a>(&self, pc: &'a Pc) -> &'a RMatrix<f64> {
-        let psm = RMatrix::<f64>::new(self.n_items, self.n_items, pc);
+        //let psm = RMatrix::<f64>::new(self.n_items, self.n_items, pc);
+        let psm = RMatrix::from_value(0.0, self.n_items, self.n_items, pc);
         let slice = psm.slice_mut();
         for labels in self.raw.chunks_exact(self.n_items) {
             for (i, &label_i) in labels.iter().enumerate() {

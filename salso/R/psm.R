@@ -16,16 +16,17 @@
 #'   subset (i.e., cluster).
 #'
 #' @export
+#' @importFrom utils head
 #' @examples
 #' # For examples, use 'nCores=1' per CRAN rules, but in practice omit this.
 #' data(iris.clusterings)
 #' partition <- iris.clusterings[1,]
-#' psm(partition, nCores=1)
+#' head(psm(partition, nCores=1))
 #'
 #' dim(iris.clusterings)
 #' probs <- psm(iris.clusterings, nCores=1)
 #' dim(probs)
-#' probs[1:6, 1:6]
+#' head(probs)
 #'
 psm <- function(x, nCores=0) {
   if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
