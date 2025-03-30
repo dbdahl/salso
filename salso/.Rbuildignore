@@ -4,8 +4,14 @@ authors-scratch.txt
 ^src/librust.a
 ^src/rust/(.*/)*target
 ^src/rust/vendor/
+^src/rust/rbindings/.crates2.json$
+^src/rust/rbindings/.crates.toml$
+^src/rust/rbindings/bin/
+^src/rust/rbindings/generate$
+^src/rust/rbindings/README$
+^src/rust/rbindings/wrapper.h$
+^src/rust/rust-toolchain.toml$
 ^src/rust/[.]cargo
 ^src/rust/(.*/)*[.]idea
 ^.*\.Rproj$
 ^[.]Rproj[.]user$
-^tools/rename_package.R$

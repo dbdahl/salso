@@ -1,2 +1,8 @@
 PKG_LIBS = -L. -lrust
+
+all: $(SHLIB) cleanup
+
 $(SHLIB): librust.a
+
+cleanup: $(SHLIB)
+	rm librust.a

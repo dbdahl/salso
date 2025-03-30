@@ -4,7 +4,6 @@
 /.RData
 /.Ruserdata
 /R/roxido.R
-/src/shim.c
 /src/shim.o
 /src/dummy.o
 /src/*.a
@@ -16,5 +15,4 @@
 /src/rust/vendor.tar.xz
 /src/rust/**/target
 /src/rust/.idea
-/inst/cargo.log
 /authors-scratch.txt

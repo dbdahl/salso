@@ -22,6 +22,9 @@ Authors:
 \itemize{
   \item Devin J. Johnson \email{devin.j.johnson7@gmail.com} (\href{https://orcid.org/0000-0003-2619-6649}{ORCID})
   \item Peter Müller \email{pmueller@math.utexas.edu}
+  \item Andrés Felipe Barrientos \email{abarrientos@fsu.edu}
+  \item Garritt Page \email{page@stat.byu.edu}
+  \item David Dunson \email{dunson@duke.edu}
 }
 
 Other contributors:

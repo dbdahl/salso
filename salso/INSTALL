@@ -1,6 +1,6 @@
-This R package relies on Cargo, the Rust package manager. Cargo can be provided in a number of ways.
-Either of the following methods should work (although the first method will guarantee that the most
-recent version is installed):
+This R package relies on Cargo, the Rust package manager. Cargo can be provided
+in a number of ways. Either of the following methods should work (although the
+first method will guarantee that the most recent version is installed):
 
 1. Install from https://rustup.rs, an official Rust website, e.g.:
 
@@ -19,16 +19,11 @@ recent version is installed):
 
 OR
 
-2. Install from a package manager and let 'cargo' by found using the $PATH environment variable,
-   e.g.:
+2. Install from a package manager and let 'cargo' by found using the $PATH
+   environment variable, e.g.:
 
    Debian:  sudo apt install cargo
    Ubuntu:  sudo apt install cargo
    Fedora:  sudo dnf install cargo
-
-   Note that package managers for MacOS and Windows are *not* recommended.  Homebrew's Rust
-   may yield static libraries with a higher minimum macOS version than that used by the compiler
-   for R.  Likewise Msys2 may be unsuitable since, "One should only be installing packages from
-   'msys' sub-repository of Msys2, mixing other sub-repositories with the toolchain may cause
-   trouble." (https://cran.r-project.org/bin/windows/base/howto-R-devel.html)
+   macOS:   brew install rust
 

@@ -28,8 +28,8 @@
 //! use roxido::*;
 //!
 //! #[roxido]
-//! fn convolve2(a: &RObject<RVector>, b: &RObject<RVector>) {
-//!     let vec = RObject::<RVector, f64>::from_value(0.0, a.len() + b.len() - 1, pc);
+//! fn convolve2(a: &RVector, b: &RVector) {
+//!     let vec = RVector::from_value(0.0, a.len() + b.len() - 1, pc);
 //!     let ab = vec.slice_mut();
 //!     for (i, ai) in a.to_f64(pc).slice().iter().enumerate() {
 //!         for (j, bj) in b.to_f64(pc).slice().iter().enumerate() {
@@ -50,7 +50,7 @@
 /// A procedural macro to facilitate calling a Rust function from R.
 pub use roxido_macro::roxido;
 
-pub mod rbindings;
+pub use rbindings;
 pub use rbindings::SEXP;
 
 use rbindings::*;
@@ -87,15 +87,19 @@ impl SEXPMethods for SEXP {
     }
 }
 
+/// Trait for methods shared by all R objects.
 pub trait RObjectVariant: Sized {
+    /// Return the underlying SEXP, a pointer to an R object.
     fn sexp(&self) -> SEXP {
         self as *const Self as SEXP
     }
 
+    /// Recharacterize as a reference to an [`RObject`].
     fn as_robject(&self) -> &RObject {
         unsafe { self.transmute() }
     }
 
+    /// Recharacterize as a mutable reference to an [`RObject`].
     fn as_robject_mut(&mut self) -> &mut RObject {
         unsafe { self.transmute_mut() }
     }
@@ -118,35 +122,34 @@ pub trait RObjectVariant: Sized {
         self.sexp().transmute_mut(self)
     }
 
-    /// Duplicate an object.
+    /// Duplicate an R object.
     ///
     /// Multiple symbols may be bound to the same object, so if the usual R semantics are to
     /// apply, any code which alters one of them needs to make a copy first.
-    /// E.g, call this method on arguments pass via `.Call` before modifying them.
     ///
     #[allow(clippy::mut_from_ref)]
     fn clone<'a>(&self, pc: &'a Pc) -> &'a mut Self {
         unsafe { pc.protect_and_transmute(Rf_duplicate(self.sexp())) }
     }
 
-    /// Get the class or classes of the data in an RObject.
+    /// Get the class of an R object.
     fn get_class(&self) -> &RVector<char> {
         unsafe { Rf_getAttrib(self.sexp(), RSymbol::class().sexp()).transmute(self) }
     }
 
-    /// Set the class or classes of the data for an RObject.
+    /// Set the class of an R object.
     fn set_class(&mut self, names: &RVector<char>) {
         unsafe {
             Rf_classgets(self.sexp(), names.sexp());
         }
     }
 
-    /// Get an attribute.
+    /// Get an attribute of an R object.
     fn get_attribute(&self, which: &RSymbol) -> &RObject {
         unsafe { Rf_getAttrib(self.sexp(), which.sexp()).transmute(self) }
     }
 
-    /// Set an attribute.
+    /// Set an attribute of an R object.
     fn set_attribute(&mut self, which: &RSymbol, value: &impl RObjectVariant) {
         unsafe {
             Rf_setAttrib(self.sexp(), which.sexp(), value.sexp());
@@ -154,37 +157,42 @@ pub trait RObjectVariant: Sized {
     }
 }
 
+/// Methods for R objects that can be sliced.
 pub trait RSliceable<T> {
+    /// Return a slice of the R object's data.
     fn slice(&self) -> &[T];
 
+    /// Return a mutable slice of the R object's data.
     fn slice_mut(&mut self) -> &mut [T];
 }
 
+/// Methods for R objects that have a length attribute.
 pub trait RHasLength: RObjectVariant {
-    /// Returns the length of the RObject.
+    /// Returns the length of the R object.
     fn len(&self) -> usize {
         let len = unsafe { Rf_xlength(self.sexp()) };
         len.try_into().unwrap() // Won't ever fail if R is sane.
     }
 
-    /// Checks to see if the RObject is empty.
+    /// Checks to see if the R object is empty.
     fn is_empty(&self) -> bool {
         unsafe { Rf_xlength(self.sexp()) == 0 }
     }
 
-    /// Checks to see if the RObject is a scalar (has a length of 1).
+    /// Checks to see if the R object is a scalar (i.e., has length equal to one).
     fn is_scalar(&self) -> bool {
         unsafe { Rf_xlength(self.sexp()) == 1 }
     }
 }
 
+/// Get and set methods for R objects with names.
 pub trait RHasNames: RHasLength {
-    /// Get names of values in a RVector.
+    /// Get names of the R object.
     fn get_names(&self) -> &RVector<char> {
         unsafe { Rf_getAttrib(self.sexp(), R_NamesSymbol).transmute(self) }
     }
 
-    /// Set names of values in a RVector.
+    /// Set names of the R object.
     fn set_names(&mut self, names: &RVector<char>) -> Result<(), &'static str> {
         if unsafe { Rf_length(names.sexp()) != Rf_length(self.sexp()) } {
             return Err("Length of names is not correct.");
@@ -196,11 +204,13 @@ pub trait RHasNames: RHasLength {
     }
 }
 
+/// Method for creating a scalar in R (i.e., an R vector of length one) from a value.
 pub trait RScalarConstructor<T> {
     #[allow(clippy::mut_from_ref)]
     fn from_value(value: T, pc: &Pc) -> &mut Self;
 }
 
+/// Methods for creating an R object from an iterator.
 pub trait RFromIterator<T> {
     #[allow(clippy::mut_from_ref)]
     fn from_iter1<S>(iter: S, pc: &Pc) -> &mut Self
@@ -214,38 +224,43 @@ pub trait RFromIterator<T> {
         T: 'b;
 }
 
+/// Get and set methods for scalars.
 pub trait RGetSet0<T> {
-    /// Get the value at a certain index in an $tipe RVector.
+    /// Get the value of a scalar.
     fn get(&self) -> T;
 
-    /// Set the value at a certain index in an $tipe RVector.
+    /// Set the value of a scalar.
     fn set(&mut self, value: T);
 }
 
+/// Get and set methods for one-dimensional data.
 pub trait RGetSet1<T> {
-    /// Get the value at a certain index in an $tipe RVector.
+    /// Get the value at a certain index in the R object.
     fn get(&self, index: usize) -> Result<T, &'static str>;
 
-    /// Set the value at a certain index in an $tipe RVector.
+    /// Set the value at a certain index in the R object.
     fn set(&mut self, index: usize, value: T) -> Result<(), &'static str>;
 }
 
+/// Get and set methods for two-dimensional data.
 pub trait RGetSet2<T> {
-    /// Get the value at a certain index in an $tipe RVector.
+    /// Get the value at a certain row and column in the R object.
     fn get(&self, row: usize, col: usize) -> Result<T, &'static str>;
 
-    /// Set the value at a certain index in an $tipe RVector.
+    /// Set the value at a certain row and column in the R object.
     fn set(&mut self, row: usize, col: usize, value: T) -> Result<(), &'static str>;
 }
 
+/// Get and set methods for N-dimensional data.
 pub trait RGetSetN<T> {
-    /// Get the value at a certain index in an $tipe RVector.
+    /// Get the value at a certain index in the R object.
     fn get(&self, index: &[usize]) -> Result<T, &'static str>;
 
-    /// Set the value at a certain index in an $tipe RVector.
+    /// Set the value at a certain index in the R object.
     fn set(&mut self, index: &[usize], value: T) -> Result<(), &'static str>;
 }
 
+/// Methods for creating a new vector in R.
 pub trait RVectorConstructors<T> {
     #[allow(clippy::mut_from_ref)]
     fn new(length: usize, pc: &Pc) -> &mut Self;
@@ -260,6 +275,7 @@ pub trait RVectorConstructors<T> {
     fn from_slice<'a>(slice: &[T], pc: &'a Pc) -> &'a mut Self;
 }
 
+/// Methods for creating a new matrix in R.
 pub trait RMatrixConstructors<T> {
     #[allow(clippy::mut_from_ref)]
     fn new(nrow: usize, ncol: usize, pc: &Pc) -> &mut Self;
@@ -268,6 +284,7 @@ pub trait RMatrixConstructors<T> {
     fn from_value(value: T, nrow: usize, ncol: usize, pc: &Pc) -> &mut Self;
 }
 
+/// Methods for creating a new array in R.
 pub trait RArrayConstructors<T> {
     #[allow(clippy::mut_from_ref)]
     fn new<'a>(dim: &[usize], pc: &'a Pc) -> &'a mut Self;
@@ -387,60 +404,62 @@ impl Pc {
 pub struct R;
 
 impl R {
-    /// Returns an R NULL value.
+    /// Returns R's `NULL` value.
     pub fn null() -> &'static RObject {
         unsafe { R_NilValue.transmute_static() }
     }
 
-    /// Returns an R NA value for storage mode "double".
+    /// Returns R's `NA` value for storage mode "double".
     pub fn na_f64() -> f64 {
         unsafe { R_NaReal }
     }
 
-    /// Returns an R NA value for storage mode "integer".
+    /// Returns R's `NA` value for storage mode "integer".
     pub fn na_i32() -> i32 {
         unsafe { R_NaInt }
     }
 
-    /// Returns an R NA value for storage mode "logical".
+    /// Returns R's `NA` value for storage mode "logical".
     pub fn na_bool() -> i32 {
         unsafe { R_NaInt }
     }
 
-    /// Returns an R NaN value.
+    /// Returns R's `NaN` value.
     pub fn nan() -> f64 {
         unsafe { R_NaN }
     }
 
-    /// Returns an R Inf value.
+    /// Returns R's `Inf` value.
     pub fn positive_infinity() -> f64 {
         unsafe { R_PosInf }
     }
 
-    /// Returns an R -Inf value.
+    /// Returns R's `-Inf` value.
     pub fn negative_infinity() -> f64 {
         unsafe { R_NegInf }
     }
 
-    /// Checks if an f64 can be interpreted as an R NA value.
+    /// Checks if an `f64` is R's `NA` value.
     pub fn is_na_f64(x: f64) -> bool {
         unsafe { R_IsNA(x) != 0 }
     }
 
-    /// Checks if an i32 can be interpreted as an R NA value.
+    /// Checks if an `i32` is R's `NA` value.
     pub fn is_na_i32(x: i32) -> bool {
         x == unsafe { R_NaInt }
     }
 
-    /// Checks if a bool can be interpreted as an R NA value.
+    /// Checks if a logical value (stored by R in an `i32`) is R's `NA` value.
     pub fn is_na_bool(x: i32) -> bool {
         x == unsafe { R_NaInt }
     }
 
+    /// Checks if a logical value (stored as an `i32`) can be evaluated as R's `TRUE`.
     pub fn is_true(x: i32) -> bool {
         x != Rboolean_FALSE.try_into().unwrap() && !Self::is_na_bool(x)
     }
 
+    /// Convert a `bool` into a logical value (stored as an `i32`).
     pub fn as_logical(x: bool) -> i32 {
         if x {
             Rboolean_TRUE.try_into().unwrap()
@@ -449,27 +468,29 @@ impl R {
         }
     }
 
-    /// Checks if an f64 can be interpreted as an R NaN value.
+    /// Checks if an `f64` is R's `NaN` value.
     pub fn is_nan(x: f64) -> bool {
         unsafe { R_IsNaN(x) != 0 }
     }
 
-    /// Checks if an f64 would be considered finite in R.
+    /// Checks if an `f64` is considered finite in R.
     pub fn is_finite(x: f64) -> bool {
         unsafe { R_finite(x) != 0 }
     }
 
-    /// Checks if an f64 would be considered finite in R.
+    /// Checks if an `f64` is considered to be positive infinity in R.
     pub fn is_positive_infinity(x: f64) -> bool {
         unsafe { x == R_PosInf }
     }
 
-    /// Checks if an f64 would be considered finite in R.
+    /// Checks if an `f64` is considered to be negative infinity in R.
     pub fn is_negative_infinity(x: f64) -> bool {
         unsafe { x == R_NegInf }
     }
 
-    /// Generate random bytes using R's RNG.
+    /// Generate random bytes using R's random number generator.
+    ///
+    /// This can be used to seed a random number generator that is native to Rust.
     pub fn random_bytes<const LENGTH: usize>() -> [u8; LENGTH] {
         unsafe {
             let m = (u8::MAX as f64) + 1.0;
@@ -483,12 +504,12 @@ impl R {
         }
     }
 
-    /// Flush the R console.
+    /// Flush R's console.
     pub fn flush_console() {
         unsafe { R_FlushConsole() };
     }
 
-    /// Check to see if the user has attempted to interrupt the execution.
+    /// Check if the user has attempted to interrupt the execution.
     pub fn check_user_interrupt() -> bool {
         extern "C" fn check_interrupt_fn(_: *mut c_void) {
             unsafe { R_CheckUserInterrupt() };
@@ -497,6 +518,7 @@ impl R {
     }
 }
 
+/// An enumeration of the supported variants of R objects.
 pub enum RObjectEnum<'a> {
     RObject(&'a RObject),
     RScalar(&'a RScalar),
@@ -512,6 +534,7 @@ pub enum RObjectEnum<'a> {
 }
 
 impl RObject {
+    // Convert to an enumeration of the supported variants.
     pub fn enumerate(&self) -> RObjectEnum {
         if self.is_vector() {
             let s: &RVector = unsafe { self.transmute() };
@@ -554,7 +577,7 @@ impl RObject {
         unsafe { sexp.transmute_mut(anchor) }
     }
 
-    /// Returns the result of the is_null method, but as an Option value.
+    /// Returns an `Option` which equals `None` if the [`RObject`] reference is null.
     pub fn as_option(&self) -> Option<&Self> {
         if self.is_null() {
             None
@@ -563,6 +586,7 @@ impl RObject {
         }
     }
 
+    /// Attempts to recharacterize as a reference to an [`RScalar`] (i.e., a vector of length 1).
     pub fn as_scalar(&self) -> Result<&RScalar, &'static str> {
         let s = self.as_vector()?;
         if s.is_scalar() {
@@ -572,6 +596,7 @@ impl RObject {
         }
     }
 
+    /// Attempts to recharacterize as a mutable reference to an [`RScalar`] (i.e., a vector of length 1).
     pub fn as_scalar_mut(&mut self) -> Result<&mut RScalar, &'static str> {
         let s = self.as_vector()?;
         if s.is_scalar() {
@@ -581,6 +606,7 @@ impl RObject {
         }
     }
 
+    /// Attempts to recharacterize as a reference to an [`RVector`].
     pub fn as_vector(&self) -> Result<&RVector, &'static str> {
         if self.is_vector() {
             Ok(unsafe { self.transmute() })
@@ -589,6 +615,7 @@ impl RObject {
         }
     }
 
+    /// Attempts to recharacterize as a mutable reference to an [`RVector`].
     pub fn as_vector_mut(&mut self) -> Result<&mut RVector, &'static str> {
         if self.is_vector() {
             Ok(unsafe { self.transmute_mut() })
@@ -597,8 +624,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RMatrix>`.
-    /// Checks using R's `Rf_isMatrix` function.
+    /// Attempts to recharacterize as a reference to an ]`RMatrix`].
     pub fn as_matrix(&self) -> Result<&RMatrix, &'static str> {
         if self.is_matrix() {
             Ok(unsafe { self.transmute() })
@@ -607,8 +633,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RMatrix>`.
-    /// Checks using R's `Rf_isMatrix` function.
+    /// Attempts to recharacterize as a mutable reference to an [`RMatrix`].
     pub fn as_matrix_mut(&mut self) -> Result<&mut RMatrix, &'static str> {
         if self.is_matrix() {
             Ok(unsafe { self.transmute_mut() })
@@ -617,8 +642,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RArray>`.
-    /// Checks using R's `Rf_isArray` function.
+    /// Attempts to recharacterize as a reference to an [`RArray`].
     pub fn as_array(&self) -> Result<&RArray, &'static str> {
         if self.is_array() {
             Ok(unsafe { self.transmute() })
@@ -627,8 +651,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RArray>`.
-    /// Checks using R's `Rf_isArray` function.
+    /// Attempts to recharacterize as a mutable reference to an [`RArray`].
     pub fn as_array_mut(&mut self) -> Result<&mut RArray, &'static str> {
         if self.is_array() {
             Ok(unsafe { self.transmute_mut() })
@@ -637,8 +660,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RVector, RList>`.
-    /// Checks using R's `Rf_isVectorList` function.
+    /// Attempts to recharacterize as a reference to an [`RList`].
     pub fn as_list(&self) -> Result<&RList, &'static str> {
         if self.is_list() {
             Ok(unsafe { self.transmute() })
@@ -647,8 +669,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RVector, RList>`.
-    /// Checks using R's `Rf_isVectorList` function.
+    /// Attempts to recharacterize as a mutable reference to an [`RList`].
     pub fn as_list_mut(&mut self) -> Result<&mut RList, &'static str> {
         if self.is_list() {
             Ok(unsafe { self.transmute_mut() })
@@ -657,8 +678,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RVector, RDataFrame>`.
-    /// Checks using R's `Rf_isFrame` function.
+    /// Attempts to recharacterize as a reference to an [`RDataFrame`].
     pub fn as_data_frame(&self) -> Result<&RDataFrame, &'static str> {
         if self.is_data_frame() {
             Ok(unsafe { self.transmute() })
@@ -667,8 +687,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RVector, RDataFrame>`.
-    /// Checks using R's `Rf_isFrame` function.
+    /// Attempts to recharacterize as a mutable reference to an [`RDataFrame`].
     pub fn as_data_frame_mut(&mut self) -> Result<&mut RDataFrame, &'static str> {
         if self.is_data_frame() {
             Ok(unsafe { self.transmute_mut() })
@@ -677,8 +696,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RFunction>`.
-    /// Checks using R's `Rf_isFunction` function.
+    /// Attempts to recharacterize as a reference to an [`RFunction`].
     pub fn as_function(&self) -> Result<&RFunction, &'static str> {
         if self.is_function() {
             Ok(unsafe { self.transmute() })
@@ -687,8 +705,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RFunction>`.
-    /// Checks using R's `Rf_isFunction` function.
+    /// Attempts to recharacterize as a mutable reference to an [`RFunction`].
     pub fn as_function_mut(&mut self) -> Result<&mut RFunction, &'static str> {
         if self.is_function() {
             Ok(unsafe { self.transmute_mut() })
@@ -697,8 +714,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RExternalPtr>`.
-    /// Uses the SEXP type to determine if this is possible.
+    /// Attempts to recharacterize as a reference to an [`RExternalPtr`].
     pub fn as_external_ptr(&self) -> Result<&RExternalPtr, &'static str> {
         if self.is_external_ptr() {
             Ok(unsafe { self.transmute() })
@@ -707,8 +723,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RExternalPtr>`.
-    /// Uses the SEXP type to determine if this is possible.
+    /// Attempts to recharacterize as a mutable reference to an [`RExternalPtr`].
     pub fn as_external_ptr_mut(&mut self) -> Result<&mut RExternalPtr, &'static str> {
         if self.is_external_ptr() {
             Ok(unsafe { self.transmute_mut() })
@@ -717,8 +732,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RSymbol>`.
-    /// Uses the SEXP type to determine if this is possible.
+    /// Attempts to recharacterize as a reference to an [`RSymbol`].
     pub fn as_symbol(&self) -> Result<&RSymbol, &'static str> {
         if self.is_symbol() {
             Ok(unsafe { self.transmute() })
@@ -727,8 +741,7 @@ impl RObject {
         }
     }
 
-    /// Check if appropriate to characterize as an `RObject<RSymbol>`.
-    /// Uses the SEXP type to determine if this is possible.
+    /// Attempts to recharacterize as a mutable reference to an [`RSymbol`].
     pub fn as_symbol_mut(&mut self) -> Result<&mut RSymbol, &'static str> {
         if self.is_symbol() {
             Ok(unsafe { self.transmute_mut() })
@@ -737,49 +750,60 @@ impl RObject {
         }
     }
 
-    /// Check if RObject can be interpreted as the NULL value in R.
+    /// Check it is R's `NULL` value.
     pub fn is_null(&self) -> bool {
         unsafe { Rf_isNull(self.sexp()) != 0 }
     }
 
+    /// Check if it can be interpreted as a vector in R.
     pub fn is_vector(&self) -> bool {
         unsafe { Rf_isVectorAtomic(self.sexp()) != 0 }
     }
 
+    /// Check if it can be interpreted as a matrix in R.
     pub fn is_matrix(&self) -> bool {
         unsafe { Rf_isMatrix(self.sexp()) != 0 }
     }
 
+    /// Check if it can be interpreted as an array in R.
     pub fn is_array(&self) -> bool {
         unsafe { Rf_isArray(self.sexp()) != 0 }
     }
 
+    /// Check if it can be interpreted as a symbol in R.
     pub fn is_symbol(&self) -> bool {
         unsafe { TYPEOF(self.sexp()) == SYMSXP as i32 }
     }
 
+    /// Check if it can be interpreted as a list in R.
     pub fn is_list(&self) -> bool {
         unsafe { Rf_isVectorList(self.sexp()) != 0 }
     }
 
+    /// Check if it can be interpreted as a data frame in R.
     pub fn is_data_frame(&self) -> bool {
-        unsafe { Rf_isFrame(self.sexp()) != 0 }
+        if unsafe { TYPEOF(self.sexp()) } != VECSXP as i32 {
+            return false;
+        }
+        let cstr = CString::new("data.frame").unwrap();
+        unsafe { Rf_inherits(self.sexp(), cstr.as_ptr()) != 0 }
     }
 
+    /// Check if it can be interpreted as a function in R.
     pub fn is_function(&self) -> bool {
         unsafe { Rf_isFunction(self.sexp()) != 0 }
     }
 
+    /// Check if it can be interpreted as an external pointer in R.
     pub fn is_external_ptr(&self) -> bool {
         unsafe { TYPEOF(self.sexp()) == EXTPTRSXP as i32 }
     }
 }
 
 impl RError {
-    /// Define a new error.
+    /// Define a new R error.
     ///
-    /// This does *not* throw an error.  To throw an R error, simply use `stop!`.
-    ///
+    /// This does *not* throw an error.  To throw an R error, simply use the [`stop`] macro.
     #[allow(clippy::mut_from_ref)]
     pub fn new<'a>(message: &str, pc: &'a Pc) -> &'a mut Self {
         let list = RList::with_names(&["message", "calls"], pc);
@@ -797,6 +821,7 @@ impl RSymbol {
         unsafe { Rf_install(x.as_ptr()).transmute_static() }
     }
 
+    /// Define a new symbol from a string.
     pub fn from(s: &str) -> Result<&Self, NulError> {
         CString::new(s).map(|cstr| unsafe { Rf_install(cstr.as_ptr()).transmute_static() })
     }
@@ -840,7 +865,7 @@ impl RFunction {
         }
     }
 
-    /// Evaluate a function with 0 parameters.
+    /// Evaluate a function with no parameters.
     pub fn call0<'a>(&self, pc: &'a Pc) -> Result<&'a RObject, i32> {
         let expression = unsafe { Rf_lang1(self.sexp()) };
         Self::eval(expression, pc)
@@ -921,20 +946,22 @@ impl RFunction {
 }
 
 impl<T> RScalar<T> {
+    /// Attempts to recharacterize as a reference to an [`RVector`].
     pub fn as_vector(&self) -> &RVector<T> {
         unsafe { self.transmute() }
     }
 
+    /// Attempts to recharacterize as a mutable reference to an [`RVector`].
     pub fn as_vector_mut(&mut self) -> &mut RVector<T> {
         unsafe { self.transmute_mut() }
     }
 
-    /// Check if appropriate to characterize as an f64.
+    /// Interpret as an `f64`.
     pub fn f64(&self) -> f64 {
         unsafe { Rf_asReal(self.sexp()) }
     }
 
-    /// Check if appropriate to characterize as an i32.
+    /// Interpret as an `i32`.
     pub fn i32(&self) -> Result<i32, &'static str> {
         if self.is_i32() {
             let x = unsafe { Rf_asInteger(self.sexp()) };
@@ -970,7 +997,7 @@ impl<T> RScalar<T> {
         }
     }
 
-    /// Check if appropriate to characterize as a usize.
+    /// Attempt to interpret as an `usize`.
     pub fn usize(&self) -> Result<usize, &'static str> {
         if self.is_i32() {
             let x = unsafe { Rf_asInteger(self.sexp()) };
@@ -1008,7 +1035,7 @@ impl<T> RScalar<T> {
         }
     }
 
-    /// Check if appropriate to characterize as a u8.
+    /// Attempt to interpret as an `u8`.
     pub fn u8(&self) -> Result<u8, &'static str> {
         if self.is_i32() {
             let x = unsafe { Rf_asInteger(self.sexp()) };
@@ -1040,7 +1067,7 @@ impl<T> RScalar<T> {
         }
     }
 
-    /// Check if appropriate to characterize as a bool.
+    /// Attempt to interpret as an `bool`.
     pub fn bool(&self) -> Result<bool, &'static str> {
         if self.is_i32() {
             let x = unsafe { Rf_asInteger(self.sexp()) };
@@ -1072,7 +1099,7 @@ impl<T> RScalar<T> {
         }
     }
 
-    /// Check if appropriate to characterize as a str reference.
+    /// Attempt to interpret as an a string.
     pub fn str<'a>(&'a self, pc: &'a Pc) -> &'a str {
         let s = self.to_char(pc);
         s.get().unwrap()
@@ -1093,7 +1120,7 @@ impl<T> RScalar<T> {
         }
     }
 
-    /// Check if RObject can be interpreted as an NaN value in R.
+    /// Check if it equals R's `NaN` value.
     pub fn is_nan(&self) -> bool {
         if self.is_f64() {
             unsafe { R_IsNaN(Rf_asReal(self.sexp())) != 0 }
@@ -1102,6 +1129,7 @@ impl<T> RScalar<T> {
         }
     }
 
+    /// Check if it can be interpreted as a finite value in R.
     pub fn is_finite(&self) -> bool {
         if self.is_f64() {
             unsafe { R_finite(Rf_asReal(self.sexp())) != 0 }
@@ -1110,6 +1138,7 @@ impl<T> RScalar<T> {
         }
     }
 
+    /// Check if it can be interpreted as positive infinity in R.
     pub fn is_positive_infinity(&self) -> bool {
         if self.is_f64() {
             unsafe { Rf_asReal(self.sexp()) == R_PosInf }
@@ -1118,6 +1147,7 @@ impl<T> RScalar<T> {
         }
     }
 
+    /// Check if it can be interpreted as negative infinity in R.
     pub fn is_negative_infinity(&self) -> bool {
         if self.is_f64() {
             unsafe { Rf_asReal(self.sexp()) == R_NegInf }
@@ -1159,7 +1189,7 @@ impl RScalarConstructor<&str> for RScalar<char> {
 macro_rules! rconvertable {
     ($name:ident) => {
         impl<T> $name<T> {
-            /// Check if appropriate to characterize storage mode as "double".
+            /// Attempt to recharacterize as R's storage mode "double".
             pub fn as_f64(&self) -> Result<&$name<f64>, &'static str> {
                 if self.is_f64() {
                     Ok(unsafe { self.transmute() })
@@ -1168,7 +1198,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Check if appropriate to characterize storage mode as "double".
+            /// Attempt to recharacterize as R's storage mode "double".
             pub fn as_f64_mut(&mut self) -> Result<&mut $name<f64>, &'static str> {
                 if self.is_f64() {
                     Ok(unsafe { self.transmute_mut() })
@@ -1177,12 +1207,12 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Checks to see if the data can be interpreted as R double.
+            /// Checks if its using R's storage model "double".
             pub fn is_f64(&self) -> bool {
                 unsafe { Rf_isReal(self.sexp()) != 0 }
             }
 
-            /// Attempts to coerce storage mode to "double".
+            /// Attempt to coerce to R's storage mode "double".
             pub fn to_f64<'a>(&'a self, pc: &'a Pc) -> &'a $name<f64> {
                 if self.is_f64() {
                     unsafe { self.transmute() }
@@ -1191,7 +1221,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Attempts to coerce storage mode to "double".
+            /// Attempt to coerce to R's storage mode "double".
             pub fn to_f64_mut<'a>(&'a mut self, pc: &'a Pc) -> &'a mut $name<f64> {
                 if self.is_f64() {
                     unsafe { self.transmute_mut() }
@@ -1200,7 +1230,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Check if appropriate to characterize storage mode as "double".
+            /// Attempt to recharacterize as R's storage mode "integer".
             pub fn as_i32(&self) -> Result<&$name<i32>, &'static str> {
                 if self.is_i32() {
                     Ok(unsafe { self.transmute() })
@@ -1209,7 +1239,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Check if appropriate to characterize storage mode as "double".
+            /// Attempt to recharacterize as R's storage mode "integer".
             pub fn as_i32_mut(&mut self) -> Result<&mut $name<i32>, &'static str> {
                 if self.is_i32() {
                     Ok(unsafe { self.transmute_mut() })
@@ -1218,12 +1248,12 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Checks to see if the data can be interpreted as R double.
+            /// Checks if its using R's storage model "integer".
             pub fn is_i32(&self) -> bool {
                 unsafe { Rf_isInteger(self.sexp()) != 0 }
             }
 
-            /// Attempts to coerce storage mode to "double".
+            /// Attempt to coerce to R's storage mode "integer".
             pub fn to_i32<'a>(&'a self, pc: &'a Pc) -> &'a $name<i32> {
                 if self.is_i32() {
                     unsafe { self.transmute() }
@@ -1232,7 +1262,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Attempts to coerce storage mode to "double".
+            /// Attempt to coerce to R's storage mode "integer".
             pub fn to_i32_mut<'a>(&'a mut self, pc: &'a Pc) -> &'a mut $name<i32> {
                 if self.is_i32() {
                     unsafe { self.transmute_mut() }
@@ -1241,7 +1271,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Check if appropriate to characterize storage mode as "double".
+            /// Attempt to recharacterize as R's storage mode "raw".
             pub fn as_u8(&self) -> Result<&$name<u8>, &'static str> {
                 if self.is_u8() {
                     Ok(unsafe { self.transmute() })
@@ -1250,7 +1280,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Check if appropriate to characterize storage mode as "double".
+            /// Attempt to recharacterize as R's storage mode "raw".
             pub fn as_u8_mut(&mut self) -> Result<&mut $name<u8>, &'static str> {
                 if self.is_u8() {
                     Ok(unsafe { self.transmute_mut() })
@@ -1259,12 +1289,12 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Checks to see if the data can be interpreted as R double.
+            /// Checks if its using R's storage model "raw".
             pub fn is_u8(&self) -> bool {
                 unsafe { TYPEOF(self.sexp()) == RAWSXP as i32 }
             }
 
-            /// Attempts to coerce storage mode to "double".
+            /// Attempt to coerce to R's storage mode "raw".
             pub fn to_u8<'a>(&'a self, pc: &'a Pc) -> &'a $name<u8> {
                 if self.is_u8() {
                     unsafe { self.transmute() }
@@ -1273,7 +1303,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Attempts to coerce storage mode to "double".
+            /// Attempt to coerce to R's storage mode "raw".
             pub fn to_u8_mut<'a>(&'a mut self, pc: &'a Pc) -> &'a mut $name<u8> {
                 if self.is_u8() {
                     unsafe { self.transmute_mut() }
@@ -1282,7 +1312,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Check if appropriate to characterize storage mode as "double".
+            /// Attempt to recharacterize as R's storage mode "logical".
             pub fn as_bool(&self) -> Result<&$name<bool>, &'static str> {
                 if self.is_bool() {
                     Ok(unsafe { self.transmute() })
@@ -1291,7 +1321,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Check if appropriate to characterize storage mode as "double".
+            /// Attempt to recharacterize as R's storage mode "logical".
             pub fn as_bool_mut(&mut self) -> Result<&mut $name<bool>, &'static str> {
                 if self.is_bool() {
                     Ok(unsafe { self.transmute_mut() })
@@ -1300,12 +1330,12 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Checks to see if the data can be interpreted as R double.
+            /// Checks if its using R's storage model "logical".
             pub fn is_bool(&self) -> bool {
                 unsafe { Rf_isLogical(self.sexp()) != 0 }
             }
 
-            /// Attempts to coerce storage mode to "double".
+            /// Attempt to coerce to R's storage mode "logical".
             pub fn to_bool<'a>(&'a self, pc: &'a Pc) -> &'a $name<bool> {
                 if self.is_bool() {
                     unsafe { self.transmute() }
@@ -1314,7 +1344,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Attempts to coerce storage mode to "double".
+            /// Attempt to coerce to R's storage mode "logical".
             pub fn to_bool_mut<'a>(&'a mut self, pc: &'a Pc) -> &'a mut $name<bool> {
                 if self.is_bool() {
                     unsafe { self.transmute_mut() }
@@ -1323,7 +1353,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Check if appropriate to characterize storage mode as "double".
+            /// Attempt to recharacterize as R's storage mode "character".
             pub fn as_char(&self) -> Result<&$name<char>, &'static str> {
                 if self.is_char() {
                     Ok(unsafe { self.transmute() })
@@ -1332,7 +1362,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Check if appropriate to characterize storage mode as "double".
+            /// Attempt to recharacterize as R's storage mode "character".
             pub fn as_char_mut(&mut self) -> Result<&mut $name<char>, &'static str> {
                 if self.is_char() {
                     Ok(unsafe { self.transmute_mut() })
@@ -1341,12 +1371,12 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Checks to see if the data can be interpreted as R double.
+            /// Checks if its using R's storage model "character".
             pub fn is_char(&self) -> bool {
                 unsafe { Rf_isString(self.sexp()) != 0 }
             }
 
-            /// Attempts to coerce storage mode to "double".
+            /// Attempt to coerce to R's storage mode "character".
             pub fn to_char<'a>(&'a self, pc: &'a Pc) -> &'a $name<char> {
                 if self.is_char() {
                     unsafe { self.transmute() }
@@ -1355,7 +1385,7 @@ macro_rules! rconvertable {
                 }
             }
 
-            /// Attempts to coerce storage mode to "double".
+            /// Attempt to coerce to R's storage mode "character".
             pub fn to_char_mut<'a>(&'a mut self, pc: &'a Pc) -> &'a mut $name<char> {
                 if self.is_char() {
                     unsafe { self.transmute_mut() }
@@ -1432,10 +1462,12 @@ impl RGetSet0<bool> for RScalar<bool> {
 }
 
 impl RScalar<char> {
+    /// Get the value of a scalar.
     pub fn get(&self) -> Result<&str, &'static str> {
         charsxp_as_str(unsafe { STRING_ELT(self.sexp(), 0) }, self)
     }
 
+    /// Set the value of a scalar.
     pub fn set(&mut self, value: &str) {
         unsafe { SET_STRING_ELT(self.sexp(), 0, charsxp_from_str(value)) }
     }
@@ -1470,7 +1502,6 @@ macro_rules! rvector {
         }
 
         impl RGetSet1<$tipe> for RVector<$tipe> {
-            /// Get the value at a certain index in an $tipe RVector.
             fn get(&self, index: usize) -> Result<$tipe, &'static str> {
                 if index < self.len() {
                     Ok(unsafe { $get(self.sexp(), index.try_into().unwrap()) })
@@ -1479,7 +1510,6 @@ macro_rules! rvector {
                 }
             }
 
-            /// Set the value at a certain index in an $tipe RVector.
             fn set(&mut self, index: usize, value: $tipe) -> Result<(), &'static str> {
                 if index < self.len() {
                     unsafe { $set(self.sexp(), index.try_into().unwrap(), value) };
@@ -1623,6 +1653,7 @@ impl RVectorConstructors<bool> for RVector<bool> {
 }
 
 impl RVector<char> {
+    /// Get the value at a certain index in the R object.
     pub fn get(&self, index: usize) -> Result<&str, &'static str> {
         if index < self.len() {
             self.get_unchecked(index)
@@ -1631,6 +1662,7 @@ impl RVector<char> {
         }
     }
 
+    /// Set the value at a certain index in the R object.
     pub fn set(&mut self, index: usize, value: &str) -> Result<(), &'static str> {
         if index < self.len() {
             self.set_unchecked(index, value);
@@ -1744,7 +1776,7 @@ rmatrix!(i32, INTSXP, INTEGER_ELT, SET_INTEGER_ELT);
 rmatrix!(u8, RAWSXP, RAW_ELT, SET_RAW_ELT);
 
 impl<T> RMatrix<T> {
-    /// Returns the number of rows in the RMatrix.
+    /// Return the number of rows in the RMatrix.
     pub fn nrow(&self) -> usize {
         unsafe { Rf_nrows(self.sexp()).try_into().unwrap() }
     }
@@ -1754,7 +1786,7 @@ impl<T> RMatrix<T> {
         unsafe { Rf_ncols(self.sexp()).try_into().unwrap() }
     }
 
-    /// Returns the dimensions of the RMatrix.
+    /// Return the dimensions of the RMatrix.
     pub fn dim(&self) -> [usize; 2] {
         [self.nrow(), self.ncol()]
     }
@@ -1771,7 +1803,7 @@ impl<T> RMatrix<T> {
         transposed
     }
 
-    /// Manipulates the matrix in place to be a vector by dropping the `dim` attribute.
+    /// Manipulate the matrix in place to be a vector by dropping the `dim` attribute.
     pub fn to_vector_mut(&mut self) -> &mut RVector<T> {
         unsafe {
             Rf_setAttrib(self.sexp(), R_DimSymbol, R_NilValue);
@@ -1779,7 +1811,7 @@ impl<T> RMatrix<T> {
         }
     }
 
-    /// Get the index of a value based on the row and column number.
+    /// Get the value at a certain row and column in the R matrix.
     pub fn index(&self, row: usize, col: usize, nrow: Option<usize>) -> usize {
         let nrow = nrow.unwrap_or_else(|| self.nrow());
         nrow * col + row
@@ -1873,13 +1905,13 @@ rarray!(i32, INTSXP, INTEGER_ELT, SET_INTEGER_ELT);
 rarray!(u8, RAWSXP, RAW_ELT, SET_RAW_ELT);
 
 impl<T> RArray<T> {
-    /// Returns the dimensions of the RMatrix.
+    /// Return the dimensions of the RMatrix.
     pub fn dim(&self) -> Vec<usize> {
         let d: &RVector<i32> = unsafe { Rf_getAttrib(self.sexp(), R_DimSymbol).transmute(self) };
         d.slice().iter().map(|&x| x.try_into().unwrap()).collect()
     }
 
-    /// Manipulates the matrix in place to be a vector by dropping the `dim` attribute.
+    /// Manipulate the matrix in place to be a vector by dropping the `dim` attribute.
     pub fn to_vector_mut(&mut self) -> &mut RVector<T> {
         unsafe {
             Rf_setAttrib(self.sexp(), R_DimSymbol, R_NilValue);
@@ -1944,14 +1976,14 @@ impl<T> RArray<T> {
     }
 }
 
-pub struct R2ListMap2<'a> {
+pub struct RListMap<'a> {
     unused_counter: usize,
     used: Vec<bool>,
     robj: &'a RList,
     map: HashMap<&'a str, usize>,
 }
 
-impl R2ListMap2<'_> {
+impl RListMap<'_> {
     /// Find an RObject in the list based on its name.
     pub fn get(&mut self, name: &str) -> Result<&RObject, String> {
         let Some(index) = self.map.get(name) else {
@@ -1964,7 +1996,7 @@ impl R2ListMap2<'_> {
         Ok(self.robj.get(*index)?)
     }
 
-    /// Check to see if every RObject in the map has been used.
+    /// Check if every element in the R list has been used.
     pub fn exhaustive(&self) -> Result<(), String> {
         if self.unused_counter != 0 {
             return Err(format!(
@@ -1995,7 +2027,7 @@ impl R2ListMap2<'_> {
 macro_rules! rlistlike {
     ($name:ident) => {
         impl $name {
-            /// Get the value at a certain index in an $tipe RVector.
+            /// Get the value at a certain index in the R list.
             pub fn get(&self, index: usize) -> Result<&RObject, &'static str> {
                 if index < self.len() {
                     Ok(unsafe {
@@ -2006,6 +2038,7 @@ macro_rules! rlistlike {
                 }
             }
 
+            /// Get the value at a certain index in the R list.
             pub fn get_mut(&mut self, index: usize) -> Result<&mut RObject, &'static str> {
                 if index < self.len() {
                     Ok(unsafe {
@@ -2016,7 +2049,7 @@ macro_rules! rlistlike {
                 }
             }
 
-            /// Set the value at a certain index in an $tipe RVector.
+            /// Set the value at a certain index in the R list.
             pub fn set(
                 &mut self,
                 index: usize,
@@ -2030,7 +2063,49 @@ macro_rules! rlistlike {
                 }
             }
 
-            /// Get a value from the RList based on its key.
+            /// Set the value at a certain index in the R list via a closure with a mutable reference to a local Pc.
+            ///
+            /// This is slightly less efficient than `set` but is useful to avoid overflowing R's PROTECT stack for
+            /// very large lists.
+            pub fn set_with_pc<T: RObjectVariant, F: FnOnce(&mut Pc) -> &T>(
+                &mut self,
+                index: usize,
+                x: F,
+            ) -> Result<(), &'static str> {
+                if index < self.len() {
+                    let mut pc = Pc::default();
+                    unsafe {
+                        SET_VECTOR_ELT(self.sexp(), index.try_into().unwrap(), x(&mut pc).sexp())
+                    };
+                    Ok(())
+                } else {
+                    Err("Index out of bounds.")
+                }
+            }
+
+            /// Set the values in the R list via a closure with a mutable reference to a local Pc.
+            ///
+            /// This is slightly less efficient than `set` but is useful to avoid overflowing R's PROTECT stack for
+            /// very large lists.
+            pub fn set_loop_with_pc<T: RObjectVariant, F: FnMut(&mut Pc) -> &T>(
+                &mut self,
+                index: usize,
+                mut x: F,
+            ) -> Result<(), &'static str> {
+                if index < self.len() {
+                    let mut pc = Pc::default();
+                    for i in 0..self.len() {
+                        unsafe {
+                            SET_VECTOR_ELT(self.sexp(), i.try_into().unwrap(), x(&mut pc).sexp())
+                        };
+                    }
+                    Ok(())
+                } else {
+                    Err("Index out of bounds.")
+                }
+            }
+
+            /// Get a value in an R list based on its key.
             pub fn get_by_key(&self, key: impl AsRef<str>) -> Result<&RObject, String> {
                 let names = self.get_names();
                 for i in 0..names.len() {
@@ -2041,7 +2116,7 @@ macro_rules! rlistlike {
                 Err(format!("Could not find '{}' in the list.", key.as_ref()))
             }
 
-            /// Get a value from the RList based on its key.
+            /// Get a value in an R list based on its key.
             pub fn get_mut_by_key(&mut self, key: impl AsRef<str>) -> Result<&mut RObject, String> {
                 let names = self.get_names();
                 for i in 0..names.len() {
@@ -2052,19 +2127,19 @@ macro_rules! rlistlike {
                 Err(format!("Could not find '{}' in the list.", key.as_ref()))
             }
 
-            /// Convert the list into an [RListMap]
+            /// Convert the list into an [`RListMap`]
             ///
-            /// This allows Rust HashMap methods to be used on the contents
+            /// This allows Rust's [`HashMap`] methods to be used on the contents
             /// of the list, while still retaining the original list within
             /// the RListMap struct in the robj field.
-            pub fn make_map(&self) -> R2ListMap2 {
+            pub fn make_map(&self) -> RListMap {
                 let mut map = HashMap::new();
                 let names = self.get_names();
                 let len = names.len();
                 for i in 0..len {
                     map.insert(names.get(i).unwrap(), i);
                 }
-                R2ListMap2 {
+                RListMap {
                     unused_counter: len,
                     used: vec![false; len],
                     robj: unsafe { self.transmute() },
@@ -2100,8 +2175,8 @@ impl RExternalPtr {
     /// Move Rust object to an R external pointer.
     ///
     /// This *method* moves a Rust object to an R external pointer and then, as far as Rust is concerned, leaks the memory.
-    /// Thus the programmer is then responsible to release the memory by calling [`RObject::decode_val`].
-    ///
+    /// Thus the programmer is then responsible to release the memory by calling [`RExternalPtr::decode_val`]
+    /// unless `managed_By_r` is `true`.
     #[allow(clippy::mut_from_ref)]
     pub fn encode<'a, T>(x: T, tag: &str, pc: &'a Pc) -> &'a mut Self {
         Self::encode_full(x, tag.to_r(pc), true, pc)
@@ -2110,8 +2185,8 @@ impl RExternalPtr {
     /// Move Rust object to an R external pointer.
     ///
     /// This *method* moves a Rust object to an R external pointer and then, as far as Rust is concerned, leaks the memory.
-    /// Thus the programmer is then responsible to release the memory by calling [`RObject::decode_val`].
-    ///
+    /// Thus the programmer is then responsible to release the memory by calling [`RExternalPtr::decode_val`]
+    /// unless `managed_By_r` is `true`.
     #[allow(clippy::mut_from_ref)]
     pub fn encode_full<'a, T>(
         x: T,
@@ -2149,7 +2224,7 @@ impl RExternalPtr {
 
     /// Move an R external pointer to a Rust object.
     ///
-    /// This method moves an R external pointer created by [`RObject::external_ptr`] to a Rust object and Rust will then manage its memory.
+    /// This method moves an R external pointer created by [`RObject::as_external_ptr`] to a Rust object and Rust will then manage its memory.
     ///
     pub fn decode_val<T>(&self) -> Result<T, &'static str> {
         if self.is_managed_by_r() {
@@ -2167,7 +2242,7 @@ impl RExternalPtr {
 
     /// Obtain a reference to a Rust object from an R external pointer.
     ///
-    /// This method obtains a reference to a Rust object from an R external pointer created by [`RObject::external_ptr`].
+    /// This method obtains a reference to a Rust object from an R external pointer created by [`RObject::as_external_ptr`].
     ///
     pub fn decode_ref<T>(&self) -> &T {
         unsafe {
@@ -2178,7 +2253,7 @@ impl RExternalPtr {
 
     /// Obtain a reference to a Rust object from an R external pointer, pretending a static lifetime.
     ///
-    /// This method obtains a reference to a Rust object from an R external pointer created by [`RObject::external_ptr`].
+    /// This method obtains a reference to a Rust object from an R external pointer created by [`RObject::as_external_ptr`].
     ///
     /// # Safety
     ///
@@ -2191,8 +2266,7 @@ impl RExternalPtr {
 
     /// Obtain a mutable reference to a Rust object from an R external pointer.
     ///
-    /// This method obtains a mutable reference to a Rust object from an R external pointer created by [`RObject::external_ptr`].
-    ///
+    /// This method obtains a mutable reference to a Rust object from an R external pointer created by [`RObject::as_external_ptr`].
     pub fn decode_mut<'a, T>(&mut self) -> &'a mut T {
         unsafe {
             let ptr = R_ExternalPtrAddr(self.sexp()) as *mut T;
@@ -2202,10 +2276,9 @@ impl RExternalPtr {
 
     /// Obtain a mutable reference to a Rust object from an R external pointer, pretending a static lifetime.
     ///
-    /// This method obtains a mutable reference to a Rust object from an R external pointer created by [`RObject::external_ptr`].
+    /// This method obtains a mutable reference to a Rust object from an R external pointer created by [`RObject::as_external_ptr`].
     ///
     /// # Safety
-    ///
     /// Despite the use of a static lifetime here, the reference is only valid as long as R's
     /// garbage collector has not reclaimed the underlying object's memory.
     pub unsafe fn decode_mut_static<T>(&mut self) -> &'static mut T {
@@ -2234,7 +2307,7 @@ impl RExternalPtr {
 
     /// Get tag for an R external pointer.
     ///
-    /// This method gets the tag associated with an R external pointer, which was set by [`Self::external_ptr`].
+    /// This method gets the tag associated with an R external pointer, which was set by [`RObject::as_external_ptr`].
     ///
     pub fn tag(&self) -> &RObject {
         unsafe { R_ExternalPtrTag(self.sexp()).transmute(self) }
@@ -2242,33 +2315,46 @@ impl RExternalPtr {
 }
 
 // Conversions
+
+/// Create a variable in Rust from a reference to an R object.
 pub trait FromR<T: RObjectVariant, U> {
+    /// Create a new object in Rust from a reference to an R object.
     fn from_r(x: &T, pc: &Pc) -> Result<Self, U>
     where
         Self: Sized;
 }
 
+/// Create a mutable reference to an R object from a Rust object.
 pub trait ToR<T: RObjectVariant> {
+    /// Create a new R object.
     #[allow(clippy::mut_from_ref)]
     fn to_r(self, pc: &Pc) -> &mut T;
 }
 
+/// Create a mutable reference to an R object from a Rust object.
 pub trait ToR1<T: RObjectVariant> {
+    /// Convert to an R object.
     #[allow(clippy::mut_from_ref)]
     fn to_r(self, pc: &Pc) -> &mut T;
 }
 
+/// Create a mutable reference to an R object from a Rust object.
 pub trait ToR2<T: RObjectVariant> {
+    /// Convert to an R object.
     #[allow(clippy::mut_from_ref)]
     fn to_r(self, pc: &Pc) -> &mut T;
 }
 
+/// Create a reference to an R object from a reference to Rust object.
 pub trait ToRRef<T: RObjectVariant> {
+    /// Convert to an R object.
     #[allow(clippy::mut_from_ref)]
     fn to_r<'a>(&self, pc: &'a Pc) -> &'a mut T;
 }
 
+/// Create an R object from a Rust object.
 pub trait ToRNoMut<T: RObjectVariant> {
+    /// Convert to an R object.
     #[allow(clippy::mut_from_ref)]
     fn to_r(self, pc: &Pc) -> &T;
 }
@@ -2353,30 +2439,37 @@ to_rvector_iter!(bool, bool);
 /// See the `Rvprintf` function in `printutils.c` of R's source.
 ///
 #[doc(hidden)]
-pub fn __private_print(x: &str, use_stdout: bool) -> bool {
+pub fn __private_print(x: &str, newline: bool, use_stdout: bool) -> bool {
     #[repr(C)]
     struct DummyFat {
         len: usize,
         ptr: *const c_char,
+        newline: bool,
         use_stdout: bool,
     }
     let mut y = DummyFat {
         len: x.len(),
         ptr: x.as_ptr() as *const c_char,
+        newline,
         use_stdout,
     };
     let y_ptr = &mut y as *mut DummyFat as *mut c_void;
     extern "C" fn print_fn(y_ptr: *mut c_void) {
         unsafe {
             let y_ptr = y_ptr as *mut DummyFat;
-            if (*y_ptr).use_stdout {
-                Rprintf(
-                    b"%.*s\0".as_ptr() as *const c_char,
+            let f = if (*y_ptr).use_stdout {
+                Rprintf
+            } else {
+                REprintf
+            };
+            if (*y_ptr).newline {
+                f(
+                    b"%.*s\n\0".as_ptr() as *const c_char,
                     (*y_ptr).len,
                     (*y_ptr).ptr,
                 );
             } else {
-                REprintf(
+                f(
                     b"%.*s\0".as_ptr() as *const c_char,
                     (*y_ptr).len,
                     (*y_ptr).ptr,
@@ -2387,6 +2480,15 @@ pub fn __private_print(x: &str, use_stdout: bool) -> bool {
     unsafe { R_ToplevelExec(Some(print_fn), y_ptr) == 0 }
 }
 
+/// Macro is called at the start of the 'src/rust/src/lib.rs' file.
+///
+/// This directs the Roxido Framework to automatically
+/// generate code to register functions decorated with the `roxido` attribute
+/// so that they are callable using R's `.Call` function. That is, this macro
+/// automatically implements for the developer what is described in Section 5.4
+/// Registering Native Routines in "Writing R Extensions". Rust code also be
+/// organized in modules under `src/rust/src/`, but there is only one use of the
+/// `roxido_registration` macro in the `src/rust/src/lib.rs` file.
 #[macro_export]
 macro_rules! roxido_registration {
     () => {
@@ -2396,53 +2498,53 @@ macro_rules! roxido_registration {
     };
 }
 
-/// Just like Rust's usual `print!` macro, except output goes to the R console.
+/// Print like Rust's usual [`print!`] macro, except output goes to R's output steam.
 #[macro_export]
 macro_rules! rprint {
     ($fmt_string:expr) => {
-        __private_print(format!($fmt_string).as_str(), true)
+        __private_print(format!($fmt_string).as_str(), false, true)
     };
     ($fmt_string:expr, $( $arg:expr ),* ) => {
-        __private_print(format!($fmt_string, $($arg),*).as_str(), true)
+        __private_print(format!($fmt_string, $($arg),*).as_str(), false, true)
     }
 }
 
-/// Just like Rust's usual `println!` macro, except output goes to the R console.
+/// Print like Rust's usual [`println!`] macro, except output goes to R's output steam.
 #[macro_export]
 macro_rules! rprintln {
     () => {
-        __private_print("\n", true)
+        __private_print("", true, true)
     };
     ($fmt_string:expr) => {
-        __private_print(format!(concat!($fmt_string,"\n")).as_str(), true)
+        __private_print(format!($fmt_string).as_str(), true, true)
     };
     ($fmt_string:expr, $( $arg:expr ),* ) => {
-        __private_print(format!(concat!($fmt_string,"\n"), $($arg),*).as_str(), true)
+        __private_print(format!($fmt_string, $($arg),*).as_str(), true, true)
     }
 }
 
-/// Just like Rust's usual `eprint!` macro, except output goes to the R console.
+/// Print like Rust's usual [`eprint!`] macro, except output goes to R's error steam.
 #[macro_export]
 macro_rules! reprint {
     ($fmt_string:expr) => {
-        __private_print(format!($fmt_string).as_str(), false)
+        __private_print(format!($fmt_string).as_str(), false, false)
     };
     ($fmt_string:expr, $( $arg:expr ),* ) => {
-        __private_print(format!($fmt_string, $($arg),*).as_str(), false)
+        __private_print(format!($fmt_string, $($arg),*).as_str(), false, false)
     }
 }
 
-/// Just like Rust's usual `eprintln!` macro, except output goes to the R console.
+/// Print like Rust's usual [`eprintln!`] macro, except output goes to R's error steam.
 #[macro_export]
 macro_rules! reprintln {
     () => {
         __private_print("\n", false)
     };
     ($fmt_string:expr) => {
-        __private_print(format!(concat!($fmt_string,"\n")).as_str(), false)
+        __private_print(format!($fmt_string).as_str(), true, false)
     };
     ($fmt_string:expr, $( $arg:expr ),* ) => {
-        __private_print(format!(concat!($fmt_string,"\n"), $($arg),*).as_str(), false)
+        __private_print(format!($fmt_string, $($arg),*).as_str(), true, false)
     }
 }
 
@@ -2451,7 +2553,9 @@ use std::fmt::Display;
 #[doc(hidden)]
 pub struct RStopHelper(pub String);
 
-/// Throw an R error.
+/// Throw an R error using symmatrics like Rust's [`panic`] macro.
+///
+/// Set the `RUST_BACKTRACE` environment variable to see a stack trace.
 #[macro_export]
 #[allow(clippy::crate_in_macro_def)]
 macro_rules! stop {
@@ -2493,9 +2597,21 @@ macro_rules! stop {
     }
 }
 
+/// Error handling functionality.
+///
+/// This trait provides the `stop` family of methods, which have similar
+/// functionality to the `unwrap` methods on [`Result`] and [`Option`],
+//  but throw an R error on failure.
 pub trait UnwrapOrStop<T> {
+    /// Throw an R error.
+    ///
+    /// Unwrap to obtain an R object or, on failure, throw an R error.
     fn stop(self) -> T;
+
+    /// Unwrap to obtain an R object or, on failure, throw an R error with the provided message.
     fn stop_str(self, msg: &str) -> T;
+
+    /// Unwrap to obtain an R object or, on failure, throw an R error with the message provided by a closure.
     fn stop_closure(self, msg: impl FnMut() -> String) -> T;
 }
 

@@ -1,0 +1,12 @@
+[package]
+name = "rbindings"
+version = "0.6.0"
+authors = ["David B. Dahl <dahl@stat.byu.edu>"]
+edition = "2021"
+description = "Rust bindings for R's C API"
+homepage = "https://github.com/roxido-framework/roxidoExample"
+readme = "README.md"
+license = "LGPL-2.1"
+publish = false
+
+[dependencies]

@@ -55,8 +55,9 @@ fn make_registration_code(src_path: &Path) -> Option<String> {
                 buffer.clear();
                 buffer.push_str("# Automatically regenerated. Do not edit.\n\n");
                 for &line in functions_info.iter() {
+                    let line_for_r = line.replace(':', "_");
                     buffer.push_str("# .Call(.");
-                    buffer.push_str(line);
+                    buffer.push_str(&line_for_r);
                     buffer.push_str(")\n");
                 }
                 buffer.push_str(
@@ -98,6 +99,7 @@ extern "C" fn R_init_{}_rust(info: *mut rbindings::DllInfo) {{
                     } else {
                         func_name
                     };
+                    let func_name_for_r = func_name.replace(':', "_");
                     let n_args = tidbits.len() - 1;
                     snippet.push_str(&format!(
                         r#"
@@ -107,7 +109,7 @@ extern "C" fn R_init_{}_rust(info: *mut rbindings::DllInfo) {{
         fun: unsafe {{ std::mem::transmute(crate::{} as *const u8) }},
         numArgs: {},
     }});"#,
-                        func_name, func_name, n_args
+                        func_name_for_r, func_name, n_args
                     ));
                 }
                 snippet.push_str(

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+cd $(readlink -f $(dirname "$0"))
+CWD="$PWD"
+DEST="$CWD/src/lib.rs"
+
+function usage {
+  >&2 echo "usage: $0 [ PATH_OF_R_HEADER_FILES ]"
+  exit 1
+}
+
+if [[ $# -gt 1 ]]
+then
+  usage
+fi
+
+if [[ $# -eq 0 ]]
+then
+  INCLUDE_PATH=$(Rscript -e 'cat(R.home("include"))')
+else
+  INCLUDE_PATH="$1"
+fi
+
+cat <<EOT > $DEST
+//! Automatically generated bindings for R's C API. Do not edit.
+#![allow(improper_ctypes)]
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+#![allow(non_upper_case_globals)]
+#![allow(clippy::all)]
+
+EOT
+
+# cargo install bindgen-cli --root . --version 0.66.1 --locked
+
+# Make sure that "clang" (A C language family front-end for LLVM) is installed.
+$CWD/bin/bindgen $CWD/wrapper.h --blocklist-item FP_NAN --blocklist-item FP_INFINITE --blocklist-item FP_ZERO --blocklist-item FP_SUBNORMAL --blocklist-item FP_NORMAL -- -I$INCLUDE_PATH >> $DEST

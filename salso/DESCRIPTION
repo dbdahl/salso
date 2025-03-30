@@ -1,10 +1,13 @@
 Package: salso
 Type: Package
 Title: Search Algorithms and Loss Functions for Bayesian Clustering
-Version: 0.3.42
+Version: 0.3.50
 Authors@R: c(person(given = "David B.", family = "Dahl", role = c("aut", "cre"), email = "dahl@stat.byu.edu", comment = c(ORCID = "0000-0002-8173-1547")),
     person(given = "Devin J.", family = "Johnson", role = c("aut"), email = "devin.j.johnson7@gmail.com", comment = c(ORCID = "0000-0003-2619-6649")),
     person(given = "Peter", family = "Müller", role = c("aut"), email = "pmueller@math.utexas.edu"),
+    person(given = "Andrés Felipe", family = "Barrientos", role = c("aut"), email = "abarrientos@fsu.edu"),
+    person(given = "Garritt", family = "Page", role = c("aut"), email = "page@stat.byu.edu"),
+    person(given = "David", family = "Dunson", role = c("aut"), email = "dunson@duke.edu"),
     person(given = "Alex", family = "Crichton", email = "alex@alexcrichton.com", role = "ctb", comment = c("Rust crates: cfg-if, proc-macro2")),
     person(given = "Brendan", family = "Zabarauskas", email = "bjzaba@yahoo.com.au", role = "ctb", comment = c("Rust crate: approx")),
     person(given = "David B.", family = "Dahl", email = "dahl@stat.byu.edu", role = "ctb", comment = c("Rust crates: dahl-bellnumber, dahl-partition, dahl-salso, roxido, roxido_macro")),
@@ -26,7 +29,7 @@ License: MIT + file LICENSE | Apache License 2.0
 URL: https://github.com/dbdahl/salso
 BugReports: https://github.com/dbdahl/salso/issues
 Depends: R (>= 4.2.0)
-SystemRequirements: Cargo (Rust's package manager), rustc (>= 1.66.1)
+SystemRequirements: Cargo (Rust's package manager), rustc (>= 1.67.1)
 Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)

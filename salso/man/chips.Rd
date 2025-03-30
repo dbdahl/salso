@@ -2,24 +2,28 @@
 % Please edit documentation in R/chips.R
 \name{chips}
 \alias{chips}
-\title{CHiPS Partition Greedy Search}
+\title{CHIPS Partition Greedy Search}
 \usage{
 chips(
-  x,
+  partitions,
   threshold = 0,
   nRuns = 64,
-  intermediateResults = TRUE,
+  intermediateResults = identical(threshold, 0),
   allCandidates = FALSE,
+  andSALSO = !intermediateResults && !allCandidates,
+  loss = VI(a = 1),
+  maxNClusters = 0,
+  initialPartition = integer(0),
   nCores = 0
 )
 }
 \arguments{
-\item{x}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
+\item{partitions}{A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
 represents a clustering of \eqn{n} items using cluster labels. For the
 \eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
 \code{x[b, i] == x[b, j]}.}
 
-\item{threshold}{The minimum marginal probability for the partial partition.
+\item{threshold}{The minimum marginal probability for the subpartition.
 Values closer to 1.0 will yield a partition of fewer items and values
 closer to 0.0 will yield a partition of more items.}
 
@@ -30,25 +34,64 @@ closer to 0.0 will yield a partition of more items.}
 \item{allCandidates}{Should all the final subset partitions from multiple runs
 be returned?}
 
+\item{andSALSO}{Should the resulting incomplete partition be completed using
+SALSO?}
+
+\item{loss}{When \code{andSALSO = TRUE}, the loss function to use, as
+indicated by \code{"binder"}, \code{"VI"}, or the result of calling a
+function with these names (which permits unequal costs).}
+
+\item{maxNClusters}{The maximum number of clusters that can be considered by
+SALSO, which has important implications for the interpretability of the
+resulting clustering and can greatly influence the RAM needed for the
+optimization algorithm. If the supplied value is zero, the optimization is
+constrained by the maximum number of clusters among the clusterings in
+\code{x}.}
+
+\item{initialPartition}{An vector of length \eqn{n} containing cluster labels
+for items that are initially clustered or \eqn{-1} for items that are not
+initially clustered.  As a special case, vector of length 0 is equivalent
+to a vector of length \eqn{n} with \eqn{-1} for all values.}
+
 \item{nCores}{The number of CPU cores to use, i.e., the number of
 simultaneous runs at any given time. A value of zero indicates to use all
 cores on the system.}
 }
 \value{
-If \code{intermediateResults} is \code{FALSE}, an integer vector giving the
+A list containing:
+\itemize{
+\item \code{chips_partition}: If \code{intermediateResults} is \code{FALSE}, an integer vector giving the
 estimated subset partition, encoded using cluster labels with \code{-1}
-indicating not allocated.  If \code{TRUE}, a matrix with intermediate subset
+indicating not allocated.  If \code{TRUE}, an integer matrix with intermediate subset
 partitions in the rows.
+\item \code{n_items}: Number of items in the estimated subset partition.
+\item \code{probability}: Monte Carlo estimate of the probability of the subset partition.
+\item \code{auc}: If \code{intermediateResults} is \code{TRUE}, this element is provided and gives
+the area under the probability curve as a function of the number of clusters
+after scaling to be between 0 and 1.
+\item \code{chips_and_salso_partition}: If \code{andSALSO} is \code{TRUE}, this element is provided and
+gives an integer vector giving the
+estimated partition of all items based on CHiPS until the \code{threshold} is met
+and using SALSO to allocate the rest.
+}
 }
 \description{
 This function provides a partition to a subset of items which has high
 marginal probability based on samples from a partition distribution
-using the CHiPS greedy search method (Dahl, Page, Barrientos, 2024).
+using the conditional high inclusion probability subset (CHIPS) partition
+greedy search method (Barrientos, Page, Dahl, Dunson, 2024).
 }
 \examples{
 # For examples, use 'nCores = 1' per CRAN rules, but in practice omit this.
 data(iris.clusterings)
 draws <- iris.clusterings
-chips(draws, threshold = 0, nRuns = 1)
-chips(draws, nCores = 1)
+
+all <- chips(draws, nRuns = 1, nCores = 1)
+plot(all$n_items, all$probability)
+
+x <- chips(draws, threshold = 0.5, nCores = 1)
+table(x$chips_partition)
+which(x$chips_partition != -1)
+x
+
 }

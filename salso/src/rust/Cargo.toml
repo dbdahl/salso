@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 publish = false
+rust-version = "1.67.1"
 
 [lib]
 crate-type = ["staticlib"]
@@ -15,13 +16,16 @@ lto = "thin"
 
 [dependencies]
 roxido = { path="roxido" }
-rand = "0.8.5"
-rand_pcg = "0.3.1"
+rand = "0.9.0"
+rand_pcg = "0.9.0"
 num-traits = "0.2.15"
 # dahl-partition = "0.5.3"
 # dahl-partition = { path="../../../../rust-dahl-partition" }
-dahl-partition = { git="https://github.com/dbdahl/rust-dahl-partition.git", rev="ae99dfd12e4" }
+dahl-partition = { git="https://github.com/dbdahl/rust-dahl-partition.git", rev="f3a39e1" }
 dahl-bellnumber = "0.1.1"
-dahl-salso = { git="https://github.com/dbdahl/rust-dahl-salso.git", rev="816577346c" }
+dahl-salso = { git="https://github.com/dbdahl/rust-dahl-salso.git", rev="f019a94" }
+# dahl-salso = { path="../../../../rust-dahl-salso" }
 rayon = "1.10.0"
+ndarray = "0.16.1"
+# dbg_step = { path="../../../../rust-dahl-dbg_step" }
 
