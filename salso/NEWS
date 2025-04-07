@@ -1,3 +1,6 @@
+0.3.52 (20YY-MM-DD)
+  * Do not specify a build target and rely on the default choice.
+
 0.3.51 (2025-03-29)
   * Added preliminary implementation of CHIPS methods.
   * Internal update to track latest roxido framework.
