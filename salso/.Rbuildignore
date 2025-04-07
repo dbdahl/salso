@@ -1,6 +1,7 @@
 justfile
 authors-scratch.txt
 ^[^/]*[.]tar[.]gz
+^inst/cargo.log$
 ^src/librust.a
 ^src/rust/(.*/)*target
 ^src/rust/vendor/

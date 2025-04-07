@@ -456,15 +456,15 @@ impl R {
 
     /// Checks if a logical value (stored as an `i32`) can be evaluated as R's `TRUE`.
     pub fn is_true(x: i32) -> bool {
-        x != Rboolean_FALSE.try_into().unwrap() && !Self::is_na_bool(x)
+        x != Rboolean_FALSE && !Self::is_na_bool(x)
     }
 
     /// Convert a `bool` into a logical value (stored as an `i32`).
     pub fn as_logical(x: bool) -> i32 {
         if x {
-            Rboolean_TRUE.try_into().unwrap()
+            Rboolean_TRUE
         } else {
-            Rboolean_FALSE.try_into().unwrap()
+            Rboolean_FALSE
         }
     }
 
@@ -2464,13 +2464,13 @@ pub fn __private_print(x: &str, newline: bool, use_stdout: bool) -> bool {
             };
             if (*y_ptr).newline {
                 f(
-                    b"%.*s\n\0".as_ptr() as *const c_char,
+                    c"%.*s\n".as_ptr() as *const c_char,
                     (*y_ptr).len,
                     (*y_ptr).ptr,
                 );
             } else {
                 f(
-                    b"%.*s\0".as_ptr() as *const c_char,
+                    c"%.*s".as_ptr() as *const c_char,
                     (*y_ptr).len,
                     (*y_ptr).ptr,
                 );

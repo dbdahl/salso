@@ -36,6 +36,8 @@ get_version <- function(what = c("cargo", "rustc")[1]) {
     message(version_string_full)
     NULL
   } else {
+    dir.create("inst", showWarnings = FALSE, recursive = FALSE)
+    writeLines(version_string, con = file.path("inst", "cargo.log"))
     version_string
   }
 }
@@ -76,34 +78,6 @@ if (!check_msrv()) {
 
 message("Found a suitable installation of cargo and rustc.")
 
-target_triple <- {
-  if (sysname == "Linux") {
-    if (arch == "aarch64") {
-      "aarch64-unknown-linux-gnu"
-    } else if (arch == "x86_64") {
-      "x86_64-unknown-linux-gnu"
-    } else {
-      stop("Cannot determine target.")
-    }
-  } else if (sysname == "Darwin") {
-    if (arch == "aarch64") {
-      "aarch64-apple-darwin"
-    } else if (arch == "x86_64") {
-      "x86_64-apple-darwin"
-    } else {
-      stop("Cannot determine target.")
-    }
-  } else if (sysname == "Windows") {
-    if (arch == "x86_64") {
-      "x86_64-pc-windows-gnu"
-    } else {
-      stop("Cannot determine target.")
-    }
-  } else {
-    stop("Cannot determine target.")
-  }
-}
-
 setwd("src/rust")
 vendor_tarball <- "vendor.tar.gz"
 cran_build <- file.exists(vendor_tarball)
@@ -127,8 +101,7 @@ if (cran_build) {
 for (run_counter in 1:2) {
   Sys.setenv(R_CARGO_RUN_COUNTER = run_counter)
   status <- system2("cargo",
-                    c("build", offline_option, "--release",
-                      "--target", target_triple, jobs_option))
+                    c("build", offline_option, "--release", jobs_option))
   if (status != 0) {
     message("Error running Cargo.\n")
     message(paste0(readLines("../../INSTALL"), collapse = "\n"))
@@ -137,8 +110,7 @@ for (run_counter in 1:2) {
 }
 unlink("roxido.txt")
 
-file.copy(sprintf("target/%s/release/librust.a", target_triple),
-          "..", overwrite = TRUE)
+file.copy("target/release/librust.a", "..", overwrite = TRUE)
 if (cran_build) {
   unlink("target", recursive = TRUE, force = TRUE, expand = FALSE)
   unlink("vendor", recursive = TRUE, force = TRUE, expand = FALSE)

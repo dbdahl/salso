@@ -31,7 +31,10 @@ cat <<EOT > $DEST
 
 EOT
 
+MSRV=$(cd ..; cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].rust_version')
+
 # cargo install bindgen-cli --root . --version 0.66.1 --locked
+# cargo install bindgen-cli --root .
 
 # Make sure that "clang" (A C language family front-end for LLVM) is installed.
-$CWD/bin/bindgen $CWD/wrapper.h --blocklist-item FP_NAN --blocklist-item FP_INFINITE --blocklist-item FP_ZERO --blocklist-item FP_SUBNORMAL --blocklist-item FP_NORMAL -- -I$INCLUDE_PATH >> $DEST
+$CWD/bin/bindgen $CWD/wrapper.h --rust-target $MSRV --blocklist-item FP_NAN --blocklist-item FP_INFINITE --blocklist-item FP_ZERO --blocklist-item FP_SUBNORMAL --blocklist-item FP_NORMAL -- -I$INCLUDE_PATH >> $DEST
