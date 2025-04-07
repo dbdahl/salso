@@ -29,6 +29,6 @@ draws <- iris.clusterings
 all <- chips(draws, nRuns = 1, nCores = 1)
 plot(all$n_items, all$probability)
 
-threshold(all, threshold = 0.5)
+threshold(all, threshold = 0.5, nCores = 1)
 
 }

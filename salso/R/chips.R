@@ -114,7 +114,7 @@ chips <- function(partitions, threshold = 0.0, nRuns = 64, intermediateResults =
 #' all <- chips(draws, nRuns = 1, nCores = 1)
 #' plot(all$n_items, all$probability)
 #'
-#' threshold(all, threshold = 0.5)
+#' threshold(all, threshold = 0.5, nCores = 1)
 #'
 threshold <- function(chipsOutput, threshold, ...) {
   index <- min(which(chipsOutput$probability >= threshold))
