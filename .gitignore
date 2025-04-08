@@ -3,7 +3,6 @@
 .Rproj.user
 .RData
 .Ruserdata
-*.Rcheck
 /*_*.tar.gz
 /*/src/*.o
 /*/src/*.so
