@@ -1,0 +1,7 @@
+/.cargo
+/vendor
+/roxido.txt
+/src/registration.rs
+/vendor.tar.xz
+/**/target
+/.idea

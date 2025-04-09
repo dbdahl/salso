@@ -1,6 +1,7 @@
-justfile
-authors-scratch.txt
+^.*\.Rproj$
+^[.]Rproj[.]user$
 ^[^/]*[.]tar[.]gz
+^justfile$
 ^inst/cargo.log$
 ^src/librust.a
 ^src/rust/(.*/)*target
@@ -11,8 +12,4 @@ authors-scratch.txt
 ^src/rust/rbindings/generate$
 ^src/rust/rbindings/README$
 ^src/rust/rbindings/wrapper.h$
-^src/rust/rust-toolchain.toml$
 ^src/rust/[.]cargo
-^src/rust/(.*/)*[.]idea
-^.*\.Rproj$
-^[.]Rproj[.]user$
