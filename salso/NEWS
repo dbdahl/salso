@@ -1,3 +1,7 @@
+0.3.54 (2025-04-16)
+  * Reduced the MSRV to 1.77.2 to support RedHat 8/Rocky 8 Linux.
+  * Latest Roxido framework.
+
 0.3.53 (2025-04-10)
   * Do not specify a build target and rely on the default choice.
   * Latest Roxido framework.

@@ -1,2 +1,8 @@
 PKG_LIBS = -L. -lrust -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
+
+all: $(SHLIB) cleanup
+
 $(SHLIB): librust.a
+
+cleanup: $(SHLIB)
+	rm librust.a
