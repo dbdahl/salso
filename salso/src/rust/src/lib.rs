@@ -662,7 +662,7 @@ impl PartialPartitionStorage {
                         "n_items",
                         "probability",
                         "unallocated",
-                        "auc",
+                        "AUChips",
                         "chips_and_salso_partition",
                     ],
                     pc,
@@ -674,7 +674,7 @@ impl PartialPartitionStorage {
                         "n_items",
                         "probability",
                         "unallocated",
-                        "auc",
+                        "AUChips",
                     ],
                     pc,
                 )
