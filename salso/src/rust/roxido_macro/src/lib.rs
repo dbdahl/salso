@@ -225,8 +225,15 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                             vec.push(parse_quote! { let #name = #name.as_char().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode character.")); });
                                         }
                                     }
+                                    "()" => {
+                                        if mutable {
+                                            vec.push(parse_quote! { let #name = #name.as_char_mut().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode character.")); });
+                                        } else {
+                                            vec.push(parse_quote! { let #name = #name.as_char().stop_str(concat!("'", stringify!(#name),"' is expected to have storage mode character.")); });
+                                        }
+                                    }
                                     _ => {
-                                        panic!("'{}' has type parameter '{}', but one of the following was expected: f64, i32, u8, bool, char.", name_as_string, snippet);
+                                        panic!("'{}' has type parameter '{}', but one of the following was expected: f64, i32, u8, bool, char, ().", name_as_string, snippet);
                                     }
                                 }
                             }

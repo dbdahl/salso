@@ -110,7 +110,17 @@ for (run_counter in 1:2) {
 }
 unlink("roxido.txt")
 
-file.copy("target/release/librust.a", "..", overwrite = TRUE)
+liba <- list.files("target", "librust.a", full.names = TRUE, recursive = TRUE) 
+liba <- liba[grepl("(^|/|\\\\)release(/|\\\\)", liba)]
+liba <- if (length(liba) > 0) {
+  file_info <- file.info(liba)
+  rownames(file_info)[which.max(file_info$mtime)]
+} else {
+  message("No matching files found.")
+  stop("Exiting.")
+}
+
+file.copy(liba, "..", overwrite = TRUE)
 if (cran_build) {
   unlink("target", recursive = TRUE, force = TRUE, expand = FALSE)
   unlink("vendor", recursive = TRUE, force = TRUE, expand = FALSE)
