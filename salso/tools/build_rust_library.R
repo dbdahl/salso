@@ -110,7 +110,7 @@ for (run_counter in 1:2) {
 }
 unlink("roxido.txt")
 
-liba <- list.files("target", "librust.a", full.names = TRUE, recursive = TRUE) 
+liba <- list.files("target", "librust.a", full.names = TRUE, recursive = TRUE)
 liba <- liba[grepl("(^|/|\\\\)release(/|\\\\)", liba)]
 liba <- if (length(liba) > 0) {
   file_info <- file.info(liba)
