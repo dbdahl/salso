@@ -198,45 +198,51 @@
 #' all.equal(binder(truth, estimate), ( 1 - RI(truth, estimate) ) * (n-1) / n)
 #' all.equal(omARI(truth, estimate), 1 - ARI(truth, estimate))
 #'
-partition.loss <- function(truth, estimate, loss=VI()) {
+partition.loss <- function(truth, estimate, loss = VI()) {
   expected.loss(truth, estimate, loss)
 }
 
 checkAokay <- function(a) {
-  if ( is.vector(a) && length(a) == 1 && is.numeric(a) && 0.0 <= a && a <= 2.0 ) {
-      return()
-  } else if ( is.null(a) ) {
-      return()
-  } else if ( is.list(a) && all(c("nClusters") %in% names(a)) &&
-              is.vector(a$nClusters) && length(a$nClusters) == 1 && is.numeric(a$nClusters) && a$nClusters >= 1 ) {
-      return()
+  if (is.vector(a) && length(a) == 1 && is.numeric(a) && 0.0 <= a && a <= 2.0) {
+    return()
+  } else if (is.null(a)) {
+    return()
+  } else if (
+    is.list(a) &&
+      all(c("nClusters") %in% names(a)) &&
+      is.vector(a$nClusters) &&
+      length(a$nClusters) == 1 &&
+      is.numeric(a$nClusters) &&
+      a$nClusters >= 1
+  ) {
+    return()
   } else {
-     stop("'a' should be in a scalar in [0,2].")
+    stop("'a' should be in a scalar in [0,2].")
   }
 }
 
 #' @export
 #' @rdname partition.loss
-binder <- function(truth, estimate, a=1) {
-  if ( missing(truth) && missing(estimate) ) {
+binder <- function(truth, estimate, a = 1) {
+  if (missing(truth) && missing(estimate)) {
     checkAokay(a)
-    structure(list(loss="binder", a=a), class="salso.loss")
+    structure(list(loss = "binder", a = a), class = "salso.loss")
   } else {
-    expected.loss(truth, estimate, Recall(a=a))
+    expected.loss(truth, estimate, Recall(a = a))
   }
 }
 
 #' @export
 #' @rdname partition.loss
 RI <- function(truth, estimate) {
-  1 - binder(truth, estimate) * length(truth) / (length(truth)-1)
+  1 - binder(truth, estimate) * length(truth) / (length(truth) - 1)
 }
 
 #' @export
 #' @rdname partition.loss
 omARI <- function(truth, estimate) {
-  if ( missing(truth) && missing(estimate) ) {
-    structure(list(loss="omARI"), class="salso.loss")
+  if (missing(truth) && missing(estimate)) {
+    structure(list(loss = "omARI"), class = "salso.loss")
   } else {
     expected.loss(truth, estimate, Recall())
   }
@@ -245,8 +251,8 @@ omARI <- function(truth, estimate) {
 #' @export
 #' @rdname partition.loss
 omARI.approx <- function(truth, estimate) {
-  if ( missing(truth) && missing(estimate) ) {
-    structure(list(loss="omARI.approx"), class="salso.loss")
+  if (missing(truth) && missing(estimate)) {
+    structure(list(loss = "omARI.approx"), class = "salso.loss")
   } else {
     expected.loss(truth, estimate, Recall())
   }
@@ -260,20 +266,20 @@ ARI <- function(truth, estimate) {
 
 #' @export
 #' @rdname partition.loss
-VI <- function(truth, estimate, a=1) {
-  if ( missing(truth) && missing(estimate) ) {
+VI <- function(truth, estimate, a = 1) {
+  if (missing(truth) && missing(estimate)) {
     checkAokay(a)
-    structure(list(loss="VI", a=a), class="salso.loss")
+    structure(list(loss = "VI", a = a), class = "salso.loss")
   } else {
-    expected.loss(truth, estimate, Recall(a=a))
+    expected.loss(truth, estimate, Recall(a = a))
   }
 }
 
 #' @export
 #' @rdname partition.loss
 VI.lb <- function(truth, estimate) {
-  if ( missing(truth) && missing(estimate) ) {
-    structure(list(loss="VI.lb"), class="salso.loss")
+  if (missing(truth) && missing(estimate)) {
+    structure(list(loss = "VI.lb"), class = "salso.loss")
   } else {
     expected.loss(truth, estimate, Recall())
   }
@@ -282,8 +288,8 @@ VI.lb <- function(truth, estimate) {
 #' @export
 #' @rdname partition.loss
 NVI <- function(truth, estimate) {
-  if ( missing(truth) && missing(estimate) ) {
-    structure(list(loss="NVI"), class="salso.loss")
+  if (missing(truth) && missing(estimate)) {
+    structure(list(loss = "NVI"), class = "salso.loss")
   } else {
     expected.loss(truth, estimate, Recall())
   }
@@ -292,8 +298,8 @@ NVI <- function(truth, estimate) {
 #' @export
 #' @rdname partition.loss
 ID <- function(truth, estimate) {
-  if ( missing(truth) && missing(estimate) ) {
-    structure(list(loss="ID"), class="salso.loss")
+  if (missing(truth) && missing(estimate)) {
+    structure(list(loss = "ID"), class = "salso.loss")
   } else {
     expected.loss(truth, estimate, Recall())
   }
@@ -302,8 +308,8 @@ ID <- function(truth, estimate) {
 #' @export
 #' @rdname partition.loss
 NID <- function(truth, estimate) {
-  if ( missing(truth) && missing(estimate) ) {
-    structure(list(loss="NID"), class="salso.loss")
+  if (missing(truth) && missing(estimate)) {
+    structure(list(loss = "NID"), class = "salso.loss")
   } else {
     expected.loss(truth, estimate, Recall())
   }
@@ -312,17 +318,29 @@ NID <- function(truth, estimate) {
 expected.loss <- function(truth, estimate, loss) {
   truth <- unclass(truth)
   estimate <- unclass(estimate)
-  if ( ! ( is.atomic(truth) && is.atomic(estimate) ) ) {
+  if (!(is.atomic(truth) && is.atomic(estimate))) {
     stop("'truth' and 'estimate' must be atomic.")
   }
-  if ( ! is.matrix(truth) ) dim(truth) <- c(1,length(truth))
-  if ( ! is.matrix(estimate) ) dim(estimate) <- c(1,length(estimate))
-  if ( nrow(estimate) == 0 ) return(numeric())
-  if ( ncol(truth) != ncol(estimate) ) {
-    stop("The number of items (i.e., number of columns) in 'truth' and 'estimate' are not the same.")
+  if (!is.matrix(truth)) {
+    dim(truth) <- c(1, length(truth))
   }
-  if ( ncol(truth) == 0 ) return(rep(NA, nrow(estimate)))
+  if (!is.matrix(estimate)) {
+    dim(estimate) <- c(1, length(estimate))
+  }
+  if (nrow(estimate) == 0) {
+    return(numeric())
+  }
+  if (ncol(truth) != ncol(estimate)) {
+    stop(
+      "The number of items (i.e., number of columns) in 'truth' and 'estimate' are not the same."
+    )
+  }
+  if (ncol(truth) == 0) {
+    return(rep(NA, nrow(estimate)))
+  }
   z <- x2drawspsm(truth, loss)
-  if ( is.list(z$a) ) stop("'a' must be explicitly provided when computing the expected loss.")
+  if (is.list(z$a)) {
+    stop("'a' must be explicitly provided when computing the expected loss.")
+  }
   .Call(.expected_loss, estimate, z$draws, z$psm, z$lossCode, z$a)
 }

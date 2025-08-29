@@ -409,6 +409,24 @@ impl R {
         unsafe { R_NilValue.transmute_static() }
     }
 
+    /// Returns R's `NULL` value.
+    #[allow(non_snake_case)]
+    pub fn NULL() -> &'static RObject {
+        unsafe { R_NilValue.transmute_static() }
+    }
+
+    /// Returns R's `TRUE` value for storage mode "integer".
+    #[allow(non_snake_case)]
+    pub fn TRUE() -> i32 {
+        Rboolean_TRUE
+    }
+
+    /// Returns R's `TRUE` value for storage mode "integer".
+    #[allow(non_snake_case)]
+    pub fn FALSE() -> i32 {
+        Rboolean_FALSE
+    }
+
     /// Returns R's `NA` value for storage mode "double".
     pub fn na_f64() -> f64 {
         unsafe { R_NaReal }
@@ -535,7 +553,7 @@ pub enum RObjectEnum<'a> {
 
 impl RObject {
     // Convert to an enumeration of the supported variants.
-    pub fn enumerate(&self) -> RObjectEnum {
+    pub fn enumerate(&self) -> RObjectEnum<'_> {
         if self.is_vector() {
             let s: &RVector = unsafe { self.transmute() };
             if s.is_scalar() {
@@ -2132,7 +2150,7 @@ macro_rules! rlistlike {
             /// This allows Rust's [`HashMap`] methods to be used on the contents
             /// of the list, while still retaining the original list within
             /// the RListMap struct in the robj field.
-            pub fn make_map(&self) -> RListMap {
+            pub fn make_map(&self) -> RListMap<'_> {
                 let mut map = HashMap::new();
                 let names = self.get_names();
                 let len = names.len();
@@ -2311,6 +2329,22 @@ impl RExternalPtr {
     ///
     pub fn tag(&self) -> &RObject {
         unsafe { R_ExternalPtrTag(self.sexp()).transmute(self) }
+    }
+
+    /// Get &str tag for an R external pointer.
+    ///
+    /// This method gets the &str tag associated with an R external pointer, which was set by [`RObject::as_external_ptr`].
+    /// It turns the empty string "" if the tag is not a character vector of length one.
+    ///
+    pub fn tag_str(&self) -> &str {
+        let tag = self.tag();
+        let Ok(tag) = tag.as_scalar() else {
+            return "";
+        };
+        let Ok(tag) = tag.as_char() else {
+            return "";
+        };
+        tag.get().unwrap_or("")
     }
 }
 

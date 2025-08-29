@@ -3,6 +3,7 @@ arch <- R.version$arch
 
 dcf <- read.dcf("DESCRIPTION")
 
+message("Timestamp: ", format(Sys.time(), tz = "UTC", usetz = TRUE))
 system_requirements <- unname(dcf[, "SystemRequirements"])
 message(sprintf("SystemRequirements: %s", system_requirements))
 
@@ -114,7 +115,8 @@ liba <- list.files("target", "librust.a", full.names = TRUE, recursive = TRUE)
 liba <- liba[grepl("(^|/|\\\\)release(/|\\\\)", liba)]
 liba <- if (length(liba) > 0) {
   file_info <- file.info(liba)
-  rownames(file_info)[which.max(file_info$mtime)]
+  file_info <- rownames(file_info)[which(file_info$mtime == max(file_info$mtime))]
+  file_info[which.min(nchar(file_info))]
 } else {
   message("No matching files found.")
   stop("Exiting.")

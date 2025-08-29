@@ -12,12 +12,15 @@
 #' enumerate.permutations(5)
 #'
 enumerate.permutations <- function(nItems) {
-  if ( nItems == 0 ) return(matrix(integer(), nrow=0, ncol=0))
+  if (nItems == 0) {
+    return(matrix(integer(), nrow = 0, ncol = 0))
+  }
   engine <- function(x) {
-    if ( length(x) == 1 ) x
-    else {
-      result <- matrix(nrow=0, ncol=length(x))
-      for ( i in seq_along(x) ) {
+    if (length(x) == 1) {
+      x
+    } else {
+      result <- matrix(nrow = 0, ncol = length(x))
+      for (i in seq_along(x)) {
         result <- rbind(result, cbind(x[i], Recall(x[-i])))
       }
       result
@@ -25,4 +28,3 @@ enumerate.permutations <- function(nItems) {
   }
   engine(as.integer(1:nItems))
 }
-

@@ -363,9 +363,9 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                                     "RExternalPtr" => {
                                         as_robject(&mut generated_statements, mutable);
                                         if mutable {
-                                            generated_statements.push(parse_quote! { let #name = #name.as_external_ptr_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be a external pointer.")); });
+                                            generated_statements.push(parse_quote! { let #name = #name.as_external_ptr_mut().stop_str(concat!("'", stringify!(#name),"' is expected to be an external pointer.")); });
                                         } else {
-                                            generated_statements.push(parse_quote! { let #name = #name.as_external_ptr().stop_str(concat!("'", stringify!(#name),"' is expected to be a external pointer.")); });
+                                            generated_statements.push(parse_quote! { let #name = #name.as_external_ptr().stop_str(concat!("'", stringify!(#name),"' is expected to be an external pointer.")); });
                                         }
                                     }
                                     "RSymbol" => {

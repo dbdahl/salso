@@ -83,95 +83,173 @@
 #' salso(iris.clusterings, binder(a=NULL), nRuns=4, nCores=1)
 #' salso(iris.clusterings, binder(a=list(nClusters=3)), nRuns=4, nCores=1)
 #'
-salso <- function(x, loss=VI(), maxNClusters=0, nRuns=16, maxZealousAttempts=10, probSequentialAllocation=0.5, nCores=0, ...) {
+salso <- function(
+  x,
+  loss = VI(),
+  maxNClusters = 0,
+  nRuns = 16,
+  maxZealousAttempts = 10,
+  probSequentialAllocation = 0.5,
+  nCores = 0,
+  ...
+) {
   z <- x2drawspsm(x, loss, nCores)
-  if ( ( z$lossStr %in% c("binder.draws","VI") ) && ( ! is.numeric(z$a) ) ) {
+  if ((z$lossStr %in% c("binder.draws", "VI")) && (!is.numeric(z$a))) {
     argg <- c(as.list(environment()), list(...))
     argg$z <- NULL
-    salsoFnc <- if ( z$lossStr == "binder.draws" ) {
+    salsoFnc <- if (z$lossStr == "binder.draws") {
       function(a) {
-        argg$loss <- binder(a=a)
+        argg$loss <- binder(a = a)
         suppressWarnings(do.call(salso, argg))
       }
-    } else if ( z$lossStr == "VI" ) {
+    } else if (z$lossStr == "VI") {
       function(a) {
-        argg$loss <- VI(a=a)
+        argg$loss <- VI(a = a)
         suppressWarnings(do.call(salso, argg))
       }
-    } else stop("Unexpected loss function.")
-    if ( is.null(z$a) ) {
-      f <- function(a) attr(salsoFnc(a),"info")$expectedLoss
-      search <- optimize(f, c(0.0,2.0), maximum=TRUE)
+    } else {
+      stop("Unexpected loss function.")
+    }
+    if (is.null(z$a)) {
+      f <- function(a) attr(salsoFnc(a), "info")$expectedLoss
+      search <- optimize(f, c(0.0, 2.0), maximum = TRUE)
       return(salsoFnc(search$maximum))
     } else {
       f <- function(a) length(unique(salsoFnc(a))) - round(z$a$nClusters)
-      search <- uniroot(f, c(0.0,2.0), extendInt="no")
+      search <- uniroot(f, c(0.0, 2.0), extendInt = "no")
       return(salsoFnc(search$root))
     }
   }
-  if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
-  if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
-  if ( ! is.finite(maxNClusters) ) maxNClusters <- 0L
-  if ( nRuns < 1.0 ) stop("'nRuns' must be at least one.")
-  nRunsX <- if ( nRuns > .Machine$integer.max ) .Machine$integer.max else nRuns
-  if ( maxZealousAttempts < 0.0 ) stop("'maxZealousAttempts' may not be negative.")
-  if ( maxZealousAttempts > .Machine$integer.max ) maxZealousAttempts <- .Machine$integer.max
-  if ( ( z$lossStr %in% c("binder.psm", "omARI.approx", "VI.lb") ) && maxZealousAttempts != 0 ) {
-    warning(sprintf("'maxZealousAttempts' set to 0 since other values are not implemented for '%s' loss.", z$loss))
+  if (nCores < 0.0) {
+    stop("'nCores' may not be negative.")
+  }
+  if (nCores > .Machine$integer.max) {
+    nCores <- .Machine$integer.max
+  }
+  if (!is.finite(maxNClusters)) {
+    maxNClusters <- 0L
+  }
+  if (nRuns < 1.0) {
+    stop("'nRuns' must be at least one.")
+  }
+  nRunsX <- if (nRuns > .Machine$integer.max) .Machine$integer.max else nRuns
+  if (maxZealousAttempts < 0.0) {
+    stop("'maxZealousAttempts' may not be negative.")
+  }
+  if (maxZealousAttempts > .Machine$integer.max) {
+    maxZealousAttempts <- .Machine$integer.max
+  }
+  if (
+    (z$lossStr %in% c("binder.psm", "omARI.approx", "VI.lb")) &&
+      maxZealousAttempts != 0
+  ) {
+    warning(sprintf(
+      "'maxZealousAttempts' set to 0 since other values are not implemented for '%s' loss.",
+      z$loss
+    ))
     maxZealousAttempts <- 0
   }
-  if ( ( z$lossStr %in% c("binder.psm", "omARI.approx", "VI.lb") ) && probSequentialAllocation != 1 ) {
-    warning(sprintf("'probSequentialAllocation' set to 1 since other values are not implemented for '%s' loss.", z$loss))
+  if (
+    (z$lossStr %in% c("binder.psm", "omARI.approx", "VI.lb")) &&
+      probSequentialAllocation != 1
+  ) {
+    warning(sprintf(
+      "'probSequentialAllocation' set to 1 since other values are not implemented for '%s' loss.",
+      z$loss
+    ))
     probSequentialAllocation <- 1
   }
-  if ( z$a != 1 && z$lossStr == "binder.psm" ) {
-    stop("The current implementation requires that samples be provided when 'a' is not 1.0 for Binder loss.")
+  if (z$a != 1 && z$lossStr == "binder.psm") {
+    stop(
+      "The current implementation requires that samples be provided when 'a' is not 1.0 for Binder loss."
+    )
   }
-  if ( probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0 ) stop("'probSequentialAllocation' should be in [0,1].")
+  if (probSequentialAllocation < 0.0 || probSequentialAllocation > 1.0) {
+    stop("'probSequentialAllocation' should be in [0,1].")
+  }
   dots <- list(...)
-  unrecognizedArguments <- setdiff(names(dots), c("seconds","maxScans","probSingletonsInitialization"))
-  if ( length(unrecognizedArguments) > 0 ) {
-    stop(paste0("unused argument: ", paste0(unrecognizedArguments,collapse=", ")))
+  unrecognizedArguments <- setdiff(
+    names(dots),
+    c("seconds", "maxScans", "probSingletonsInitialization")
+  )
+  if (length(unrecognizedArguments) > 0) {
+    stop(paste0(
+      "unused argument: ",
+      paste0(unrecognizedArguments, collapse = ", ")
+    ))
   }
-  if ( ! "seconds" %in% names(dots) ) {
+  if (!"seconds" %in% names(dots)) {
     seconds <- Inf
   } else {
     seconds <- dots[["seconds"]]
   }
-  if ( is.infinite(seconds) && is.infinite(nRuns) ) stop("At least one of 'nRuns' and 'seconds' must be finite.")
-  if ( ! "maxScans" %in% names(dots) ) {
+  if (is.infinite(seconds) && is.infinite(nRuns)) {
+    stop("At least one of 'nRuns' and 'seconds' must be finite.")
+  }
+  if (!"maxScans" %in% names(dots)) {
     maxScans <- .Machine$integer.max
   } else {
     maxScans <- dots[["maxScans"]]
-    if ( maxScans < 0.0 ) stop("'maxScans' may not be negative.")
-    if ( maxScans > .Machine$integer.max ) maxScans <- .Machine$integer.max
+    if (maxScans < 0.0) {
+      stop("'maxScans' may not be negative.")
+    }
+    if (maxScans > .Machine$integer.max) maxScans <- .Machine$integer.max
   }
-  if ( ! "probSingletonsInitialization" %in% names(dots) ) {
+  if (!"probSingletonsInitialization" %in% names(dots)) {
     probSingletonsInitialization <- 0.0
   } else {
     probSingletonsInitialization <- dots[["probSingletonsInitialization"]]
-    if ( probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0 ) stop("'probSingletonsInitialization' should be in [0,1].")
+    if (
+      probSingletonsInitialization < 0.0 || probSingletonsInitialization > 1.0
+    ) {
+      stop("'probSingletonsInitialization' should be in [0,1].")
+    }
   }
-  if ( ( maxNClusters == 0 ) && ( ! is.null(z$psm) ) && ( ! is.null(z$draws) ) ) {
+  if ((maxNClusters == 0) && (!is.null(z$psm)) && (!is.null(z$draws))) {
     maxNClusters <- max(apply(z$draws, 1, function(x) length(unique(x))))
   }
-  estimate <- .Call(.minimize_by_salso, z$draws, z$psm, z$lossCode, z$a, maxNClusters, nRunsX, seconds, maxScans, maxZealousAttempts, probSequentialAllocation, probSingletonsInitialization, nCores)
+  estimate <- .Call(
+    .minimize_by_salso,
+    z$draws,
+    z$psm,
+    z$lossCode,
+    z$a,
+    maxNClusters,
+    nRunsX,
+    seconds,
+    maxScans,
+    maxZealousAttempts,
+    probSequentialAllocation,
+    probSingletonsInitialization,
+    nCores
+  )
   info <- attr(estimate, "info")
   info$loss <- z$loss
-  if ( ! z$loss %in% c("binder","VI") ) info$a <- NULL
-  info$initMethod <- names(which(initMethodMapping==info$initMethod))
-  attr(estimate, "info") <- as.data.frame(info, row.names="")
+  if (!z$loss %in% c("binder", "VI")) {
+    info$a <- NULL
+  }
+  info$initMethod <- names(which(initMethodMapping == info$initMethod))
+  attr(estimate, "info") <- as.data.frame(info, row.names = "")
   attr(estimate, "draws") <- z$draws
   attr(estimate, "psm") <- z$psm
   actualNRuns <- info$nRuns
-  if ( is.finite(nRuns) && ( actualNRuns < nRunsX ) ) {
-    warning(sprintf("Only %s of the requested %s run%s performed. Consider increasing 'seconds' or lowering 'nRuns'.",actualNRuns,nRuns,ifelse(actualNRuns==1L," was","s were")))
+  if (is.finite(nRuns) && (actualNRuns < nRunsX)) {
+    warning(sprintf(
+      "Only %s of the requested %s run%s performed. Consider increasing 'seconds' or lowering 'nRuns'.",
+      actualNRuns,
+      nRuns,
+      ifelse(actualNRuns == 1L, " was", "s were")
+    ))
   }
-  if ( ( maxNClusters == 0 ) && ( length(unique(estimate)) == info$maxNClusters ) ) {
-    warning("The number of clusters equals the default maximum possible number of clusters.")
+  if ((maxNClusters == 0) && (length(unique(estimate)) == info$maxNClusters)) {
+    warning(
+      "The number of clusters equals the default maximum possible number of clusters."
+    )
   }
-  if ( ( maxZealousAttempts > 0 ) && ( info$nZAtt > maxZealousAttempts ) ) {
-    warning("The number of possible zealous attempts exceeded the maximum. Do you really want that many clusters? Consider lowering 'maxNClusters' or increasing 'maxZealousAttempts'.")
+  if ((maxZealousAttempts > 0) && (info$nZAtt > maxZealousAttempts)) {
+    warning(
+      "The number of possible zealous attempts exceeded the maximum. Do you really want that many clusters? Consider lowering 'maxNClusters' or increasing 'maxZealousAttempts'."
+    )
   }
   estimate
 }
@@ -180,7 +258,7 @@ salso <- function(x, loss=VI(), maxNClusters=0, nRuns=16, maxZealousAttempts=10,
 #'
 print.salso.estimate <- function(x, ...) {
   class(x) <- NULL
-  attr(x,"draws") <- NULL
-  attr(x,"psm") <- NULL
+  attr(x, "draws") <- NULL
+  attr(x, "psm") <- NULL
   print(x)
 }

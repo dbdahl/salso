@@ -9,7 +9,7 @@
 #'   represents a clustering of \eqn{n} items using cluster labels. For the
 #'   \eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
 #'   \code{x[b, i] == x[b, j]}.
-#' @param threshold The minimum marginal probability for the subpartition.
+#' @param threshold The minimum marginal probability for the subpartition, i.e., the gamma parameter.
 #'   Values closer to 1.0 will yield a partition of fewer items and values
 #'   closer to 0.0 will yield a partition of more items.
 #' @param nRuns The number of runs to try, where the best result is returned.
@@ -64,7 +64,18 @@
 #' which(x$chips_partition != -1)
 #' x
 #'
-chips <- function(partitions, threshold = 0.0, nRuns = 64, intermediateResults = identical(threshold, 0.0), allCandidates = FALSE, andSALSO = !intermediateResults && !allCandidates, loss = VI(a = 1), maxNClusters = 0, initialPartition = integer(0), nCores = 0) {
+chips <- function(
+  partitions,
+  threshold = 0.0,
+  nRuns = 64,
+  intermediateResults = identical(threshold, 0.0),
+  allCandidates = FALSE,
+  andSALSO = !intermediateResults && !allCandidates,
+  loss = VI(a = 1),
+  maxNClusters = 0,
+  initialPartition = integer(0),
+  nCores = 0
+) {
   loss_code <- 0
   a <- 1.0
   if (!isFALSE(andSALSO)) {
@@ -80,13 +91,42 @@ chips <- function(partitions, threshold = 0.0, nRuns = 64, intermediateResults =
       loss_str <- "binder.draws"
     }
     if ((length(loss_str) != 1) || !(loss_str %in% names(lossMapping))) {
-      stop(sprintf('loss="%s" is not recognized.  Please use one of the following: %s', loss, paste0('"', names(lossMapping), '"', collapse=", ")))
+      stop(sprintf(
+        'loss="%s" is not recognized.  Please use one of the following: %s',
+        loss,
+        paste0('"', names(lossMapping), '"', collapse = ", ")
+      ))
     }
     loss_code <- unname(lossMapping[loss_str])
   }
-  y <- .Call(.chips, partitions, threshold, nRuns, intermediateResults, allCandidates, andSALSO, loss_code, a, maxNClusters, initialPartition, nCores)
+  y <- .Call(
+    .chips,
+    partitions,
+    threshold,
+    nRuns,
+    intermediateResults,
+    allCandidates,
+    andSALSO,
+    loss_code,
+    a,
+    maxNClusters,
+    initialPartition,
+    nCores
+  )
   if (!intermediateResults && !allCandidates) {
-    y$probability_of_chips_clusters <- sapply(sort(setdiff(unique(y$chips_partition), -1)), \(label) mean(apply(partitions[, which(y$chips_partition == label), drop = FALSE], 1, \(z) length(unique(z))) == 1))
+    y$probability_of_chips_clusters <- sapply(
+      sort(setdiff(unique(y$chips_partition), -1)),
+      \(label) {
+        mean(
+          apply(
+            partitions[, which(y$chips_partition == label), drop = FALSE],
+            1,
+            \(z) length(unique(z))
+          ) ==
+            1
+        )
+      }
+    )
   }
   attr(y, "partitions") <- partitions
   class(y) <- "salso_chips"
@@ -118,7 +158,12 @@ chips <- function(partitions, threshold = 0.0, nRuns = 64, intermediateResults =
 #'
 threshold <- function(chipsOutput, threshold, ...) {
   index <- min(which(chipsOutput$probability >= threshold))
-  chips(attr(chipsOutput, "partitions"), threshold = chipsOutput$probability[index], initialPartition = chipsOutput$chips_partition[index, ], ...)
+  chips(
+    attr(chipsOutput, "partitions"),
+    threshold = chipsOutput$probability[index],
+    initialPartition = chipsOutput$chips_partition[index, ],
+    ...
+  )
 }
 
 #' @export

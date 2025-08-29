@@ -29,10 +29,16 @@
 #' dim(probs)
 #' probs[1:6, 1:6]
 #'
-psm <- function(x, nCores=0) {
-  if ( nCores < 0.0 ) stop("'nCores' may not be negative.")
-  if ( nCores > .Machine$integer.max ) nCores <- .Machine$integer.max
-  if ( ! is.matrix(x) ) x <- t(x)
+psm <- function(x, nCores = 0) {
+  if (nCores < 0.0) {
+    stop("'nCores' may not be negative.")
+  }
+  if (nCores > .Machine$integer.max) {
+    nCores <- .Machine$integer.max
+  }
+  if (!is.matrix(x)) {
+    x <- t(x)
+  }
   y <- .Call(.psm, x, nCores)
   dim(y) <- rep(ncol(x), 2)
   dimnames(y) <- list(colnames(x), colnames(x))
