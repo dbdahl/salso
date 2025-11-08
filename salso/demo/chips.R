@@ -1,6 +1,7 @@
 library(salso)
 data(synthetic)
 
+# Run CHIPS on the synthetic demo partitions
 out <- chips(synthetic$partitions)
 out$AUChips
 
