@@ -2193,8 +2193,7 @@ impl RExternalPtr {
     /// Move Rust object to an R external pointer.
     ///
     /// This *method* moves a Rust object to an R external pointer and then, as far as Rust is concerned, leaks the memory.
-    /// Thus the programmer is then responsible to release the memory by calling [`RExternalPtr::decode_val`]
-    /// unless `managed_By_r` is `true`.
+    /// R will automatically free the memory when the associated R object is collected.
     #[allow(clippy::mut_from_ref)]
     pub fn encode<'a, T>(x: T, tag: &str, pc: &'a Pc) -> &'a mut Self {
         Self::encode_full(x, tag.to_r(pc), true, pc)
@@ -2204,7 +2203,7 @@ impl RExternalPtr {
     ///
     /// This *method* moves a Rust object to an R external pointer and then, as far as Rust is concerned, leaks the memory.
     /// Thus the programmer is then responsible to release the memory by calling [`RExternalPtr::decode_val`]
-    /// unless `managed_By_r` is `true`.
+    /// unless `managed_by_r` is `true`.
     #[allow(clippy::mut_from_ref)]
     pub fn encode_full<'a, T>(
         x: T,
@@ -2235,9 +2234,39 @@ impl RExternalPtr {
         }
     }
 
+    /// Reconstitute an Rust object into an R external pointer.
+    ///
+    /// This *method* moves a Rust object to an R external pointer.
+    #[allow(clippy::mut_from_ref)]
+    pub fn reencode<'a, T, F: FnOnce(&RObject) -> T>(&mut self, f: F) {
+        unsafe {
+            if self.is_null() {
+                let ptr = Box::into_raw(Box::new(f(self.tag())));
+                R_SetExternalPtrAddr(self.sexp(), ptr as *mut c_void);
+                if Rf_getAttrib(self.sexp(), R_AtsignSymbol) == R_AtsignSymbol {
+                    unsafe extern "C" fn free<S>(sexp: SEXP) {
+                        let addr = R_ExternalPtrAddr(sexp);
+                        if addr.as_ref().is_none() {
+                            return;
+                        }
+                        let _ = Box::from_raw(addr as *mut S);
+                        R_ClearExternalPtr(sexp);
+                    }
+                    Rf_setAttrib(self.sexp(), R_AtsignSymbol, R_AtsignSymbol);
+                    R_RegisterCFinalizerEx(self.sexp(), Some(free::<T>), 0);
+                }
+            }
+        }
+    }
+
     /// Check if an external pointer is managed by R.
     pub fn is_managed_by_r(&self) -> bool {
         unsafe { Rf_getAttrib(self.sexp(), R_AtsignSymbol) == R_AtsignSymbol }
+    }
+
+    /// Check if an external pointer is null.
+    pub fn is_null(&self) -> bool {
+        self.address().is_null()
     }
 
     /// Move an R external pointer to a Rust object.
@@ -2307,6 +2336,11 @@ impl RExternalPtr {
     /// Get the memory address of the external pointer.
     pub fn address(&self) -> *mut c_void {
         unsafe { R_ExternalPtrAddr(self.sexp()) }
+    }
+
+    /// Get the memory address of the external pointer.
+    pub fn set_address(&self, addr: &mut c_void) {
+        unsafe { R_SetExternalPtrAddr(self.sexp(), addr) }
     }
 
     /// Register the external pointer to be finalized.
