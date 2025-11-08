@@ -11,7 +11,7 @@
 #' - `means`: numeric array of size `B x K x 2` giving cluster-specific means
 #'   across MCMC iterations (`B`), for each cluster (`K`) and dimension (2).
 #'
-#' See also the CHIPS demo: `demo("chips-demo", package = "salso")`.
+#' See also the CHIPS demo: `demo("chips", package = "salso")`.
 #'
 #' @format A list with elements `partitions`, `data`, and `means` as described.
 #' @seealso chips

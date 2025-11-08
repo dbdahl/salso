@@ -7,7 +7,7 @@
 #'
 #' A complete, end-to-end demonstration is provided in the package demo.
 #' To run it and to access the accompanying synthetic dataset:
-#' - Run the demo: `demo("chips-demo", package = "salso")`
+#' - Run the demo: `demo("chips", package = "salso")`
 #' - Load the synthetic data used in the demo: `data("synthetic", package = "salso")`
 #'
 #' @param partitions A \eqn{B}-by-\eqn{n} matrix, where each of the \eqn{B} rows
@@ -60,13 +60,13 @@
 #' data(iris.clusterings)
 #' draws <- iris.clusterings
 #'
-#' # For examples, use 'nCores = 1' per CRAN rules, but in practice omit this.
-#' all <- chips(draws, nRuns = 64, nCores = 1)
+#' # For examples, use 'nRuns = 1' and 'nCores = 1' for CRAN, but in practice omit this.
+#' all <- chips(draws, nRuns = 1, nCores = 1)
 #' plot(all$n_items, all$probability, type = "l")
 #' subpartition <- threshold(all, 0.80)
 #' str(subpartition)
 #'
-#' # See the full CHIPS demo run: demo("chips-demo", package = "salso")
+#' # See the full CHIPS demo run: demo("chips", package = "salso")
 #'
 chips <- function(
   partitions,

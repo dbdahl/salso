@@ -85,7 +85,7 @@ greedy search method (Barrientos, Page, Dahl, Dunson, 2024).
 A complete, end-to-end demonstration is provided in the package demo.
 To run it and to access the accompanying synthetic dataset:
 \itemize{
-\item Run the demo: \code{demo("chips-demo", package = "salso")}
+\item Run the demo: \code{demo("chips", package = "salso")}
 \item Load the synthetic data used in the demo: \code{data("synthetic", package = "salso")}
 }
 }
@@ -93,12 +93,12 @@ To run it and to access the accompanying synthetic dataset:
 data(iris.clusterings)
 draws <- iris.clusterings
 
-# For examples, use 'nCores = 1' per CRAN rules, but in practice omit this.
-all <- chips(draws, nRuns = 64, nCores = 1)
+# For examples, use 'nRuns = 1' and 'nCores = 1' for CRAN, but in practice omit this.
+all <- chips(draws, nRuns = 1, nCores = 1)
 plot(all$n_items, all$probability, type = "l")
 subpartition <- threshold(all, 0.80)
 str(subpartition)
 
-# See the full CHIPS demo run: demo("chips-demo", package = "salso")
+# See the full CHIPS demo run: demo("chips", package = "salso")
 
 }

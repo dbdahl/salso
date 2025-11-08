@@ -27,7 +27,7 @@ observations used to generate the partitions.
 across MCMC iterations (\code{B}), for each cluster (\code{K}) and dimension (2).
 }
 
-See also the CHIPS demo: \code{demo("chips-demo", package = "salso")}.
+See also the CHIPS demo: \code{demo("chips", package = "salso")}.
 }
 \examples{
 data(synthetic)

@@ -1,7 +1,7 @@
-data(synthetic, package = "salso")
+library(salso)
+data(synthetic)
 
-# For examples, use 'nCores = 1' per CRAN rules, but in practice omit this.
-out <- salso::chips(synthetic$partitions, nCores = 1)
+out <- chips(synthetic$partitions)
 out$AUChips
 
 # Plot probability vs subpartition size
@@ -15,7 +15,7 @@ plot(
 )
 
 # Find subpartition with probability threshold gamma = 0.95
-chips_thresholded <- salso::threshold(out, threshold = 0.95)
+chips_thresholded <- threshold(out, threshold = 0.95)
 chips_members <- which(chips_thresholded$chips_partition != -1)
 subpartition <- chips_thresholded$chips_partition[chips_members]
 
@@ -50,9 +50,7 @@ if (nrow(excluded) > 0) {
 
 # Cluster specific parameter estimation
 # Find posterior draws that contain the subpartition
-indices <- which(
-  salso::VI(subpartition, synthetic$partitions[, chips_members]) == 0
-)
+indices <- which(VI(subpartition, synthetic$partitions[, chips_members]) == 0)
 
 # Only keep MCMC samples of mean for iterates that have our subpartition
 chips_mu <- synthetic$means[indices, , , drop = FALSE]
