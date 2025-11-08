@@ -23,7 +23,7 @@ represents a clustering of \eqn{n} items using cluster labels. For the
 \eqn{b}th clustering, items \eqn{i} and \eqn{j} are in the same cluster if
 \code{x[b, i] == x[b, j]}.}
 
-\item{threshold}{The minimum marginal probability for the subpartition.
+\item{threshold}{The minimum marginal probability for the subpartition, i.e., the gamma parameter.
 Values closer to 1.0 will yield a partition of fewer items and values
 closer to 0.0 will yield a partition of more items.}
 
@@ -81,17 +81,24 @@ marginal probability based on samples from a partition distribution
 using the conditional high inclusion probability subset (CHIPS) partition
 greedy search method (Barrientos, Page, Dahl, Dunson, 2024).
 }
+\details{
+A complete, end-to-end demonstration is provided in the package demo.
+To run it and to access the accompanying synthetic dataset:
+\itemize{
+\item Run the demo: \code{demo("chips-demo", package = "salso")}
+\item Load the synthetic data used in the demo: \code{data("synthetic", package = "salso")}
+}
+}
 \examples{
-# For examples, use 'nCores = 1' per CRAN rules, but in practice omit this.
 data(iris.clusterings)
 draws <- iris.clusterings
 
-all <- chips(draws, nRuns = 1, nCores = 1)
-plot(all$n_items, all$probability)
+# For examples, use 'nCores = 1' per CRAN rules, but in practice omit this.
+all <- chips(draws, nRuns = 64, nCores = 1)
+plot(all$n_items, all$probability, type = "l")
+subpartition <- threshold(all, 0.80)
+str(subpartition)
 
-x <- chips(draws, threshold = 0.5, nCores = 1)
-table(x$chips_partition)
-which(x$chips_partition != -1)
-x
+# See the full CHIPS demo run: demo("chips-demo", package = "salso")
 
 }

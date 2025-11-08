@@ -1,7 +1,7 @@
 Package: salso
 Type: Package
 Title: Search Algorithms and Loss Functions for Bayesian Clustering
-Version: 0.3.57
+Version: 0.3.58
 Authors@R: c(person(given = "David B.", family = "Dahl", role = c("aut", "cre"), email = "dahl@stat.byu.edu", comment = c(ORCID = "0000-0002-8173-1547")),
     person(given = "Devin J.", family = "Johnson", role = c("aut"), email = "devin.j.johnson7@gmail.com", comment = c(ORCID = "0000-0003-2619-6649")),
     person(given = "Peter", family = "Müller", role = c("aut"), email = "pmueller@math.utexas.edu"),
@@ -33,5 +33,5 @@ SystemRequirements: Cargo (Rust's package manager), rustc (>= 1.80.1)
 Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Config/Roxido/Version: 25.08.19
