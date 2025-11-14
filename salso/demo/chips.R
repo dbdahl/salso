@@ -46,7 +46,7 @@ points(
 # Radius of each point reflects the qmax value.
 excluded <- synthetic$data[chips_thresholded$unallocated[, 1], , drop = FALSE]
 if (nrow(excluded) > 0) {
-  points(excluded, col = "gray", cex = 1.5 * max(0, p - qi))
+  points(excluded, col = "gray", cex = 1.5 * (p - qi))
 }
 
 # Cluster specific parameter estimation
