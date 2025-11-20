@@ -47,7 +47,7 @@
 #'     partitions in the rows.
 #'   + `n_items`: Number of items in the estimated subset partition.
 #'   + `probability`: Monte Carlo estimate of the probability of the subset partition.
-#'   + `auc`: If `intermediateResults` is `TRUE`, this element is provided and gives
+#'   + `AUChips`: If `intermediateResults` is `TRUE`, this element is provided and gives
 #'     the area under the probability curve as a function of the number of clusters
 #'     after scaling to be between 0 and 1.
 #'   + `chips_and_salso_partition`: If `andSALSO` is `TRUE`, this element is provided and

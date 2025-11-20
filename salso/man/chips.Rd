@@ -66,7 +66,7 @@ indicating not allocated.  If \code{TRUE}, an integer matrix with intermediate s
 partitions in the rows.
 \item \code{n_items}: Number of items in the estimated subset partition.
 \item \code{probability}: Monte Carlo estimate of the probability of the subset partition.
-\item \code{auc}: If \code{intermediateResults} is \code{TRUE}, this element is provided and gives
+\item \code{AUChips}: If \code{intermediateResults} is \code{TRUE}, this element is provided and gives
 the area under the probability curve as a function of the number of clusters
 after scaling to be between 0 and 1.
 \item \code{chips_and_salso_partition}: If \code{andSALSO} is \code{TRUE}, this element is provided and
