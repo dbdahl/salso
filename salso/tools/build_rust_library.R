@@ -99,10 +99,17 @@ if (cran_build) {
   jobs_option <- NULL
 }
 
+if (sysname == "Windows") {
+  target_option <- c("--target", "x86_64-pc-windows-gnu")
+} else {
+  target_option <- NULL
+}
+
 for (run_counter in 1:2) {
   Sys.setenv(R_CARGO_RUN_COUNTER = run_counter)
   status <- system2("cargo",
-                    c("build", offline_option, "--release", jobs_option))
+                    c("build", offline_option, "--release", jobs_option,
+                      target_option))
   if (status != 0) {
     message("Error running Cargo.\n")
     message(paste0(readLines("../../INSTALL"), collapse = "\n"))
