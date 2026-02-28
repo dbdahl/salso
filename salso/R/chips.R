@@ -17,7 +17,9 @@
 #' @param threshold The minimum marginal probability for the subpartition, i.e., the gamma parameter.
 #'   Values closer to 1.0 will yield a partition of fewer items and values
 #'   closer to 0.0 will yield a partition of more items.
-#' @param nRuns The number of runs to try, where the best result is returned.
+#' @param nRuns The number of runs to try. When multiple runs produce candidate
+#'   subpartitions, the one allocating the most items is selected; among ties,
+#'   the candidate with the highest posterior probability is chosen.
 #' @param intermediateResults Should intermediate subset partitions be returned?
 #' @param allCandidates Should all the final subset partitions from multiple runs
 #'   be returned?

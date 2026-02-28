@@ -928,7 +928,14 @@ fn chips(
         storage.to_r(true, false, pc)
     } else {
         let mut best = if !threshold.is_nan() {
-            candidates.sort_unstable_by(|x, y| y.0.last().unwrap().2.cmp(&x.0.last().unwrap().2));
+            candidates.sort_unstable_by(|x, y| {
+                let x_last = x.0.last().unwrap();
+                let y_last = y.0.last().unwrap();
+                y_last
+                    .2
+                    .cmp(&x_last.2)
+                    .then(x_last.1.total_cmp(&y_last.1))
+            });
             candidates.pop().unwrap()
         } else {
             let mut tmp = PartialPartitionStorage::new();
