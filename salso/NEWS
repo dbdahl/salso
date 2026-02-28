@@ -1,3 +1,6 @@
+0.3.59 (2026-02-28)
+  * Fixed CHIPS to select, among candidates with the most allocated items, the one with the highest posterior probability.
+
 0.3.58 (2025-11-07)
   * Added demo for chips functions and related methods.
   * Latest roxido framework.
