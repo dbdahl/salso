@@ -1,5 +1,5 @@
 #!/bin/sh
 
 cat <<'EOF' | "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -
-source("tools/build_rust_library.R")
+source("tools/check_rust.R")
 EOF

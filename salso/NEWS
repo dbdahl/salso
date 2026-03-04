@@ -1,4 +1,4 @@
-0.3.60 (2026-02-28)
+0.3.66 (2026-03-03)
   * Fixed CHIPS to select, among candidates with the most allocated items, the one with the highest posterior probability.
   * Latest roxido framework.
 

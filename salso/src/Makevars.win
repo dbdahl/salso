@@ -4,5 +4,8 @@ all: $(SHLIB) cleanup
 
 $(SHLIB): librust.a
 
+librust.a:
+	cd .. && "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript.exe" -e "source('tools/build_rust_library.R')"
+
 cleanup: $(SHLIB)
 	rm librust.a
