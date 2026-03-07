@@ -1,5 +1,3 @@
 #!/bin/sh
 
-cat <<'EOF' | "${R_HOME}/bin${R_ARCH_BIN}/Rscript" -
-source("tools/build_rust_library.R")
-EOF
+"${R_HOME}/bin${R_ARCH_BIN}/Rscript" tools/configure.R

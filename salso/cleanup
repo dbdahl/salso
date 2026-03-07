@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rm -rf src/rust/vendor src/rust/.cargo src/rust/.cargo-home
+rm -f src/Makevars src/Makevars.win

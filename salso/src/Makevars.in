@@ -1,0 +1,24 @@
+CARGO = @CARGO@
+RUST_DIR = rust
+RUST_LIB = $(RUST_DIR)/librust.a
+RUST_TARGET_LIB = $(RUST_DIR)/target/release/librust.a
+# Note: CRAN builds use .cargo/config.toml (from vendor.tar.xz) to use only two cores.
+CARGO_BUILD_CMD = $(CARGO) build --release --lib
+CARGO_ENV = @CARGO_ENV@
+
+@RUST_DEPS@
+
+PKG_LIBS = $(RUST_LIB)
+
+all: $(SHLIB)
+
+$(SHLIB): $(RUST_LIB)
+
+$(RUST_LIB): $(RUST_DEPS)
+	cd $(RUST_DIR) && R_CARGO_RUN_COUNTER=1 $(CARGO_ENV) $(CARGO_BUILD_CMD)
+	cd $(RUST_DIR) && R_CARGO_RUN_COUNTER=2 $(CARGO_ENV) $(CARGO_BUILD_CMD)
+	cp -f $(RUST_TARGET_LIB) $(RUST_LIB)
+
+clean:
+	rm -f $(RUST_DIR)/roxido.txt $(RUST_LIB)
+	rm -rf $(RUST_DIR)/.cargo-home

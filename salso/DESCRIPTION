@@ -1,37 +1,23 @@
 Package: salso
 Type: Package
 Title: Search Algorithms and Loss Functions for Bayesian Clustering
-Version: 0.3.67
+Version: 0.3.68
 Authors@R: c(person(given = "David B.", family = "Dahl", role = c("aut", "cre"), email = "dahl@stat.byu.edu", comment = c(ORCID = "0000-0002-8173-1547")),
     person(given = "Devin J.", family = "Johnson", role = c("aut"), email = "devin.j.johnson7@gmail.com", comment = c(ORCID = "0000-0003-2619-6649")),
     person(given = "Peter", family = "Müller", role = c("aut"), email = "pmueller@math.utexas.edu"),
     person(given = "Andrés Felipe", family = "Barrientos", role = c("aut"), email = "abarrientos@fsu.edu"),
     person(given = "Garritt", family = "Page", role = c("aut"), email = "page@stat.byu.edu"),
     person(given = "David", family = "Dunson", role = c("aut"), email = "dunson@duke.edu"),
-    person(given = "Alex", family = "Crichton", email = "alex@alexcrichton.com", role = "ctb", comment = c("Rust crates: cfg-if, proc-macro2")),
-    person(given = "Brendan", family = "Zabarauskas", email = "bjzaba@yahoo.com.au", role = "ctb", comment = c("Rust crate: approx")),
-    person(given = "David B.", family = "Dahl", email = "dahl@stat.byu.edu", role = "ctb", comment = c("Rust crates: dahl-bellnumber, dahl-partition, dahl-salso, roxido, roxido_macro")),
-    person(given = "David", family = "Tolnay", email = "dtolnay@gmail.com", role = "ctb", comment = c("Rust crates: proc-macro2, quote, syn, unicode-ident")),
-    person(given = "Jim", family = "Turner", role = "ctb", comment = c("Rust crate: ndarray")),
-    person(given = "Josh", family = "Stone", email = "cuviper@gmail.com", role = "ctb", comment = c("Rust crate: autocfg")),
-    person(given = "R. Janis", family = "Goldschmidt", role = "ctb", comment = c("Rust crate: matrixmultiply")),
-    person(given = "Sean", family = "McArthur", email = "sean@seanmonstar.com", role = "ctb", comment = c("Rust crate: num_cpus")),
-    person(given = "Stefan", family = "Lankes", role = "ctb", comment = c("Rust crate: hermit-abi")),
-    person(given = "The Cranelift Project Developers", role = "ctb", comment = c("Rust crate: wasi")),
-    person(given = "The CryptoCorrosion Contributors", role = "ctb", comment = c("Rust crates: ppv-lite86, rand_chacha")),
-    person(given = "The Rand Project Developers", role = "ctb", comment = c("Rust crates: getrandom, rand, rand_chacha, rand_core, rand_pcg")),
-    person(given = "The Rust Project Developers", role = "ctb", comment = c("Rust crates: libc, num-bigint, num-complex, num-integer, num-traits, rand, rand_chacha, rand_core")),
-    person(given = "Ulrik Sverdrup", family = "\"bluss\"", role = "ctb", comment = c("Rust crate: ndarray")),
-    person(given = "bluss", role = "ctb", comment = c("Rust crates: matrixmultiply, rawpointer")),
-    person())
+    person(given = "Authors of the dependency Rust crates", role = "ctb", comment = "see inst/AUTHORS file for details"))
 Description: The SALSO algorithm is an efficient randomized greedy search method to find a point estimate for a random partition based on a loss function and posterior Monte Carlo samples. The algorithm is implemented for many loss functions, including the Binder loss and a generalization of the variation of information loss, both of which allow for unequal weights on the two types of clustering mistakes. Efficient implementations are also provided for Monte Carlo estimation of the posterior expected loss of a given clustering estimate. See Dahl, Johnson, Müller (2022) <doi:10.1080/10618600.2022.2069779>.
 License: MIT + file LICENSE | Apache License 2.0
 URL: https://github.com/dbdahl/salso
 BugReports: https://github.com/dbdahl/salso/issues
-Depends: R (>= 4.2.0)
-SystemRequirements: Cargo (Rust's package manager), rustc (>= 1.80.1)
+Depends: R (>= 4.3.0)
+SystemRequirements: Cargo (Rust's package manager), rustc
 Encoding: UTF-8
 LazyData: TRUE
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-Config/Roxido/Version: 25.10.08
+Config/Roxido/TemplateVersion: 26.03.04
+Config/Roxido/MinCLIVersion: 0.8.0

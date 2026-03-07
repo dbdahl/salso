@@ -72,7 +72,6 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
         }
         _ => None,
     };
-    let mut longjmp = true;
     let mut invisible = false;
     let mut module = String::new();
     for meta in options {
@@ -85,13 +84,6 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
                 let name_string = quote!(#name).to_string();
                 let value_string = quote!(#value).to_string();
                 match name_string.as_str() {
-                    "longjmp" => match value_string.as_str() {
-                        "true" => longjmp = true,
-                        "false" => longjmp = false,
-                        _ => {
-                            panic!("Unsupported value '{value_string}' for {name_string}.")
-                        }
-                    },
                     "invisible" => match value_string.as_str() {
                         "true" => invisible = true,
                         "false" => invisible = false,
@@ -425,19 +417,11 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
             true => ("invisible(", ")"),
             false => ("", ""),
         };
-        let write_result = if longjmp {
-            write!(
-                file,
-                "{} <- function({}) {}.Call(.{}{}{}){}",
-                func_name, args, invisible_opening, func_name, comma, args, invisible_closing
-            )
-        } else {
-            write!(
-                file,
-                "{} <- function({}) {{\n  x <- .Call(.{}{}{})\n  if ( inherits(x,'error') ) stop(x) else {}x{}\n}}",
-                func_name, args, func_name, comma, args, invisible_opening, invisible_closing
-            )
-        };
+        let write_result = write!(
+            file,
+            "{} <- function({}) {}.Call(.{}{}{}){}",
+            func_name, args, invisible_opening, func_name, comma, args, invisible_closing
+        );
         if write_result.is_err() {
             panic!("Could not write to the file '{:?}'.", path);
         }
@@ -468,69 +452,45 @@ fn roxido_fn(options: Vec<NestedMeta>, item_fn: syn::ItemFn) -> TokenStream {
         }
     }
     // Write the function itself, wrapping the body in 'catch_unwind' to prevent unwinding into C.
-    if longjmp {
-        // This will long jump, but that's seems to be okay because this is the last Rust stack
-        // frame and we've cleaned up all of our heap memory.  Light testing indicated no memory
-        // leaks.  See https://docs.rs/crate/setjmp for background information.
-        TokenStream::from(quote! {
-            #[allow(clippy::useless_transmute)]
-            #[allow(clippy::not_unsafe_ptr_arg_deref)]
-            #[no_mangle]
-            pub extern "C" fn #name(#new_args) -> SEXP {
-                let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                    let pc = &mut Pc::__private_new();
-                    #( #generated_statements )*
-                    let mut f = || { #body };
-                    f().to_r(pc).sexp()
-                }));
-                match result {
-                    Ok(obj) => obj,
-                    Err(ref payload) => {
-                        use crate::rbindings::*;
-                        let msg = match payload.downcast_ref::<RStopHelper>() {
-                            Some(x) => x.0.as_str(),
-                            None => {
-                                concat!("Panic in Rust function '", stringify!(#name),"' with 'roxido' attribute.")
-                            }
-                        };
-                        let len = msg.len();
-                        let sexp = unsafe {
-                            use std::convert::TryInto;
-                            Rf_mkCharLenCE(
-                                msg.as_ptr() as *const std::os::raw::c_char,
-                                msg.len().try_into().unwrap(),
-                                cetype_t_CE_UTF8,
-                            )
-                        };
-                        drop(result);
-                        unsafe {
-                            Rf_error(b"%.*s\0".as_ptr() as *const std::os::raw::c_char, len, R_CHAR(sexp));
+    // On panic, Rf_error() long jumps, but this is safe because catch_unwind has already run
+    // all Rust destructors and this is the last Rust stack frame.
+    TokenStream::from(quote! {
+        #[allow(clippy::useless_transmute)]
+        #[allow(clippy::not_unsafe_ptr_arg_deref)]
+        #[no_mangle]
+        pub extern "C" fn #name(#new_args) -> SEXP {
+            let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                let pc = &mut Pc::__private_new();
+                #( #generated_statements )*
+                let mut f = || { #body };
+                f().to_r(pc).sexp()
+            }));
+            match result {
+                Ok(obj) => obj,
+                Err(ref payload) => {
+                    use crate::rbindings::*;
+                    let msg = match payload.downcast_ref::<RStopHelper>() {
+                        Some(x) => x.0.as_str(),
+                        None => {
+                            concat!("Panic in Rust function '", stringify!(#name),"' with 'roxido' attribute.")
                         }
-                        R::null().sexp()  // We never get here.
+                    };
+                    let len = msg.len();
+                    let sexp = unsafe {
+                        use std::convert::TryInto;
+                        Rf_mkCharLenCE(
+                            msg.as_ptr() as *const std::os::raw::c_char,
+                            msg.len().try_into().unwrap(),
+                            cetype_t_CE_UTF8,
+                        )
+                    };
+                    drop(result);
+                    unsafe {
+                        Rf_error(b"%.*s\0".as_ptr() as *const std::os::raw::c_char, len, R_CHAR(sexp));
                     }
+                    R::null().sexp()  // We never get here.
                 }
             }
-        })
-    } else {
-        TokenStream::from(quote! {
-            #[allow(clippy::useless_transmute)]
-            #[allow(clippy::not_unsafe_ptr_arg_deref)]
-            #[no_mangle]
-            pub extern "C" fn #name(#new_args) -> SEXP {
-                let result: Result<SEXP, _> = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-                    let pc = &mut Pc::__private_new();
-                    #( #generated_statements )*
-                    let mut f = || { #body };
-                    f().to_r(pc).sexp()
-                }));
-                match result {
-                    Ok(obj) => obj,
-                    Err(_) => {
-                        let pc = &mut Pc::__private_new();
-                        RError::new(concat!("Panic in Rust function '",stringify!(#name),"' with 'roxido' attribute."), pc).sexp()
-                    }
-                }
-            }
-        })
-    }
+        }
+    })
 }

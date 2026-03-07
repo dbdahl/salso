@@ -1,6 +1,8 @@
 /.cargo
+/.cargo-home
 /vendor
 /roxido.txt
+/librust.a
 /src/registration.rs
 /vendor.tar.xz
 /**/target

@@ -1,9 +1,11 @@
+^[.][^/]+$
 ^.*\.Rproj$
-^[.]Rproj[.]user$
 ^[^/]*[.]tar[.]gz
 ^justfile$
+^roxido-update[.]txt$
+^[^/]*[.]Rcheck$
 ^inst/cargo.log$
-^src/librust.a
+^src/rust/librust\.a
 ^src/rust/(.*/)*target
 ^src/rust/vendor/
 ^src/rust/rbindings/.crates2.json$
@@ -13,3 +15,6 @@
 ^src/rust/rbindings/README$
 ^src/rust/rbindings/wrapper.h$
 ^src/rust/[.]cargo
+^src/rust/[.]cargo-home
+^src/Makevars$
+^src/Makevars[.]win$

@@ -1,16 +1,16 @@
-0.3.67 (2026-03-04)
+0.3.68 (2026-03-07)
   * Fixed CHIPS to select, among candidates with the most allocated items, the one with the highest posterior probability.
-  * Latest roxido framework.
+  * Latest Roxido framework.
 
 0.3.58 (2025-11-07)
   * Added demo for chips functions and related methods.
-  * Latest roxido framework.
+  * Latest Roxido framework.
 
 0.3.57 (2025-08-29)
-  * Latest roxido framework.
+  * Latest Roxido framework.
 
 0.3.56 (2025-05-09)
-  * Latest roxido framework.
+  * Latest Roxido framework.
 
 0.3.55 (2025-05-06)
   * Slight bug fix for chips function.
@@ -25,7 +25,7 @@
 
 0.3.51 (2025-03-29)
   * Added preliminary implementation of CHIPS methods.
-  * Internal update to track latest roxido framework.
+  * Internal update to track latest Roxido framework.
   * Update for CRAN compliance regarding "WARNINGs about calling bad
     entry points in the "compiled code" check.
 
@@ -35,7 +35,7 @@
 
 0.3.41 (2024-09-06)
   * Added cexAdjustment argument to plot() function for a partition estimate.
-  * Update to track latest roxido framework.
+  * Update to track latest Roxido framework.
   * Update for CRAN compliance in reporting rustc version during installation.
 
 0.3.35 (2023-07-17)
