@@ -371,9 +371,9 @@ note("MSRV check passed.")
 
 cran_vendor_mode <- file.exists(file.path("src", "rust", "vendor.tar.xz"))
 if (cran_vendor_mode) {
-  note("Detected src/rust/vendor.tar.xz; enabling CRAN cargo isolation in Makevars.")
+  note("Detected src/rust/vendor.tar.xz; setting CARGO_HOME to a local directory.")
 } else {
-  note("No src/rust/vendor.tar.xz found; using default Cargo home behavior.")
+  note("No src/rust/vendor.tar.xz found; not setting CARGO_HOME.")
 }
 
 render_platform_makevars(cargo$path, rustc$path, cran_vendor_mode = cran_vendor_mode)
