@@ -18,6 +18,7 @@ $(RUST_LIB): $(RUST_DEPS)
 	cd $(RUST_DIR) && R_CARGO_RUN_COUNTER=1 $(CARGO_ENV) $(CARGO_BUILD_CMD)
 	cd $(RUST_DIR) && R_CARGO_RUN_COUNTER=2 $(CARGO_ENV) $(CARGO_BUILD_CMD)
 	cp -f $(RUST_TARGET_LIB) $(RUST_LIB)
+	rm -rf $(RUST_DIR)/vendor
 
 clean:
 	rm -f $(RUST_DIR)/roxido.txt $(RUST_LIB)
