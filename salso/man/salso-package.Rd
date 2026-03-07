@@ -29,21 +29,7 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item Alex Crichton \email{alex@alexcrichton.com} (Rust crates: cfg-if, proc-macro2) [contributor]
-  \item Brendan Zabarauskas \email{bjzaba@yahoo.com.au} (Rust crate: approx) [contributor]
-  \item David B. Dahl \email{dahl@stat.byu.edu} (Rust crates: dahl-bellnumber, dahl-partition, dahl-salso, roxido, roxido_macro) [contributor]
-  \item David Tolnay \email{dtolnay@gmail.com} (Rust crates: proc-macro2, quote, syn, unicode-ident) [contributor]
-  \item Jim Turner (Rust crate: ndarray) [contributor]
-  \item Josh Stone \email{cuviper@gmail.com} (Rust crate: autocfg) [contributor]
-  \item R. Janis Goldschmidt (Rust crate: matrixmultiply) [contributor]
-  \item Sean McArthur \email{sean@seanmonstar.com} (Rust crate: num_cpus) [contributor]
-  \item Stefan Lankes (Rust crate: hermit-abi) [contributor]
-  \item The Cranelift Project Developers (Rust crate: wasi) [contributor]
-  \item The CryptoCorrosion Contributors (Rust crates: ppv-lite86, rand_chacha) [contributor]
-  \item The Rand Project Developers (Rust crates: getrandom, rand, rand_chacha, rand_core, rand_pcg) [contributor]
-  \item The Rust Project Developers (Rust crates: libc, num-bigint, num-complex, num-integer, num-traits, rand, rand_chacha, rand_core) [contributor]
-  \item Ulrik Sverdrup "bluss" (Rust crate: ndarray) [contributor]
-  \item bluss (Rust crates: matrixmultiply, rawpointer) [contributor]
+  \item Authors of the dependency Rust crates (see inst/AUTHORS file for details) [contributor]
 }
 
 }

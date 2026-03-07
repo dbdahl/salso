@@ -65,7 +65,7 @@
 #' # For examples, use 'nRuns = 1' and 'nCores = 1' for CRAN, but in practice omit this.
 #' all <- chips(draws, nRuns = 1, nCores = 1)
 #' plot(all$n_items, all$probability, type = "l")
-#' subpartition <- threshold(all, 0.80)
+#' subpartition <- threshold(all, 0.80, nCores = 1)
 #' str(subpartition)
 #'
 #' # See the full CHIPS demo run: demo("chips", package = "salso")
