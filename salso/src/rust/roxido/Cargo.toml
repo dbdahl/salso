@@ -1,8 +1,9 @@
 [package]
 name = "roxido"
-version = "0.6.0"
+version = "0.6.1"
 authors = ["David B. Dahl <dahl@stat.byu.edu>"]
-edition = "2021"
+edition = "2024"
+rust-version = "1.88"
 description = "An simple and high-performance framework to develop R packages using idiomatic Rust with minimal overhead."
 homepage = "https://github.com/roxido-framework/roxidoExample"
 readme = "README.md"
