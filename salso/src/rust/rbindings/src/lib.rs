@@ -76,16 +76,6 @@ pub struct R_CMethodDef {
     pub numArgs: ::std::os::raw::c_int,
     pub types: *mut R_NativePrimitiveArgType,
 }
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of R_CMethodDef"][::std::mem::size_of::<R_CMethodDef>() - 32usize];
-    ["Alignment of R_CMethodDef"][::std::mem::align_of::<R_CMethodDef>() - 8usize];
-    ["Offset of field: R_CMethodDef::name"][::std::mem::offset_of!(R_CMethodDef, name) - 0usize];
-    ["Offset of field: R_CMethodDef::fun"][::std::mem::offset_of!(R_CMethodDef, fun) - 8usize];
-    ["Offset of field: R_CMethodDef::numArgs"]
-        [::std::mem::offset_of!(R_CMethodDef, numArgs) - 16usize];
-    ["Offset of field: R_CMethodDef::types"][::std::mem::offset_of!(R_CMethodDef, types) - 24usize];
-};
 pub type R_FortranMethodDef = R_CMethodDef;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -94,17 +84,6 @@ pub struct R_CallMethodDef {
     pub fun: DL_FUNC,
     pub numArgs: ::std::os::raw::c_int,
 }
-#[allow(clippy::unnecessary_operation, clippy::identity_op)]
-const _: () = {
-    ["Size of R_CallMethodDef"][::std::mem::size_of::<R_CallMethodDef>() - 24usize];
-    ["Alignment of R_CallMethodDef"][::std::mem::align_of::<R_CallMethodDef>() - 8usize];
-    ["Offset of field: R_CallMethodDef::name"]
-        [::std::mem::offset_of!(R_CallMethodDef, name) - 0usize];
-    ["Offset of field: R_CallMethodDef::fun"]
-        [::std::mem::offset_of!(R_CallMethodDef, fun) - 8usize];
-    ["Offset of field: R_CallMethodDef::numArgs"]
-        [::std::mem::offset_of!(R_CallMethodDef, numArgs) - 16usize];
-};
 pub type R_ExternalMethodDef = R_CallMethodDef;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

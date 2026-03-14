@@ -74,11 +74,19 @@ tool_info <- function(tool, tool_path) {
     error = function(e) e
   )
   if (inherits(output, "error")) {
-    stop(sprintf("Could not run '%s --version': %s", tool_path, conditionMessage(output)))
+    stop(sprintf(
+      "Could not run '%s --version': %s",
+      tool_path,
+      conditionMessage(output)
+    ))
   }
   status <- attr(output, "status")
   if (!is.null(status) && status != 0L) {
-    stop(sprintf("'%s --version' returned non-zero exit status: %s", tool_path, status))
+    stop(sprintf(
+      "'%s --version' returned non-zero exit status: %s",
+      tool_path,
+      status
+    ))
   }
   if (length(output) < 1L || !any(nzchar(output))) {
     stop(sprintf("'%s --version' did not report a version string.", tool_path))
@@ -128,7 +136,11 @@ extract_vendor_if_present <- function(rust_dir) {
     error = function(e) e
   )
   if (inherits(tar_result, "error")) {
-    fail(sprintf("Failed to extract %s: %s", tarball, conditionMessage(tar_result)))
+    fail(sprintf(
+      "Failed to extract %s: %s",
+      tarball,
+      conditionMessage(tar_result)
+    ))
   }
   if (is.numeric(tar_result) && length(tar_result) == 1L && tar_result != 0L) {
     fail(sprintf("Extracting %s failed with status %s.", tarball, tar_result))
@@ -198,7 +210,11 @@ select_toolchain <- function(msrv) {
     if (length(missing) > 0L) {
       diagnostics <- c(
         diagnostics,
-        sprintf("* %s: missing %s", candidate$name, paste(missing, collapse = " and "))
+        sprintf(
+          "* %s: missing %s",
+          candidate$name,
+          paste(missing, collapse = " and ")
+        )
       )
       next
     }
@@ -230,7 +246,12 @@ select_toolchain <- function(msrv) {
     if (utils::compareVersion(rustc$version, msrv) < 0L) {
       diagnostics <- c(
         diagnostics,
-        sprintf("* %s: rustc %s does not satisfy MSRV %s", candidate$name, rustc$version, msrv)
+        sprintf(
+          "* %s: rustc %s does not satisfy MSRV %s",
+          candidate$name,
+          rustc$version,
+          msrv
+        )
       )
       next
     }
@@ -270,12 +291,19 @@ discover_rust_dependency_files <- function(rust_dir) {
   rel <- substring(files, nchar(rust_dir) + 2L)
 
   excluded_dirs <- c("target", "vendor", "\\.cargo", "\\.cargo-home")
-  excluded_pattern <- paste0("(^|/)(", paste(excluded_dirs, collapse = "|"), ")/")
+  excluded_pattern <- paste0(
+    "(^|/)(",
+    paste(excluded_dirs, collapse = "|"),
+    ")/"
+  )
   keep <- !grepl(excluded_pattern, rel)
   rel <- rel[keep]
   rel <- rel[!(rel %in% c("librust.a", "roxido.txt"))]
   if (length(rel) < 1L) {
-    fail(sprintf("No Rust dependency files remained after filtering under %s.", rust_dir))
+    fail(sprintf(
+      "No Rust dependency files remained after filtering under %s.",
+      rust_dir
+    ))
   }
 
   deps <- file.path("rust", rel)
@@ -286,66 +314,95 @@ render_rust_deps <- function(rust_dir, template_name) {
   deps <- c(template_name, discover_rust_dependency_files(rust_dir))
   lines <- sprintf("  %s", deps)
   if (length(lines) > 1L) {
-    lines[seq_len(length(lines) - 1L)] <- paste0(lines[seq_len(length(lines) - 1L)], " \\")
+    lines[seq_len(length(lines) - 1L)] <- paste0(
+      lines[seq_len(length(lines) - 1L)],
+      " \\"
+    )
   }
   paste(c("RUST_DEPS = \\", lines), collapse = "\n")
 }
 
-render_makevars <- function(template_path, output_path, cargo_path, rust_deps, cargo_env) {
+render_makevars <- function(template_path, output_path, substitutions) {
   if (!file.exists(template_path)) {
     fail(sprintf("Could not find template: %s", template_path))
   }
-  escaped_cargo <- gsub("\"", "\\\\\"", cargo_path, fixed = TRUE)
-  tokens <- c("@CARGO@", "@RUST_DEPS@", "@CARGO_ENV@")
-  replacements <- c(
-    paste0("\"", escaped_cargo, "\""),
-    rust_deps,
-    cargo_env
-  )
   lines <- readLines(template_path, warn = FALSE)
-  for (i in seq_along(tokens)) {
-    token <- tokens[[i]]
-    if (!any(grepl(token, lines, fixed = TRUE))) {
-      fail(sprintf("Template %s does not contain token %s.", template_path, token))
-    }
-    lines <- gsub(token, replacements[[i]], lines, fixed = TRUE)
+  for (token in names(substitutions)) {
+    lines <- gsub(token, substitutions[[token]], lines, fixed = TRUE)
+  }
+  all_text <- paste(lines, collapse = "\n")
+  remaining <- unique(regmatches(all_text, gregexpr("@[A-Z_]+@", all_text))[[
+    1
+  ]])
+  if (length(remaining) > 0L) {
+    fail(sprintf(
+      "Template %s has unreplaced tokens: %s",
+      template_path,
+      paste(remaining, collapse = ", ")
+    ))
   }
   writeLines(lines, con = output_path, useBytes = TRUE)
 }
 
 render_platform_makevars <- function(
   cargo_path,
-  rustc_path,
   rust_dir = file.path("src", "rust"),
-  cran_vendor_mode = FALSE
+  cran_vendor_mode = FALSE,
+  host_triple = ""
 ) {
   sysname <- Sys.info()[["sysname"]]
   makevars <- file.path("src", "Makevars")
   makevars_win <- file.path("src", "Makevars.win")
-  escaped_rustc <- gsub("\"", "\\\\\"", rustc_path, fixed = TRUE)
-  cargo_env_parts <- sprintf("RUSTC=\"%s\"", escaped_rustc)
+  cargo_env <- ""
   if (isTRUE(cran_vendor_mode)) {
-    cargo_env_parts <- paste(cargo_env_parts, "CARGO_HOME=\"$(CURDIR)/$(RUST_DIR)/.cargo-home\"")
+    cargo_env <- "CARGO_HOME=\"$(CURDIR)/$(RUST_DIR)/.cargo-home\""
   }
-  cargo_env <- cargo_env_parts
+  escaped_cargo <- gsub("\"", "\\\\\"", cargo_path, fixed = TRUE)
+  cargo_sub <- paste0("\"", escaped_cargo, "\"")
   unlink(c(makevars, makevars_win), force = TRUE)
 
   if (identical(sysname, "Windows")) {
+    gnu_host <- identical(host_triple, "x86_64-pc-windows-gnu")
+    if (gnu_host) {
+      note(
+        "GNU Windows host detected; building without --target (host = target)."
+      )
+      target_decl <- ""
+      rust_target_lib <- "$(RUST_DIR)/target/release/librust.a"
+      target_flag <- ""
+      cargo_pre <- 'unset CARGO_BUILD_TARGET && export RUSTFLAGS="-C link-self-contained=yes" && '
+    } else {
+      note(
+        "Non-GNU Windows host detected; cross-compiling with --target=x86_64-pc-windows-gnu."
+      )
+      target_decl <- "TARGET = x86_64-pc-windows-gnu"
+      rust_target_lib <- "$(RUST_DIR)/target/$(TARGET)/release/librust.a"
+      target_flag <- " --target=$(TARGET)"
+      cargo_pre <- ""
+    }
     render_makevars(
       file.path("src", "Makevars.win.in"),
       makevars_win,
-      cargo_path,
-      render_rust_deps(rust_dir, "Makevars.win.in"),
-      cargo_env
+      list(
+        "@CARGO@" = cargo_sub,
+        "@RUST_DEPS@" = render_rust_deps(rust_dir, "Makevars.win.in"),
+        "@CARGO_ENV@" = cargo_env,
+        "@TARGET_DECL@" = target_decl,
+        "@RUST_TARGET_LIB@" = rust_target_lib,
+        "@TARGET_FLAG@" = target_flag,
+        "@CARGO_PRE@" = cargo_pre
+      )
     )
     note("Rendered src/Makevars.win from template.")
   } else {
     render_makevars(
       file.path("src", "Makevars.in"),
       makevars,
-      cargo_path,
-      render_rust_deps(rust_dir, "Makevars.in"),
-      cargo_env
+      list(
+        "@CARGO@" = cargo_sub,
+        "@RUST_DEPS@" = render_rust_deps(rust_dir, "Makevars.in"),
+        "@CARGO_ENV@" = cargo_env
+      )
     )
     note("Rendered src/Makevars from template.")
   }
@@ -366,15 +423,37 @@ note(sprintf("cargo --version: %s", cargo$line))
 note(sprintf("rustc path: %s", rustc$path))
 note(sprintf("rustc --version: %s", rustc$line))
 note("MSRV check passed.")
+rustc_vv <- tryCatch(
+  system2(rustc$path, "-vV", stdout = TRUE, stderr = TRUE),
+  error = function(e) "(could not run rustc -vV)"
+)
+note(paste(c("rustc -vV:", rustc_vv), collapse = "\n  "))
+
+host_triple <- ""
+for (line in rustc_vv) {
+  m <- regexec("^\\s*host:\\s*(\\S+)", line)
+  parts <- regmatches(line, m)[[1]]
+  if (length(parts) >= 2L) {
+    host_triple <- parts[[2]]
+    break
+  }
+}
+note(sprintf("Host triple: %s", host_triple))
 
 cran_vendor_mode <- file.exists(file.path("src", "rust", "vendor.tar.xz"))
 if (cran_vendor_mode) {
-  note("Detected src/rust/vendor.tar.xz; setting CARGO_HOME to a local directory.")
+  note(
+    "Detected src/rust/vendor.tar.xz; setting CARGO_HOME to a local directory."
+  )
 } else {
   note("No src/rust/vendor.tar.xz found; not setting CARGO_HOME.")
 }
 
-render_platform_makevars(cargo$path, rustc$path, cran_vendor_mode = cran_vendor_mode)
+render_platform_makevars(
+  cargo$path,
+  cran_vendor_mode = cran_vendor_mode,
+  host_triple = host_triple
+)
 
 dir.create("inst", showWarnings = FALSE, recursive = TRUE)
 writeLines(cargo$version, con = file.path("inst", "cargo.log"), useBytes = TRUE)
