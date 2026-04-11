@@ -1,4 +1,4 @@
-^[.][^/]+$
+(^|/)[.][^/]+($|/)
 ^.*\.Rproj$
 ^[^/]*[.]tar[.]gz
 ^justfile$
@@ -8,13 +8,9 @@
 ^src/rust/librust\.a
 ^src/rust/(.*/)*target
 ^src/rust/vendor/
-^src/rust/rbindings/.crates2.json$
-^src/rust/rbindings/.crates.toml$
 ^src/rust/rbindings/bin/
 ^src/rust/rbindings/generate$
 ^src/rust/rbindings/README$
 ^src/rust/rbindings/wrapper.h$
-^src/rust/[.]cargo
-^src/rust/[.]cargo-home
 ^src/Makevars$
 ^src/Makevars[.]win$
