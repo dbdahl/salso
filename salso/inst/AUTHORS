@@ -3,17 +3,26 @@ The source code is vendored in the R package and can also be found at
 https://crates.io/crates/XXXX, where XXXX is a crate name.
 The authors of these Rust crates are listed below.
 
-Alex Crichton <alex@alexcrichton.com>     : cfg-if, proc-macro2, wit-bindgen
-bluss                                     : either, matrixmultiply, rawpointer
-Brendan Zabarauskas <bjzaba@yahoo.com.au> : approx
-David B. Dahl <dahl@stat.byu.edu>         : dahl-bellnumber, dahl-partition, dahl-salso, rbindings, roxido, roxido_macro
-David Tolnay <dtolnay@gmail.com>          : proc-macro2, quote, syn, unicode-ident
-Jack Wrenn <jswrenn@amazon.com>           : zerocopy, zerocopy-derive
-Jim Turner                                : ndarray
-Josh Stone <cuviper@gmail.com>            : autocfg
-Joshua Liebow-Feeser <joshlf@google.com>  : zerocopy, zerocopy-derive
-R. Janis Goldschmidt                      : matrixmultiply
-The CryptoCorrosion Contributors          : ppv-lite86, rand_chacha
-The Rand Project Developers               : getrandom, rand, rand_chacha, rand_core, rand_pcg
-The Rust Project Developers               : libc, num-bigint, num-complex, num-integer, num-traits, rand, rand_chacha, rand_core
-Ulrik Sverdrup "bluss"                    : ndarray
+Aleksey Kladov <aleksey.kladov@gmail.com>   : id-arena
+Alex Crichton <alex@alexcrichton.com>       : cfg-if, proc-macro2, wit-bindgen, wit-bindgen-core, wit-bindgen-rust, wit-bindgen-rust-macro, wit-parser
+Amanieu d'Antras <amanieu@gmail.com>        : hashbrown
+Andrew Gallant <jamslam@gmail.com>          : memchr
+bluss                                       : either, matrixmultiply, memchr, rawpointer
+Brendan Zabarauskas <bjzaba@yahoo.com.au>   : approx
+Bryant Luk <code@bryantluk.com>             : leb128fmt
+David B. Dahl <dahl@stat.byu.edu>           : dahl-bellnumber, dahl-partition, dahl-salso, rbindings, roxido, roxido_macro
+David Tolnay <dtolnay@gmail.com>            : anyhow, itoa, prettyplease, proc-macro2, quote, semver, serde, serde_core, serde_derive, serde_json, syn, unicode-ident, zmij
+Erick Tryzelaar <erick.tryzelaar@gmail.com> : serde, serde_core, serde_derive, serde_json, unicode-xid
+Jim Turner                                  : ndarray
+Josh Stone <cuviper@gmail.com>              : autocfg
+kwantam <kwantam@gmail.com>                 : unicode-xid
+Manish Goregaokar <manishsmail@gmail.com>   : unicode-xid
+Nick Fitzgerald <fitzgen@gmail.com>         : id-arena, wasm-encoder
+Orson Peters <orsonpeters@gmail.com>        : foldhash
+Peter Huene <peter@huene.dev>               : wit-component
+R. Janis Goldschmidt                        : matrixmultiply
+RustCrypto Developers                       : chacha20, cpufeatures
+The Rand Project Developers                 : getrandom, rand, rand_core, rand_pcg
+The Rust Project Developers                 : bitflags, libc, log, num-bigint, num-complex, num-integer, num-traits, rand
+Ulrik Sverdrup "bluss"                      : ndarray
+Yury Delendik <ydelendik@mozilla.com>       : wasmparser
