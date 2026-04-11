@@ -10,15 +10,6 @@ checksum = "7f202df86484c868dbad7eaa557ef785d5c66295e41b460ef922eca0723b842c"
 
 [[package]]
 name = "approx"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3f2a05fd1bd10b2527e20a2cd32d8873d115b8b39fe219ee25f42a8aca6ba278"
-dependencies = [
- "num-traits",
-]
-
-[[package]]
-name = "approx"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cab112f0a86d568ea0e627cc1d6be74a1e9cd55214684db5561995f6dad897c6"
@@ -122,29 +113,32 @@ checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 
 [[package]]
 name = "dahl-bellnumber"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e24cbca8840d535b2c017ab6f31f00b420186bce79c2dbba771d0c123ed2b81b"
+checksum = "d77e3f57114818f25a783e354161657689ac21ea6391b69d87092aa6a26416d9"
 dependencies = [
- "approx 0.4.0",
+ "approx",
  "num-bigint",
+ "num-rational",
  "num-traits",
 ]
 
 [[package]]
 name = "dahl-partition"
 version = "0.5.5"
-source = "git+https://github.com/dbdahl/rust-dahl-partition.git?rev=c3a9894b198#c3a9894b198250067e68146f648fc0c270fe00c9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf2528f14284226e502c375a3fa104d0cbdc54ecb1cdfaa90a16766a7467e4b8"
 dependencies = [
  "rand",
 ]
 
 [[package]]
 name = "dahl-salso"
-version = "0.6.8"
-source = "git+https://github.com/dbdahl/rust-dahl-salso.git?rev=6067e2b#6067e2b825afb46a094505b70058bfa33bc73396"
+version = "0.6.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "13ebb0374d27997bef686ff563436fea718ff0b280d8a7a2a0f2710808a330e1"
 dependencies = [
- "approx 0.5.1",
+ "approx",
  "crossbeam",
  "dahl-partition",
  "ndarray",
@@ -303,6 +297,17 @@ version = "0.1.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7969661fd2958a5cb096e56c8e1ad0444ac2bbcd0061bd28660485a44879858f"
 dependencies = [
+ "num-traits",
+]
+
+[[package]]
+name = "num-rational"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f83d14da390562dca69fc84082e73e548e1ad308d24accdedd2720017cb37824"
+dependencies = [
+ "num-bigint",
+ "num-integer",
  "num-traits",
 ]
 
