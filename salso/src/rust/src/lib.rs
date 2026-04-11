@@ -7,7 +7,7 @@ use core::f64;
 use ndarray::{Array2, Array3, Axis};
 use num_traits::cast::ToPrimitive;
 use rand::prelude::{IndexedRandom, SliceRandom};
-use rand::{Rng, SeedableRng};
+use rand::{RngExt, SeedableRng};
 use rand_pcg::Mcg128Xsl64;
 use rand_pcg::Pcg64Mcg;
 use rayon::prelude::*;
