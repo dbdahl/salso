@@ -25,9 +25,9 @@ checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 
 [[package]]
 name = "bitflags"
-version = "2.11.0"
+version = "2.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "843867be96c8daad0d758b57df9392b6d8d271134fce549de6ce169ff98a92af"
+checksum = "c4512299f36f043ab09a583e57bceb5a5aab7a73db1805848e8fef3c9e8c78b3"
 
 [[package]]
 name = "cfg-if"
@@ -114,8 +114,7 @@ checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 [[package]]
 name = "dahl-bellnumber"
 version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d77e3f57114818f25a783e354161657689ac21ea6391b69d87092aa6a26416d9"
+source = "git+https://github.com/dbdahl/rust-dahl-bellnumber.git?rev=792af17#792af17f6d7ce02a421b6a16f5f0aad85baaab8e"
 dependencies = [
  "approx",
  "num-bigint",
@@ -126,8 +125,7 @@ dependencies = [
 [[package]]
 name = "dahl-partition"
 version = "0.5.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cf2528f14284226e502c375a3fa104d0cbdc54ecb1cdfaa90a16766a7467e4b8"
+source = "git+https://github.com/dbdahl/rust-dahl-partition.git?rev=dbb59e5#dbb59e5015868a29866977b39f8ef695ba3c8420"
 dependencies = [
  "rand",
 ]
@@ -135,8 +133,7 @@ dependencies = [
 [[package]]
 name = "dahl-salso"
 version = "0.6.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13ebb0374d27997bef686ff563436fea718ff0b280d8a7a2a0f2710808a330e1"
+source = "git+https://github.com/dbdahl/rust-dahl-salso.git?rev=cdabc9c#cdabc9c7ac208e5bbab2d599fae5caa605a91ef4"
 dependencies = [
  "approx",
  "crossbeam",
@@ -231,9 +228,9 @@ checksum = "09edd9e8b54e49e587e4f6295a7d29c3ea94d469cb40ab8ca70b288248a81db2"
 
 [[package]]
 name = "libc"
-version = "0.2.184"
+version = "0.2.185"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48f5d2a454e16a5ea0f4ced81bd44e4cfc7bd3a507b61887c99fd3538b28e4af"
+checksum = "52ff2c0fe9bc6cb6b14a0592c2ff4fa9ceb83eea9db979b0487cd054946a2b8f"
 
 [[package]]
 name = "log"
@@ -382,9 +379,9 @@ dependencies = [
 
 [[package]]
 name = "rand_core"
-version = "0.10.0"
+version = "0.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0c8d0fd677905edcbeedbf2edb6494d676f0e98d54d5cf9bda0b061cb8fb8aba"
+checksum = "63b8176103e19a2643978565ca18b50549f6101881c443590420e4dc998a3c69"
 
 [[package]]
 name = "rand_pcg"
@@ -403,9 +400,9 @@ checksum = "60a357793950651c4ed0f3f52338f53b2f809f32d83a07f72909fa13e4c6c1e3"
 
 [[package]]
 name = "rayon"
-version = "1.11.0"
+version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "368f01d005bf8fd9b1206fb6fa653e6c4a81ceb1466406b81792d87c5677a58f"
+checksum = "fb39b166781f92d482534ef4b4b1b2568f42613b53e5b6c160e24cfbfa30926d"
 dependencies = [
  "either",
  "rayon-core",
@@ -529,11 +526,11 @@ checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
 
 [[package]]
 name = "wasip2"
-version = "1.0.2+wasi-0.2.9"
+version = "1.0.1+wasi-0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9517f9239f02c069db75e65f174b3da828fe5f5b945c4dd26bd25d89c03ebcf5"
+checksum = "0562428422c63773dad2c345a1882263bbf4d65cf3f42e90921f787ef5ad58e7"
 dependencies = [
- "wit-bindgen",
+ "wit-bindgen 0.46.0",
 ]
 
 [[package]]
@@ -542,7 +539,7 @@ version = "0.4.0+wasi-0.3.0-rc-2026-01-06"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5428f8bf88ea5ddc08faddef2ac4a67e390b88186c703ce6dbd955e1c145aca5"
 dependencies = [
- "wit-bindgen",
+ "wit-bindgen 0.51.0",
 ]
 
 [[package]]
@@ -578,6 +575,12 @@ dependencies = [
  "indexmap",
  "semver",
 ]
+
+[[package]]
+name = "wit-bindgen"
+version = "0.46.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f17a85883d4e6d00e8a97c586de764dabcc06133f7f1d55dce5cdc070ad7fe59"
 
 [[package]]
 name = "wit-bindgen"
