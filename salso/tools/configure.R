@@ -394,10 +394,12 @@ render_platform_makevars <- function(
       target_flag <- ""
       cargo_pre <- 'unset CARGO_BUILD_TARGET && export RUSTFLAGS="-C link-self-contained=yes" && '
     } else {
-      note(
-        "Non-GNU Windows host detected; cross-compiling with --target=x86_64-pc-windows-gnu."
-      )
-      target_decl <- paste("TARGET =", windows_target())
+      target <- windows_target()
+      note(sprintf(
+        "Non-GNU Windows host detected; cross-compiling with --target=%s.",
+        target
+      ))
+      target_decl <- paste("TARGET =", target)
       rust_target_lib <- "$(RUST_DIR)/target/$(TARGET)/release/librust.a"
       target_flag <- " --target=$(TARGET)"
       cargo_pre <- ""
