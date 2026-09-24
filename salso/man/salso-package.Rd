@@ -20,6 +20,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item David B. Dahl \email{dahl@stat.byu.edu} (\href{https://orcid.org/0000-0002-8173-1547}{ORCID})
   \item Devin J. Johnson \email{devin.j.johnson7@gmail.com} (\href{https://orcid.org/0000-0003-2619-6649}{ORCID})
   \item Peter Müller \email{pmueller@math.utexas.edu}
   \item Andrés Felipe Barrientos \email{abarrientos@fsu.edu}

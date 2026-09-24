@@ -25,26 +25,34 @@ export(partition.loss)
 export(psm)
 export(salso)
 export(threshold)
-importFrom(grDevices,heat.colors)
-importFrom(grDevices,rainbow)
-importFrom(grDevices,topo.colors)
-importFrom(graphics,abline)
-importFrom(graphics,axis)
-importFrom(graphics,box)
-importFrom(graphics,image)
-importFrom(graphics,legend)
-importFrom(graphics,pairs)
-importFrom(graphics,par)
-importFrom(graphics,plot)
-importFrom(graphics,points)
-importFrom(graphics,polygon)
-importFrom(graphics,segments)
-importFrom(graphics,text)
-importFrom(stats,as.dist)
-importFrom(stats,cmdscale)
-importFrom(stats,hclust)
-importFrom(stats,optimize)
-importFrom(stats,uniroot)
-importFrom(utils,combn)
-importFrom(utils,head)
+importFrom(grDevices,
+  heat.colors,
+  rainbow,
+  topo.colors
+)
+importFrom(graphics,
+  abline,
+  axis,
+  box,
+  image,
+  legend,
+  pairs,
+  par,
+  plot,
+  points,
+  polygon,
+  segments,
+  text
+)
+importFrom(stats,
+  as.dist,
+  cmdscale,
+  hclust,
+  optimize,
+  uniroot
+)
+importFrom(utils,
+  combn,
+  head
+)
 useDynLib(salso, .registration = TRUE)

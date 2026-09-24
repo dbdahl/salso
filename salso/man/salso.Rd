@@ -55,7 +55,7 @@ also take more CPU time which might be better used trying additional runs.}
 
 \item{probSequentialAllocation}{For the initial allocation, the probability
 of sequential allocation instead of using \code{sample(1:K, ncol(x),
-  TRUE)}, where \code{K} is set according to the \code{maxNClusters}
+TRUE)}, where \code{K} is set according to the \code{maxNClusters}
 argument.}
 
 \item{nCores}{The number of CPU cores to use, i.e., the number of
