@@ -3,7 +3,6 @@ roxido_registration!();
 use dahl_salso::LossFunction;
 use roxido::*;
 
-use core::f64;
 use ndarray::{Array2, Array3, Axis};
 use num_traits::cast::ToPrimitive;
 use rand::prelude::{IndexedRandom, SliceRandom};
@@ -50,7 +49,7 @@ fn enumerate_partitions(n_items: usize) {
 #[roxido]
 fn expected_loss(
     partitions: &mut RMatrix,
-    draws: &mut RMatrix,
+    draws: &mut RObject,
     psm: &mut RObject,
     loss: i32,
     a: f64,
@@ -58,7 +57,6 @@ fn expected_loss(
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
     let partitions = partitions.to_i32_mut(pc);
-    let draws = draws.to_i32_mut(pc);
     let psm2: &mut RMatrix<f64>;
     let psm_slice = if !psm.is_null() {
         psm2 = psm.as_matrix_mut().stop().to_f64_mut(pc);
@@ -76,6 +74,10 @@ fn expected_loss(
     let loss_function = dahl_salso::LossFunction::from_code(loss, a);
     match loss_function {
         Some(dahl_salso::LossFunction::BinderDraws(a)) => {
+            let draws = draws
+                .as_matrix_mut()
+                .stop_str("'draws' is expected to be a matrix.")
+                .to_i32_mut(pc);
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -95,6 +97,10 @@ fn expected_loss(
             dahl_salso::loss::binder_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::OneMinusARI) => {
+            let draws = draws
+                .as_matrix_mut()
+                .stop_str("'draws' is expected to be a matrix.")
+                .to_i32_mut(pc);
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -114,6 +120,10 @@ fn expected_loss(
             dahl_salso::loss::omariapprox_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::VI(a)) => {
+            let draws = draws
+                .as_matrix_mut()
+                .stop_str("'draws' is expected to be a matrix.")
+                .to_i32_mut(pc);
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -134,6 +144,10 @@ fn expected_loss(
             dahl_salso::loss::vilb_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::NVI) => {
+            let draws = draws
+                .as_matrix_mut()
+                .stop_str("'draws' is expected to be a matrix.")
+                .to_i32_mut(pc);
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -156,6 +170,10 @@ fn expected_loss(
             )
         }
         Some(dahl_salso::LossFunction::ID) => {
+            let draws = draws
+                .as_matrix_mut()
+                .stop_str("'draws' is expected to be a matrix.")
+                .to_i32_mut(pc);
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -178,6 +196,10 @@ fn expected_loss(
             )
         }
         Some(dahl_salso::LossFunction::NID) => {
+            let draws = draws
+                .as_matrix_mut()
+                .stop_str("'draws' is expected to be a matrix.")
+                .to_i32_mut(pc);
             let n_draws = draws.nrow();
             let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
                 draws.slice_mut(),
@@ -348,6 +370,9 @@ fn minimize_by_salso(
     };
     let results =
         dahl_salso::optimize::minimize_by_salso(pdi, loss_function, &p, seconds, n_cores, &mut rng);
+    if results.clustering.len() != n_items || !results.expected_loss.is_finite() {
+        stop!("SALSO did not yield a clustering with a finite expected loss.");
+    }
     let info_attr = RList::with_names(
         &[
             "loss",
@@ -400,10 +425,7 @@ fn minimize_by_salso(
         *rr = i32::try_from(*v + 1).unwrap();
     }
     r.set_class(["salso.estimate"].to_r(pc));
-    r.set_attribute(
-        RSymbol::new(std::ffi::CStr::from_bytes_with_nul(b"info\0").unwrap()),
-        info_attr,
-    );
+    r.set_attribute(RSymbol::new(c"info"), info_attr);
     r
 }
 
@@ -653,7 +675,7 @@ impl PartialPartitionStorage {
         }
         let result = if compute_auc {
             let n_items_f64 = n_items as f64;
-            let auc: f64 = (&self.0[..self.0.len() - 1])
+            let auc: f64 = self.0[..self.0.len() - 1]
                 .iter()
                 .map(|x| x.1 / n_items_f64)
                 .sum();
@@ -891,9 +913,9 @@ fn chips(
             })
             .collect()
     });
-    let chips_result = if all_candidates {
+    if all_candidates {
         let mut storage = PartialPartitionStorage::new();
-        candidates.sort_unstable_by(|x, y| y.0.last().unwrap().2.cmp(&x.0.last().unwrap().2));
+        candidates.sort_unstable_by_key(|x| std::cmp::Reverse(x.0.last().unwrap().2));
         candidates.iter_mut().for_each(|candidate| {
             let x = candidate.0.pop().unwrap();
             storage.push(&x.0, x.1, x.2)
@@ -979,8 +1001,7 @@ fn chips(
         } else {
             best.to_r(false, false, pc)
         }
-    };
-    chips_result
+    }
 }
 
 type CountType = u32;

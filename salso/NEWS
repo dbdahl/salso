@@ -1,3 +1,11 @@
+0.3.80
+  * Fixed compiler warnings reported by CRAN.
+  * Corrected sequential allocation scores for NVI, ID, and NID losses.
+  * NVI and NID yield zero for identical partitions.
+  * Error if optimization produces no loss with finite result.
+  * Corrected expected loss calculations from pairwise similarity matrices.
+  * Improved speed by adjusting memory access.
+
 0.3.79 (2026-09-24)
   * Fixed installation on Windows ARM64 (thanks to Jeroen Ooms, #4).
 
