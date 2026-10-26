@@ -8,20 +8,21 @@ RUST_TARGET_LIB = @RUST_TARGET_LIB@
 CARGO_BUILD_CMD = $(CARGO) build --release --lib@TARGET_FLAG@
 CARGO_ENV = @CARGO_ENV@
 
-@RUST_DEPS@
-
 PKG_LIBS = $(RUST_LIB) -lws2_32 -ladvapi32 -luserenv -lbcrypt -lntdll
 
 all: $(SHLIB)
 
 $(SHLIB): $(RUST_LIB)
 
-$(RUST_LIB): $(RUST_DEPS)
-	@CARGO_PRE@cd $(RUST_DIR) && R_CARGO_RUN_COUNTER=1 $(CARGO_ENV) $(CARGO_BUILD_CMD)
-	@CARGO_PRE@cd $(RUST_DIR) && R_CARGO_RUN_COUNTER=2 $(CARGO_ENV) $(CARGO_BUILD_CMD)
+$(RUST_LIB): FORCE
+	@CARGO_PRE@cd $(RUST_DIR) && $(CARGO_ENV) $(CARGO_BUILD_CMD)
 	cp -f $(RUST_TARGET_LIB) $(RUST_LIB)
 	rm -rf $(RUST_DIR)/vendor
 
 clean:
-	rm -f $(RUST_DIR)/roxido.txt $(RUST_LIB)
+	rm -f $(RUST_LIB)
 	rm -rf $(RUST_DIR)/.cargo-home
+
+FORCE:
+
+.PHONY: FORCE clean

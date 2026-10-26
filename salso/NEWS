@@ -5,6 +5,11 @@
   * Error if optimization produces no loss with finite result.
   * Corrected expected loss calculations from pairwise similarity matrices.
   * Improved speed by adjusting memory access.
+  * Results of salso() with losses based on a pairwise similarity matrix are reproducible with set.seed().
+  * bell(0) and lbell(0) give 1 and 0, and enumerate.partitions(0) gives the one partition of no items.
+  * psm() with nCores = 1 is faster and correct for partitions with more than 256 clusters.
+  * chips() supports partitions with more than 255 clusters.
+  * Latest Roxido framework.
 
 0.3.79 (2026-09-24)
   * Fixed installation on Windows ARM64 (thanks to Jeroen Ooms, #4).

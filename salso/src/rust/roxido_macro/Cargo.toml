@@ -1,6 +1,6 @@
 [package]
 name = "roxido_macro"
-version = "0.6.1"
+version = "0.7.1"
 authors = ["David B. Dahl <dahl@stat.byu.edu>"]
 edition = "2024"
 rust-version = "1.85.1"
@@ -13,5 +13,5 @@ publish = false
 proc-macro = true
 
 [dependencies]
-syn = { version = "2.0", features = ["full"] }
+syn = { version = "3", features = ["full"] }
 quote = "1.0"

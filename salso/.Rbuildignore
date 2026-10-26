@@ -2,6 +2,7 @@
 ^.*\.Rproj$
 ^[^/]*[.]tar[.]gz
 ^justfile$
+^dev$
 ^roxido-update[.]txt$
 ^[^/]*[.]Rcheck$
 ^inst/cargo.log$

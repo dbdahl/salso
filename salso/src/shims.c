@@ -1,9 +1,6 @@
-// Last-resort shims that intercept process-terminating functions and convert
-// them to R errors, preventing Rust's standard library from killing the R
-// session. Under normal operation, Rust panics are caught by catch_unwind at
-// the R/Rust boundary and cleanly converted to R errors. These shims only
-// fire in truly exceptional cases (e.g., double panics or explicit aborts)
-// that bypass catch_unwind.
+// Last-resort conversion of runtime termination calls to R errors.
+// This skips Rust cleanup and cannot safely recover from worker-thread failures.
+// Ordinary panics should unwind to the #[roxido] boundary instead.
 
 #if defined(__GNUC__) || defined(__clang__)
 __attribute__((noreturn))

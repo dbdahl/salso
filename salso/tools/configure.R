@@ -272,57 +272,6 @@ select_toolchain <- function(msrv) {
   )
 }
 
-discover_rust_dependency_files <- function(rust_dir) {
-  rust_dir <- normalizePath(rust_dir, winslash = "/", mustWork = TRUE)
-  files <- list.files(
-    rust_dir,
-    recursive = TRUE,
-    all.files = TRUE,
-    no.. = TRUE,
-    full.names = TRUE
-  )
-  files <- files[file.exists(files) & !dir.exists(files)]
-  if (length(files) < 1L) {
-    fail(sprintf("No Rust files were found under %s.", rust_dir))
-  }
-  files <- normalizePath(files, winslash = "/", mustWork = FALSE)
-  inside <- startsWith(files, paste0(rust_dir, "/"))
-  files <- files[inside]
-  rel <- substring(files, nchar(rust_dir) + 2L)
-
-  excluded_dirs <- c("target", "vendor")
-  excluded_dir_pattern <- paste0(
-    "(^|/)(",
-    paste(excluded_dirs, collapse = "|"),
-    ")/"
-  )
-  hidden_path_pattern <- "(^|/)[.][^/]+($|/)"
-  keep <- !grepl(excluded_dir_pattern, rel) & !grepl(hidden_path_pattern, rel)
-  rel <- rel[keep]
-  rel <- rel[!(rel %in% c("librust.a", "roxido.txt"))]
-  if (length(rel) < 1L) {
-    fail(sprintf(
-      "No Rust dependency files remained after filtering under %s.",
-      rust_dir
-    ))
-  }
-
-  deps <- file.path("rust", rel)
-  sort(unique(deps))
-}
-
-render_rust_deps <- function(rust_dir, template_name) {
-  deps <- c(template_name, discover_rust_dependency_files(rust_dir))
-  lines <- sprintf("  %s", deps)
-  if (length(lines) > 1L) {
-    lines[seq_len(length(lines) - 1L)] <- paste0(
-      lines[seq_len(length(lines) - 1L)],
-      " \\"
-    )
-  }
-  paste(c("RUST_DEPS = \\", lines), collapse = "\n")
-}
-
 render_makevars <- function(template_path, output_path, substitutions) {
   if (!file.exists(template_path)) {
     fail(sprintf("Could not find template: %s", template_path))
@@ -392,7 +341,7 @@ render_platform_makevars <- function(
       target_decl <- ""
       rust_target_lib <- "$(RUST_DIR)/target/release/librust.a"
       target_flag <- ""
-      cargo_pre <- 'unset CARGO_BUILD_TARGET && export RUSTFLAGS="-C link-self-contained=yes" && '
+      cargo_pre <- 'unset CARGO_BUILD_TARGET && export RUSTFLAGS="$$RUSTFLAGS -C link-self-contained=yes" && '
     } else {
       target <- windows_target()
       note(sprintf(
@@ -409,7 +358,6 @@ render_platform_makevars <- function(
       makevars_win,
       list(
         "@CARGO@" = cargo_sub,
-        "@RUST_DEPS@" = render_rust_deps(rust_dir, "Makevars.win.in"),
         "@CARGO_ENV@" = cargo_env,
         "@TARGET_DECL@" = target_decl,
         "@RUST_TARGET_LIB@" = rust_target_lib,
@@ -424,7 +372,6 @@ render_platform_makevars <- function(
       makevars,
       list(
         "@CARGO@" = cargo_sub,
-        "@RUST_DEPS@" = render_rust_deps(rust_dir, "Makevars.in"),
         "@CARGO_ENV@" = cargo_env
       )
     )
