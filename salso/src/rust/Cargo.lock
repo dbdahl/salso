@@ -101,9 +101,9 @@ checksum = "a31eee39dddec8330830986fcd7625edb5a24ec90ea038215273bbc3adb08ac6"
 
 [[package]]
 name = "dahl-bellnumber"
-version = "0.1.3"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e46d1c227deb16ae136cd3b156f1a9216da9708bb6f303d25cb375f5bcb039c8"
+checksum = "aa97d7ef5de16b4cf342fcc33085a821440075f05b8888bfb8be810beaf1873b"
 dependencies = [
  "approx",
  "num-bigint",
@@ -113,18 +113,18 @@ dependencies = [
 
 [[package]]
 name = "dahl-partition"
-version = "0.5.6"
+version = "0.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81708188d7bbacad7b91ddf3758c45987882e0075b99b97ed3d2b421b4adbb09"
+checksum = "012fe28c367f9999af491a5c862ae341f78f33c4c4cce93f066d65a09808fc46"
 dependencies = [
  "rand",
 ]
 
 [[package]]
 name = "dahl-salso"
-version = "0.7.0"
+version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "62850d7c988c92c650bf84b1393447d59fb112d3bac5b35e1379f9e707035507"
+checksum = "5ca9f907fba7e49cdcd94c67a85aab943a8eed789b501b1b09280d0947c553f3"
 dependencies = [
  "approx",
  "crossbeam",

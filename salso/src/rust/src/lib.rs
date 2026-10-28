@@ -3,7 +3,7 @@ roxido_registration!();
 use dahl_salso::LossFunction;
 use roxido::*;
 
-use ndarray::{Array2, Array3, Axis};
+use ndarray::{Array2, Array3};
 use num_traits::cast::ToPrimitive;
 use rand::prelude::{IndexedRandom, SliceRandom};
 use rand::{RngExt, SeedableRng};
@@ -47,26 +47,18 @@ fn enumerate_partitions(n_items: usize) {
 }
 
 #[roxido]
-fn expected_loss(
-    partitions: &mut RMatrix,
-    draws: &mut RObject,
-    psm: &mut RObject,
-    loss: i32,
-    a: f64,
-) {
+fn expected_loss(partitions: &RMatrix, draws: &mut RObject, psm: &mut RObject, loss: i32, a: f64) {
     let n_partitions = partitions.nrow();
     let n_items = partitions.ncol();
-    let partitions = partitions.to_i32_mut(pc);
-    let psm2: &mut RMatrix<f64>;
+    let partitions = partitions.to_i32(pc);
     let psm_slice = if !psm.is_null() {
-        psm2 = psm.as_matrix_mut().stop().to_f64_mut(pc);
-        psm2.slice_mut()
+        psm.as_matrix().stop().to_f64(pc).slice()
     } else {
-        &mut []
+        &[]
     };
     let results = RVector::<f64>::new(n_partitions, pc);
-    let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
-        partitions.slice_mut(),
+    let partitions = dahl_partition::PartitionsHolderView::from_slice(
+        partitions.slice(),
         n_partitions,
         n_items,
         true,
@@ -75,12 +67,12 @@ fn expected_loss(
     match loss_function {
         Some(dahl_salso::LossFunction::BinderDraws(a)) => {
             let draws = draws
-                .as_matrix_mut()
+                .as_matrix()
                 .stop_str("'draws' is expected to be a matrix.")
-                .to_i32_mut(pc);
+                .to_i32(pc);
             let n_draws = draws.nrow();
-            let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice_mut(),
+            let draws = dahl_partition::PartitionsHolderView::from_slice(
+                draws.slice(),
                 n_draws,
                 n_items,
                 true,
@@ -93,17 +85,17 @@ fn expected_loss(
             )
         }
         Some(dahl_salso::LossFunction::BinderPSM) => {
-            let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
+            let psm = dahl_partition::SquareMatrixView::from_slice(psm_slice, n_items);
             dahl_salso::loss::binder_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::OneMinusARI) => {
             let draws = draws
-                .as_matrix_mut()
+                .as_matrix()
                 .stop_str("'draws' is expected to be a matrix.")
-                .to_i32_mut(pc);
+                .to_i32(pc);
             let n_draws = draws.nrow();
-            let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice_mut(),
+            let draws = dahl_partition::PartitionsHolderView::from_slice(
+                draws.slice(),
                 n_draws,
                 n_items,
                 true,
@@ -116,17 +108,17 @@ fn expected_loss(
             )
         }
         Some(dahl_salso::LossFunction::OneMinusARIapprox) => {
-            let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
+            let psm = dahl_partition::SquareMatrixView::from_slice(psm_slice, n_items);
             dahl_salso::loss::omariapprox_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::VI(a)) => {
             let draws = draws
-                .as_matrix_mut()
+                .as_matrix()
                 .stop_str("'draws' is expected to be a matrix.")
-                .to_i32_mut(pc);
+                .to_i32(pc);
             let n_draws = draws.nrow();
-            let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice_mut(),
+            let draws = dahl_partition::PartitionsHolderView::from_slice(
+                draws.slice(),
                 n_draws,
                 n_items,
                 true,
@@ -140,17 +132,17 @@ fn expected_loss(
             )
         }
         Some(dahl_salso::LossFunction::VIlb) => {
-            let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm_slice, n_items);
+            let psm = dahl_partition::SquareMatrixView::from_slice(psm_slice, n_items);
             dahl_salso::loss::vilb_multiple(&partitions, &psm, results.slice_mut())
         }
         Some(dahl_salso::LossFunction::NVI) => {
             let draws = draws
-                .as_matrix_mut()
+                .as_matrix()
                 .stop_str("'draws' is expected to be a matrix.")
-                .to_i32_mut(pc);
+                .to_i32(pc);
             let n_draws = draws.nrow();
-            let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice_mut(),
+            let draws = dahl_partition::PartitionsHolderView::from_slice(
+                draws.slice(),
                 n_draws,
                 n_items,
                 true,
@@ -171,12 +163,12 @@ fn expected_loss(
         }
         Some(dahl_salso::LossFunction::ID) => {
             let draws = draws
-                .as_matrix_mut()
+                .as_matrix()
                 .stop_str("'draws' is expected to be a matrix.")
-                .to_i32_mut(pc);
+                .to_i32(pc);
             let n_draws = draws.nrow();
-            let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice_mut(),
+            let draws = dahl_partition::PartitionsHolderView::from_slice(
+                draws.slice(),
                 n_draws,
                 n_items,
                 true,
@@ -197,12 +189,12 @@ fn expected_loss(
         }
         Some(dahl_salso::LossFunction::NID) => {
             let draws = draws
-                .as_matrix_mut()
+                .as_matrix()
                 .stop_str("'draws' is expected to be a matrix.")
-                .to_i32_mut(pc);
+                .to_i32(pc);
             let n_draws = draws.nrow();
-            let draws = dahl_partition::PartitionsHolderBorrower::from_slice(
-                draws.slice_mut(),
+            let draws = dahl_partition::PartitionsHolderView::from_slice(
+                draws.slice(),
                 n_draws,
                 n_items,
                 true,
@@ -227,33 +219,27 @@ fn expected_loss(
 }
 
 #[roxido]
-fn psm(partitions: &mut RMatrix, n_cores: usize) {
-    if n_cores == 1 {
-        let partitions = Partitions::from_r(partitions.to_i32(pc));
-        partitions.pairwise_similarity_matrix(pc)
-    } else {
-        let n_partitions = partitions.nrow();
-        let n_items = partitions.ncol();
-        let partitions = partitions.to_i32_mut(pc);
-        let n_cores = u32::try_from(n_cores).stop();
-        let psm = RMatrix::<f64>::new(n_items, n_items, pc);
-        let partitions = dahl_partition::PartitionsHolderBorrower::from_slice(
-            partitions.slice_mut(),
-            n_partitions,
-            n_items,
-            true,
-        );
-        let mut psm2 = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice_mut(), n_items);
-        dahl_salso::psm::psm_engine(n_partitions, n_items, n_cores, &partitions, &mut psm2);
-        psm
-    }
+fn psm(partitions: &RMatrix, n_cores: usize) {
+    let n_partitions = partitions.nrow();
+    let n_items = partitions.ncol();
+    let partitions = partitions.to_i32(pc);
+    let n_cores = u32::try_from(n_cores).stop();
+    let psm = RMatrix::<f64>::new(n_items, n_items, pc);
+    let partitions = dahl_partition::PartitionsHolderView::from_slice(
+        partitions.slice(),
+        n_partitions,
+        n_items,
+        true,
+    );
+    let mut psm2 = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice_mut(), n_items);
+    dahl_salso::psm::psm_into(&partitions, n_cores, &mut psm2);
+    psm
 }
 
 #[roxido]
-fn minimize_by_enumeration(psm: &mut RMatrix, loss: i32, a: f64) {
+fn minimize_by_enumeration(psm: &RMatrix, loss: i32, a: f64) {
     let n_items = psm.nrow();
-    let psm = psm.to_f64_mut(pc);
-    let psm = dahl_partition::SquareMatrixBorrower::from_slice(psm.slice_mut(), n_items);
+    let psm = dahl_partition::SquareMatrixView::from_slice(psm.to_f64(pc).slice(), n_items);
     let f = match dahl_salso::LossFunction::from_code(loss, a) {
         Some(loss_function) => match loss_function {
             dahl_salso::LossFunction::BinderDraws(_) => stop!("No implementation for binder."),
@@ -295,7 +281,6 @@ fn minimize_by_salso(
     let n_items;
     let draws2;
     let psm2;
-    let psm3;
     let (loss_function, pdi) = match dahl_salso::LossFunction::from_code(loss, a) {
         Some(loss_function) => match loss_function {
             dahl_salso::LossFunction::BinderDraws(_)
@@ -304,20 +289,13 @@ fn minimize_by_salso(
             | dahl_salso::LossFunction::NVI
             | dahl_salso::LossFunction::ID
             | dahl_salso::LossFunction::NID => {
-                let Ok(draws) = draws.as_matrix_mut() else {
+                let Ok(draws) = draws.as_matrix() else {
                     stop!("'draws' should be a matrix.");
                 };
-                let draws = draws.to_i32_mut(pc);
+                let draws = draws.to_i32(pc);
                 n_items = draws.ncol();
-                let n_draws = draws.nrow();
                 draws2 = dahl_salso::clustering::Clusterings::from_i32_column_major_order(
-                    dahl_partition::PartitionsHolderBorrower::from_slice(
-                        draws.slice_mut(),
-                        n_draws,
-                        n_items,
-                        true,
-                    )
-                    .data(),
+                    draws.slice(),
                     n_items,
                 );
                 (
@@ -329,14 +307,14 @@ fn minimize_by_salso(
             | dahl_salso::LossFunction::OneMinusARIapprox
             | dahl_salso::LossFunction::VIlb => {
                 let psm = psm
-                    .as_matrix_mut()
+                    .as_matrix()
                     .stop_str("'psm' is expected to be a matrix.");
                 n_items = psm.ncol();
-                psm2 = psm.to_f64_mut(pc);
-                psm3 = dahl_partition::SquareMatrixBorrower::from_slice(psm2.slice_mut(), n_items);
+                psm2 =
+                    dahl_partition::SquareMatrixView::from_slice(psm.to_f64(pc).slice(), n_items);
                 (
                     loss_function,
-                    dahl_salso::PartitionDistributionInformation::PairwiseSimilarityMatrix(&psm3),
+                    dahl_salso::PartitionDistributionInformation::PairwiseSimilarityMatrix(&psm2),
                 )
             }
         },
@@ -371,7 +349,7 @@ fn minimize_by_salso(
     let results =
         dahl_salso::optimize::minimize_by_salso(pdi, loss_function, &p, seconds, n_cores, &mut rng);
     if results.clustering.len() != n_items || !results.expected_loss.is_finite() {
-        stop!("SALSO did not yield a clustering with a finite expected loss.");
+        stop!("SALSO did not produce a complete clustering with a finite expected loss.");
     }
     let info_attr = RList::with_names(
         &[
@@ -431,11 +409,14 @@ fn minimize_by_salso(
 
 // Conditionally-allocated High Probability Subset (CHiPS) Partition
 
+// A cluster label in CHiPS. The largest value marks a cluster that has no label yet.
+type Label = u16;
+
 pub struct Partitions {
     n_items: usize,
     n_partitions: usize,
-    n_clusters: Vec<u8>,
-    raw: Array2<u8>,
+    n_clusters: Vec<Label>,
+    raw: Array2<Label>,
 }
 
 impl Partitions {
@@ -443,7 +424,7 @@ impl Partitions {
         let n_items = partitions.ncol();
         let n_partitions = partitions.nrow();
         let slice = partitions.slice();
-        let mut raw = Array2::<u8>::zeros((n_items, n_partitions));
+        let mut raw = Array2::<Label>::zeros((n_items, n_partitions));
         let mut n_clusters = Vec::with_capacity(n_partitions);
         let mut map = HashMap::new();
         for sample_index in 0..n_partitions {
@@ -452,6 +433,12 @@ impl Partitions {
             for item_index in 0..partitions.ncol() {
                 let label = slice[n_partitions * item_index + sample_index];
                 let relabel = map.entry(label).or_insert_with(|| {
+                    if next_key == Label::MAX - 1 {
+                        stop!(
+                            "CHiPS supports at most {} clusters in a partition.",
+                            Label::MAX - 1
+                        );
+                    }
                     let temp = next_key;
                     next_key += 1;
                     temp
@@ -468,7 +455,7 @@ impl Partitions {
         }
     }
 
-    pub fn max_n_clusters(&self) -> u8 {
+    pub fn max_n_clusters(&self) -> Label {
         *self.n_clusters.iter().max().unwrap_or(&0)
     }
 
@@ -477,46 +464,20 @@ impl Partitions {
         let mapper = self
             .n_clusters
             .iter()
-            .map(|n_clusters| vec![u8::MAX; usize::from(*n_clusters)])
+            .map(|n_clusters| vec![Label::MAX; usize::from(*n_clusters)])
             .collect();
         State { active, mapper }
     }
 
-    pub fn at(&self, sample_index: usize, item_index: usize) -> u8 {
+    pub fn at(&self, sample_index: usize, item_index: usize) -> Label {
         self.raw[(item_index, sample_index)]
-    }
-
-    pub fn pairwise_similarity_matrix<'a>(&self, pc: &'a Pc) -> &'a RMatrix<f64> {
-        //let psm = RMatrix::<f64>::new(self.n_items, self.n_items, pc);
-        let psm = RMatrix::from_value(0.0, self.n_items, self.n_items, pc);
-        let slice = psm.slice_mut();
-        for labels in self.raw.axis_iter(Axis(1)) {
-            for (i, &label_i) in labels.iter().enumerate() {
-                for (j, &label_j) in labels.into_iter().take(i).enumerate() {
-                    if label_i == label_j {
-                        slice[self.n_items * i + j] += 1.0;
-                        slice[self.n_items * j + i] += 1.0;
-                    }
-                }
-            }
-        }
-        let n_partitions_f64 = self.n_partitions as f64;
-        for x in slice.iter_mut() {
-            // Compute relative frequency.
-            *x /= n_partitions_f64;
-        }
-        for i in 0..self.n_items {
-            // Set diagonal elements to 1.0.
-            slice[self.n_items * i + i] += 1.0;
-        }
-        psm
     }
 }
 
 #[derive(Clone)]
 pub struct State {
     active: Vec<usize>,
-    mapper: Vec<Vec<u8>>,
+    mapper: Vec<Vec<Label>>,
 }
 
 impl State {
@@ -524,8 +485,8 @@ impl State {
         &self,
         partitions: &Partitions,
         item_index: usize,
-        next_label: u8,
-    ) -> Vec<(u8, u32)> {
+        next_label: Label,
+    ) -> Vec<(Label, u32)> {
         let mut counter = Vec::with_capacity(usize::from(next_label + 1));
         for label in 0..=next_label {
             counter.push((label, 0));
@@ -533,7 +494,7 @@ impl State {
         for &sample_index in self.active.iter() {
             let original_label = partitions.at(sample_index, item_index);
             let new_label = self.mapper[sample_index][usize::from(original_label)];
-            if new_label == u8::MAX {
+            if new_label == Label::MAX {
                 counter[usize::from(next_label)].1 += 1;
             } else {
                 counter[usize::from(new_label)].1 += 1;
@@ -550,14 +511,14 @@ impl State {
         &mut self,
         partitions: &Partitions,
         item_index: usize,
-        label: u8,
-        next_label: u8,
+        label: Label,
+        next_label: Label,
     ) {
         let mut deactivate_queue = Vec::new();
         for &sample_index in self.active.iter() {
             let original_label = partitions.at(sample_index, item_index);
             let new_label = self.mapper[sample_index][usize::from(original_label)];
-            let new_label = if new_label == u8::MAX {
+            let new_label = if new_label == Label::MAX {
                 self.mapper[sample_index][usize::from(original_label)] = next_label;
                 next_label
             } else {
@@ -581,7 +542,7 @@ pub struct PartialPartition {
     n_items: usize,
     offset: usize,
     indices: Vec<usize>,
-    labels: Vec<u8>,
+    labels: Vec<Label>,
 }
 
 impl PartialPartition {
@@ -594,7 +555,7 @@ impl PartialPartition {
         }
     }
 
-    pub fn allocate(&mut self, index: usize, label: u8) {
+    pub fn allocate(&mut self, index: usize, label: Label) {
         if let Some(pos) = self.dormant().iter().position(|&x| x == index) {
             self.indices.swap(self.offset, self.offset + pos);
             self.offset += 1;
@@ -628,7 +589,10 @@ impl ToRRef<RVector<i32>> for PartialPartition {
 }
 
 #[derive(Clone)]
-struct PartialPartitionStorage(Vec<(PartialPartition, f64, usize)>, Vec<(usize, u8, u32)>);
+struct PartialPartitionStorage(
+    Vec<(PartialPartition, f64, usize)>,
+    Vec<(usize, Label, u32)>,
+);
 
 impl PartialPartitionStorage {
     pub fn new() -> Self {
@@ -769,7 +733,7 @@ fn chips(
     and_salso: bool,
     loss: i32,
     a: f64,
-    max_n_clusters: u8,
+    max_n_clusters: usize,
     initial_partition: &RVector,
     n_cores: usize,
 ) {
@@ -785,6 +749,9 @@ fn chips(
     if and_salso && (intermediate_results || all_candidates) {
         stop!("if 'andSALSO', both 'intermediateResults' and 'allCandidates' must be FALSE.");
     }
+    let Ok(max_n_clusters) = Label::try_from(max_n_clusters) else {
+        stop!("'maxNClusters' may be at most {}.", Label::MAX);
+    };
     let partitions = Partitions::from_r(partitions.to_i32(pc));
     if partitions.n_partitions == 0 {
         stop!("'partitions' must have a least one partition (i.e., row).");
@@ -1010,7 +977,7 @@ fn salso_after_chips<S: LossComputer>(
     state: PartialPartition,
     partitions: &Partitions,
     loss_computer: S,
-    max_n_clusters: u8,
+    max_n_clusters: Label,
     pool: ThreadPool,
     mut rngs: Vec<Pcg64Mcg>,
 ) -> PartialPartition {
@@ -1078,7 +1045,7 @@ fn salso_after_chips<S: LossComputer>(
                     min_to_label
                 };
                 if to_label != from_label {
-                    state.labels[item_index] = u8::try_from(to_label).unwrap();
+                    state.labels[item_index] = Label::try_from(to_label).unwrap();
                     state_counts[to_label] += 1;
                     state_counts[from_label] -= 1;
                     let to_label_index = to_label + 1;
